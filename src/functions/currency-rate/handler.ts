@@ -5,10 +5,11 @@ import { handleApiFuncError } from '@libs/error';
 import { formatJSONApiResponse } from '@libs/format';
 import { middyfy } from '@libs/middyfy';
 import { getUsdToMntRates as getUsdToMntRatesSrv } from '@services/currency-rate';
+import { extractMetadata } from '@services/utils/cognito-auth-service';
 
-const getUsdToMntRatesFunc: ApiFunc<null> = async (): Promise<ApiFuncRes> => {
+const getUsdToMntRatesFunc: ApiFunc<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    return formatJSONApiResponse(await getUsdToMntRatesSrv());
+    return formatJSONApiResponse(await getUsdToMntRatesSrv(extractMetadata(event)));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }

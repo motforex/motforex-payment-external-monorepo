@@ -1,17 +1,12 @@
 import type { AWS } from '@serverless/typescript';
-import { testFunc } from '@functions/hello';
-import {
-  getExampleTableDesc,
-  getExampleItemById,
-  getExampleItemsByQuery,
-  postCreateExampleItem,
-  putUpdateExampleItem,
-} from '@functions/example';
+
+import { getUsdToMntRates } from '@functions/currency-rate';
+import { getUserPaymentMethodById, getUserPaymentMethodsByType } from '@functions/payment-methods';
 
 const serverlessConfig: AWS = {
-  service: 'service-name',
+  service: 'motforex-client-configs',
   frameworkVersion: '4',
-  app: 'app-name',
+  app: 'motforex-client-configs',
   plugins: ['serverless-offline', 'serverless-prune-plugin'],
   provider: {
     name: 'aws',
@@ -20,16 +15,37 @@ const serverlessConfig: AWS = {
     region: 'ap-southeast-1',
     profile: 'default',
     logRetentionInDays: 365,
+    timeout: 29,
+    apiGateway: {
+      minimumCompressionSize: 1024,
+      shouldStartNameWithService: true,
+    },
+    iam: { role: 'arn:aws:iam::786487424160:role/payments-service-role' },
+    environment: {},
   },
   functions: {
-    testFunc,
-    getExampleTableDesc,
-    getExampleItemById,
-    getExampleItemsByQuery,
-    postCreateExampleItem,
-    putUpdateExampleItem,
+    getUsdToMntRates,
+    getUserPaymentMethodById,
+    getUserPaymentMethodsByType,
   },
   package: { individually: true },
+  resources: {
+    Resources: {
+      GatewayResponseDefault4XX: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'DEFAULT_4XX',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
+    },
+  },
   custom: {
     prune: {
       automatic: true,

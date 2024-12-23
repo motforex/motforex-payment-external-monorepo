@@ -9,16 +9,15 @@ const defaultConfig = {
   },
 };
 
-const authHeader = {
+const clientAuthHeader = {
   authorizer: {
+    name: 'motforex-users',
+    arn: 'arn:aws:cognito-idp:ap-southeast-1:786487424160:userpool/ap-southeast-1_uFWbndS6d',
     type: 'COGNITO_USER_POOLS',
-    authorizerId: {
-      Ref: 'CognitoAuthorizer',
-    },
   },
   throttling: {
-    maxRequestsPerSecond: 10000,
-    maxConcurrentRequests: 5000,
+    burstLimit: 5000,
+    rateLimit: 10000,
   },
   cors: {
     origin: '*',
@@ -55,7 +54,7 @@ export function createDefaultApiGatewayFunc(
   };
 }
 
-export function createAuthApiGatewayFunc(
+export function createClientAuthApiFunc(
   dirname: string,
   handler: string,
   method: string,
@@ -69,7 +68,7 @@ export function createAuthApiGatewayFunc(
         http: {
           method: method,
           path: url,
-          ...authHeader,
+          ...clientAuthHeader,
         },
       },
     ],
