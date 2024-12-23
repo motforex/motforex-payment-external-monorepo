@@ -1,3 +1,9 @@
+import {
+  COMMISSION_TYPE_ADDITIONAL,
+  COMMISSION_TYPE_FIXED,
+  COMMISSION_TYPE_INCLUDED,
+  COMMISSION_TYPE_PERCENT,
+} from '@constants/status.constants';
 import { z } from 'zod';
 
 export type LbdFuncResponse = {
@@ -63,3 +69,39 @@ export const CognitoIdTokenSchema = z.object({
   jti: z.string(),
   email: z.string(),
 });
+
+export const AccountSchema = z.object({
+  platform: z.string(),
+  login: z.string(),
+});
+
+export type Account = z.infer<typeof AccountSchema>;
+
+export const AmountSchema = z.object({
+  amount: z.number(),
+  currency: z.string(),
+});
+
+export type Amount = z.infer<typeof AmountSchema>;
+
+export const TradingAccountDataSchema = z.object({
+  balance: z.number(),
+  credit: z.number(),
+  account: AccountSchema,
+});
+
+export type TradingAccountData = z.infer<typeof TradingAccountDataSchema>;
+
+export const CommissionSchema = AmountSchema.extend({
+  type: z.enum([COMMISSION_TYPE_FIXED, COMMISSION_TYPE_PERCENT]),
+  additionType: z.enum([COMMISSION_TYPE_ADDITIONAL, COMMISSION_TYPE_INCLUDED]),
+}).nullable();
+
+export type Commission = z.infer<typeof CommissionSchema>;
+
+export const OptionsSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+});
+
+export type Options = z.infer<typeof OptionsSchema>;
