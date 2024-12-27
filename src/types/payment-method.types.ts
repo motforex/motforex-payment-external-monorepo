@@ -25,42 +25,25 @@ export const PaymentMethodSchema = z.object({
   minAmount: AmountSchema,
   maxAmount: AmountSchema,
   commission: CommissionSchema.nullable(),
+  transactionCurrency: z.string(),
   // Configs
   allowedCountries: z.array(z.string()).min(1, 'At least one country is required'),
   formSchema: z.array(FormSchema).nullable(),
   warning: z.string().nullable(),
   isRequireProof: z.boolean(),
+  isAmountEditable: z.boolean(),
+  isMetadataRequired: z.boolean(),
   instructions: z.string(),
   paymentProofInstructions: z.string().nullable(),
   expirationPeriod: z.number(),
   // Status
   isActive: z.boolean(),
   message: z.string(),
+  postDate: z.string(),
   createdBy: z.string(),
   createdAt: z.number(),
   updatedBy: z.string().nullable(),
   updatedAt: z.number().nullable(),
-  postDate: z.string(),
 });
 
 export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
-
-export const CreatePaymentMethodRequestSchema = z.object({
-  title: z.string(),
-  iconUrl: z.string().url(),
-  type: PaymentMethodTypesSchema,
-  // Amounts
-  minAmount: AmountSchema,
-  maxAmount: AmountSchema,
-  commission: CommissionSchema.nullable(),
-  // Configs
-  allowedCountries: z.array(z.string()).min(1, 'At least one country is required'),
-  formSchema: z.array(FormSchema).nullable(),
-  warning: z.string().nullable(),
-  isRequireProof: z.boolean(),
-  instructions: z.string(),
-  paymentProofInstructions: z.string().nullable(),
-  expirationPeriod: z.number(),
-});
-
-export type CreatePaymentMethodRequest = z.infer<typeof CreatePaymentMethodRequestSchema>;
