@@ -1,5 +1,5 @@
 import type { PaymentMethod } from '@type/payment-method.types';
-import type { CustomQueryCommandOutput as QueryOutput, QueryRequest } from '@type/dynamo.types';
+import type { CustomQueryCommandOutput as QueryOutput, QueryRequest } from '@repository/dynamo';
 
 import { extractExpAttributeNamesFromProjection, getRecordByKey, getTableDescription, queryRecords } from './dynamo';
 import { DescribeTableCommandOutput } from '@aws-sdk/client-dynamodb';

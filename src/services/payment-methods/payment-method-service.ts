@@ -6,7 +6,7 @@ import {
 } from '@repository/payment-methods-repository';
 import { formatJSONApiResponse } from '@libs/format';
 import { handleApiFuncError } from '@libs/error';
-import { QueryRequest } from '@type/dynamo.types';
+import { QueryRequest } from '@repository/dynamo';
 
 const USER_VISIBLE_KEYS =
   'id, type, title, iconUrl, minAmount, maxAmount, commission, formSchema, instructions, isRequireProof, expirationPeriod, isActive, paymentProofInstructions, transactionCurrency, warning';
