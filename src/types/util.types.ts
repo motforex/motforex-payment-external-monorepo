@@ -94,7 +94,6 @@ export type TradingAccountData = z.infer<typeof TradingAccountDataSchema>;
 
 export const CommissionSchema = AmountSchema.extend({
   type: z.enum([COMMISSION_TYPE_FIXED, COMMISSION_TYPE_PERCENT]),
-  additionType: z.enum([COMMISSION_TYPE_ADDITIONAL, COMMISSION_TYPE_INCLUDED]),
 }).nullable();
 
 export type Commission = z.infer<typeof CommissionSchema>;
