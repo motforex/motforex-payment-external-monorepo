@@ -9,19 +9,19 @@ export type CustomHeader = { Authorization: string; 'Content-Type': string };
  * @param contentType - Content type for the header
  * @returns An object containing the Authorization header.
  */
-function createBearerAuthHeader(token: string, contentType: string = 'application/json'): CustomHeader {
+export function createBearerAuthHeader(token: string, contentType: string = 'application/json'): CustomHeader {
   return { Authorization: `Bearer ${token}`, 'Content-Type': contentType };
 }
 
 /**
  * Creates a Basic Authorization header object.
- * @param username - The username for basic auth.
- * @param password - The password for basic auth.
+ * @param uname - The username for basic auth.
+ * @param pwd - The password for basic auth.
  * @param contentType - ContentType for basic auth
  * @returns An object containing the Authorization header.
  */
-function createBasicAuthHeader(username: string, password: string, contentType = 'application/json'): CustomHeader {
-  const credentials = `${username}:${password}`;
+export function createBasicAuthHeader(uname: string, pwd: string, contentType = 'application/json'): CustomHeader {
+  const credentials = `${uname}:${pwd}`;
   const encodedCredentials = Buffer.from(credentials).toString('base64');
   return {
     Authorization: `Basic ${encodedCredentials}`,
@@ -75,7 +75,7 @@ function createBasicAuthHeader(username: string, password: string, contentType =
  * });
  * console.log(response.data); // Created user data
  */
-async function sendRequest<Response = unknown, Request = Record<string, unknown>>(
+export async function sendRequest<Response = unknown, Request = Record<string, unknown>>(
   params: AxiosRequestConfig<Request>
 ): Promise<AxiosResponse<Response>> {
   try {
@@ -86,5 +86,3 @@ async function sendRequest<Response = unknown, Request = Record<string, unknown>
     throw error;
   }
 }
-
-export { createBasicAuthHeader, createBearerAuthHeader, sendRequest };
