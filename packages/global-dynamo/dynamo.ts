@@ -11,7 +11,7 @@ import { DescribeTableCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand, UpdateCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-import { CustomError, logger } from '@custom-repo/global-libs';
+import { CustomError, logger } from '@motforex/global-libs';
 import * as build from './commands';
 
 // Initialize DynamoDB client

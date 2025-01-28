@@ -18,8 +18,8 @@ importers:
         specifier: ^0.5.14
         version: 0.5.14(prettier@3.4.2)
       turbo:
-        specifier: ^2.3.3
-        version: 2.3.3
+        specifier: ^2.3.4
+        version: 2.3.4
 
   packages/global-dynamo:
     dependencies:
@@ -33,10 +33,10 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@custom-repo/global-libs':
+      '@motforex/global-libs':
         specifier: workspace:*
         version: link:../global-libs
-      '@custom-repo/typescript-config':
+      '@motforex/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
 
@@ -64,10 +64,10 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@custom-repo/global-types':
+      '@motforex/global-types':
         specifier: workspace:*
         version: link:../global-types
-      '@custom-repo/typescript-config':
+      '@motforex/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/aws-lambda':
@@ -83,7 +83,7 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@custom-repo/typescript-config':
+      '@motforex/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
 
@@ -102,21 +102,9 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
 
-  stacks/example-stack:
+  stacks/motforex-background:
     dependencies:
-      '@aws-sdk/client-dynamodb':
-        specifier: ^3.693.0
-        version: 3.726.1
-      '@aws-sdk/client-lambda':
-        specifier: ^3.693.0
-        version: 3.726.1
-      '@aws-sdk/client-ssm':
-        specifier: ^3.693.0
-        version: 3.726.1
-      '@aws-sdk/lib-dynamodb':
-        specifier: ^3.693.0
-        version: 3.726.1(@aws-sdk/client-dynamodb@3.726.1)
-      '@custom-repo/dynamo':
+      '@motforex/dynamo':
         specifier: workspace:*
         version: link:../../packages/global-dynamo
       aws-lambda:
@@ -132,24 +120,146 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@custom-repo/global-libs':
-        specifier: workspace:*
-        version: link:../../packages/global-libs
-      '@custom-repo/global-types':
-        specifier: workspace:*
-        version: link:../../packages/global-types
-      '@custom-repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
       '@eslint/js':
         specifier: ^9.15.0
         version: 9.18.0
-      '@middy/core':
-        specifier: ^4.1.0
-        version: 4.7.0
-      '@middy/http-json-body-parser':
-        specifier: ^4.1.0
-        version: 4.7.0
+      '@motforex/global-libs':
+        specifier: workspace:*
+        version: link:../../packages/global-libs
+      '@motforex/global-types':
+        specifier: workspace:*
+        version: link:../../packages/global-types
+      '@motforex/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@serverless/eslint-config':
+        specifier: ^5.1.0
+        version: 5.1.0(eslint@9.18.0)
+      '@serverless/typescript':
+        specifier: ^3.38.0
+        version: 3.38.0
+      '@types/aws-lambda':
+        specifier: ^8.10.147
+        version: 8.10.147
+      '@types/node':
+        specifier: ^22.10.6
+        version: 22.10.6
+      eslint:
+        specifier: ^9.18.0
+        version: 9.18.0
+      globals:
+        specifier: ^15.14.0
+        version: 15.14.0
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
+      serverless:
+        specifier: ^4.4.10
+        version: 4.4.18
+      serverless-offline:
+        specifier: ^14.3.4
+        version: 14.4.0(serverless@4.4.18)
+      serverless-prune-plugin:
+        specifier: ^2.1.0
+        version: 2.1.0(serverless@4.4.18)
+      typescript-eslint:
+        specifier: ^8.20.0
+        version: 8.20.0(eslint@9.18.0)(typescript@5.7.3)
+
+  stacks/motforex-qpay:
+    dependencies:
+      '@motforex/dynamo':
+        specifier: workspace:*
+        version: link:../../packages/global-dynamo
+      aws-lambda:
+        specifier: ^1.0.7
+        version: 1.0.7
+      axios:
+        specifier: ^1.7.7
+        version: 1.7.9
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.15.0
+        version: 9.18.0
+      '@motforex/global-libs':
+        specifier: workspace:*
+        version: link:../../packages/global-libs
+      '@motforex/global-types':
+        specifier: workspace:*
+        version: link:../../packages/global-types
+      '@motforex/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@serverless/eslint-config':
+        specifier: ^5.1.0
+        version: 5.1.0(eslint@9.18.0)
+      '@serverless/typescript':
+        specifier: ^3.38.0
+        version: 3.38.0
+      '@types/aws-lambda':
+        specifier: ^8.10.147
+        version: 8.10.147
+      '@types/node':
+        specifier: ^22.10.6
+        version: 22.10.6
+      eslint:
+        specifier: ^9.18.0
+        version: 9.18.0
+      globals:
+        specifier: ^15.14.0
+        version: 15.14.0
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
+      serverless:
+        specifier: ^4.4.10
+        version: 4.4.18
+      serverless-offline:
+        specifier: ^14.3.4
+        version: 14.4.0(serverless@4.4.18)
+      serverless-prune-plugin:
+        specifier: ^2.1.0
+        version: 2.1.0(serverless@4.4.18)
+      typescript-eslint:
+        specifier: ^8.20.0
+        version: 8.20.0(eslint@9.18.0)(typescript@5.7.3)
+
+  stacks/motforex-socialpay:
+    dependencies:
+      '@motforex/dynamo':
+        specifier: workspace:*
+        version: link:../../packages/global-dynamo
+      aws-lambda:
+        specifier: ^1.0.7
+        version: 1.0.7
+      axios:
+        specifier: ^1.7.7
+        version: 1.7.9
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.15.0
+        version: 9.18.0
+      '@motforex/global-libs':
+        specifier: workspace:*
+        version: link:../../packages/global-libs
+      '@motforex/global-types':
+        specifier: workspace:*
+        version: link:../../packages/global-types
+      '@motforex/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@serverless/eslint-config':
         specifier: ^5.1.0
         version: 5.1.0(eslint@9.18.0)
@@ -1970,38 +2080,38 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
-  turbo-darwin-64@2.3.3:
-    resolution: {integrity: sha512-bxX82xe6du/3rPmm4aCC5RdEilIN99VUld4HkFQuw+mvFg6darNBuQxyWSHZTtc25XgYjQrjsV05888w1grpaA==}
+  turbo-darwin-64@2.3.4:
+    resolution: {integrity: sha512-uOi/cUIGQI7uakZygH+cZQ5D4w+aMLlVCN2KTGot+cmefatps2ZmRRufuHrEM0Rl63opdKD8/JIu+54s25qkfg==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.3.3:
-    resolution: {integrity: sha512-DYbQwa3NsAuWkCUYVzfOUBbSUBVQzH5HWUFy2Kgi3fGjIWVZOFk86ss+xsWu//rlEAfYwEmopigsPYSmW4X15A==}
+  turbo-darwin-arm64@2.3.4:
+    resolution: {integrity: sha512-IIM1Lq5R+EGMtM1YFGl4x8Xkr0MWb4HvyU8N4LNoQ1Be5aycrOE+VVfH+cDg/Q4csn+8bxCOxhRp5KmUflrVTQ==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.3.3:
-    resolution: {integrity: sha512-eHj9OIB0dFaP6BxB88jSuaCLsOQSYWBgmhy2ErCu6D2GG6xW3b6e2UWHl/1Ho9FsTg4uVgo4DB9wGsKa5erjUA==}
+  turbo-linux-64@2.3.4:
+    resolution: {integrity: sha512-1aD2EfR7NfjFXNH3mYU5gybLJEFi2IGOoKwoPLchAFRQ6OEJQj201/oNo9CDL75IIrQo64/NpEgVyZtoPlfhfA==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.3.3:
-    resolution: {integrity: sha512-NmDE/NjZoDj1UWBhMtOPmqFLEBKhzGS61KObfrDEbXvU3lekwHeoPvAMfcovzswzch+kN2DrtbNIlz+/rp8OCg==}
+  turbo-linux-arm64@2.3.4:
+    resolution: {integrity: sha512-MxTpdKwxCaA5IlybPxgGLu54fT2svdqTIxRd0TQmpRJIjM0s4kbM+7YiLk0mOh6dGqlWPUsxz/A0Mkn8Xr5o7Q==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.3.3:
-    resolution: {integrity: sha512-O2+BS4QqjK3dOERscXqv7N2GXNcqHr9hXumkMxDj/oGx9oCatIwnnwx34UmzodloSnJpgSqjl8iRWiY65SmYoQ==}
+  turbo-windows-64@2.3.4:
+    resolution: {integrity: sha512-yyCrWqcRGu1AOOlrYzRnizEtdkqi+qKP0MW9dbk9OsMDXaOI5jlWtTY/AtWMkLw/czVJ7yS9Ex1vi9DB6YsFvw==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.3.3:
-    resolution: {integrity: sha512-dW4ZK1r6XLPNYLIKjC4o87HxYidtRRcBeo/hZ9Wng2XM/MqqYkAyzJXJGgRMsc0MMEN9z4+ZIfnSNBrA0b08ag==}
+  turbo-windows-arm64@2.3.4:
+    resolution: {integrity: sha512-PggC3qH+njPfn1PDVwKrQvvQby8X09ufbqZ2Ha4uSu+5TvPorHHkAbZVHKYj2Y+tvVzxRzi4Sv6NdHXBS9Be5w==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.3.3:
-    resolution: {integrity: sha512-DUHWQAcC8BTiUZDRzAYGvpSpGLiaOQPfYXlCieQbwUvmml/LRGIe3raKdrOPOoiX0DYlzxs2nH6BoWJoZrj8hA==}
+  turbo@2.3.4:
+    resolution: {integrity: sha512-1kiLO5C0Okh5ay1DbHsxkPsw9Sjsbjzm6cF85CpWjR0BIyBFNDbKqtUyqGADRS1dbbZoQanJZVj4MS5kk8J42Q==}
     hasBin: true
 
   type-check@0.4.0:
@@ -4401,32 +4511,32 @@ snapshots:
 
   tunnel@0.0.6: {}
 
-  turbo-darwin-64@2.3.3:
+  turbo-darwin-64@2.3.4:
     optional: true
 
-  turbo-darwin-arm64@2.3.3:
+  turbo-darwin-arm64@2.3.4:
     optional: true
 
-  turbo-linux-64@2.3.3:
+  turbo-linux-64@2.3.4:
     optional: true
 
-  turbo-linux-arm64@2.3.3:
+  turbo-linux-arm64@2.3.4:
     optional: true
 
-  turbo-windows-64@2.3.3:
+  turbo-windows-64@2.3.4:
     optional: true
 
-  turbo-windows-arm64@2.3.3:
+  turbo-windows-arm64@2.3.4:
     optional: true
 
-  turbo@2.3.3:
+  turbo@2.3.4:
     optionalDependencies:
-      turbo-darwin-64: 2.3.3
-      turbo-darwin-arm64: 2.3.3
-      turbo-linux-64: 2.3.3
-      turbo-linux-arm64: 2.3.3
-      turbo-windows-64: 2.3.3
-      turbo-windows-arm64: 2.3.3
+      turbo-darwin-64: 2.3.4
+      turbo-darwin-arm64: 2.3.4
+      turbo-linux-64: 2.3.4
+      turbo-linux-arm64: 2.3.4
+      turbo-windows-64: 2.3.4
+      turbo-windows-arm64: 2.3.4
 
   type-check@0.4.0:
     dependencies:

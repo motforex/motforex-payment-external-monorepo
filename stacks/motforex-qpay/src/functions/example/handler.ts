@@ -1,4 +1,4 @@
-import type { CustomAPIGatewayEvent as ApiFunc } from '@custom-repo/global-libs';
+import type { CustomAPIGatewayEvent as ApiFunc } from '@motforex/global-libs';
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
 import {
@@ -7,8 +7,8 @@ import {
   getExampleItemsByQuery as getExampleItemsByQueryService,
   createExampleItem
 } from '@/services/example';
-import { CustomError, extractMetadata, handleApiFuncError, middyfy } from '@custom-repo/global-libs';
-import { QueryRequestSchema } from '@custom-repo/dynamo';
+import { CustomError, extractMetadata, handleApiFuncError, middyfy } from '@motforex/global-libs';
+import { QueryRequestSchema } from '@motforex/dynamo';
 
 const getExampleTableDescFunc: ApiFunc<null> = async (): Promise<ApiFuncRes> => {
   try {

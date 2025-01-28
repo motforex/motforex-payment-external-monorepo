@@ -1,5 +1,5 @@
 {
-  "name": "@custom-repo/global-libs",
+  "name": "@motforex/global-libs",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
@@ -11,8 +11,8 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@custom-repo/global-types": "workspace:*",
-    "@custom-repo/typescript-config": "workspace:*",
+    "@motforex/global-types": "workspace:*",
+    "@motforex/typescript-config": "workspace:*",
     "@types/aws-lambda": "^8.10.145",
     "@types/jsonwebtoken": "^9.0.7"
   },

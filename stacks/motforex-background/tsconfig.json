@@ -1,5 +1,5 @@
 {
-  "extends": "@custom-repo/typescript-config/base.json",
+  "extends": "@motforex/typescript-config/base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

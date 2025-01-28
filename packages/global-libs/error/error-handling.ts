@@ -1,5 +1,5 @@
 import type { APIGatewayProxyResultV2 } from 'aws-lambda';
-import type { LbdFuncResponse } from '@custom-repo/global-types';
+import type { LbdFuncResponse } from '@motforex/global-types';
 
 import CustomError from './custom-error';
 import axios, { AxiosError } from 'axios';

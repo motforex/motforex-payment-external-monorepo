@@ -7,8 +7,8 @@ import {
   createExampleItem as createExampleItemRepo,
   updateExampleItem as updateExampleItemRepo
 } from '@/repository/example-repository';
-import { QueryRequest } from '@custom-repo/dynamo';
-import { CustomError, formatApiResponse } from '@custom-repo/global-libs';
+import { QueryRequest } from '@motforex/dynamo';
+import { CustomError, formatApiResponse } from '@motforex/global-libs';
 
 export async function getExampleTableDescription(): Promise<APIResponse> {
   const tableDescription = await getExampleTableDesc();

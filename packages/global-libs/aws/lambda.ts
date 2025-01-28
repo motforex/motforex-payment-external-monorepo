@@ -1,4 +1,4 @@
-import type { GenericFuncResponse } from '@custom-repo/global-types';
+import type { GenericFuncResponse } from '@motforex/global-types';
 import { logger } from '../utils';
 import { InvocationType, InvokeCommand, InvokeCommandOutput, LambdaClient } from '@aws-sdk/client-lambda';
 
