@@ -1,4 +1,5 @@
 import type { AWS } from '@serverless/typescript';
+import { postTestFunction } from '@/functions/test';
 
 const serverlessConfig: AWS = {
   service: 'motforex-payment-qpay',
@@ -11,9 +12,28 @@ const serverlessConfig: AWS = {
     runtime: 'nodejs18.x',
     region: 'ap-southeast-1',
     profile: 'default',
-    logRetentionInDays: 365
+    logRetentionInDays: 365,
+    timeout: 29,
+    apiGateway: {
+      minimumCompressionSize: 1024,
+      shouldStartNameWithService: true,
+      usagePlan: {
+        throttle: {
+          burstLimit: 150,
+          rateLimit: 100 // Average number of requests per second
+        }
+      }
+    },
+    iam: { role: 'arn:aws:iam::786487424160:role/payments-service-role' },
+    environment: {
+      MOTFOREX_QPAY_USERNAME: '${ssm:/motforex/payments/qpay/username}',
+      MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}'
+    }
   },
-  functions: {},
+
+  functions: {
+    postTestFunction
+  },
   package: { individually: true },
   custom: {
     prune: {

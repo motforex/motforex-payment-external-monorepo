@@ -13,13 +13,11 @@ import { QPAY_BASE_URL } from './constants';
 
 export async function createSimpleQpayInvoice(authToken: string, invoice: CreateRequest): Promise<QpaySimpleInvoice> {
   try {
-    // Create headers for the request, including the Bearer token for authorization
-    const headers = createBearerAuthHeader(authToken);
     // Send the request to the Qpay API
     const { data } = await sendRequest<QpaySimpleInvoice>({
       url: `${QPAY_BASE_URL}/invoice`,
       method: 'POST',
-      params: { headers },
+      headers: createBearerAuthHeader(authToken),
       data: invoice
     });
     // Return the response data
@@ -33,11 +31,10 @@ export async function createSimpleQpayInvoice(authToken: string, invoice: Create
 export async function checkQpayInvoiceStatus(authToken: string, invoiceId: string): Promise<QpayCheckPayment> {
   try {
     // Create headers for the request, including the Bearer token for authorization
-    const headers = createBearerAuthHeader(authToken);
     const { data } = await sendRequest<QpayCheckPayment>({
       url: `${QPAY_BASE_URL}/payment/check`,
       method: 'GET',
-      params: { headers },
+      headers: createBearerAuthHeader(authToken),
       data: {
         object_type: 'INVOICE',
         object_id: invoiceId,
@@ -56,11 +53,10 @@ export async function checkQpayInvoiceStatus(authToken: string, invoiceId: strin
 
 export async function cancelQpayInvoice(authToken: string, invoiceId: string): Promise<QpaySimpleResponse> {
   try {
-    const headers = createBearerAuthHeader(authToken);
     const { data } = await sendRequest<QpaySimpleResponse>({
       url: `${QPAY_BASE_URL}/invoice/${invoiceId}`,
       method: 'DELETE',
-      params: { headers }
+      headers: createBearerAuthHeader(authToken)
     });
     return data;
   } catch (error: unknown) {
@@ -71,11 +67,10 @@ export async function cancelQpayInvoice(authToken: string, invoiceId: string): P
 
 export async function getQpayInvoiceByInvoiceId(authToken: string, invoiceId: string): Promise<QpayGetPayment> {
   try {
-    const headers = createBearerAuthHeader(authToken);
     const { data } = await sendRequest<QpayGetPayment>({
       url: `${QPAY_BASE_URL}/payment/${invoiceId}`,
       method: 'GET',
-      params: { headers }
+      headers: createBearerAuthHeader(authToken)
     });
     return QpayGetPaymentSchema.parse(data);
   } catch (error: unknown) {
@@ -86,11 +81,10 @@ export async function getQpayInvoiceByInvoiceId(authToken: string, invoiceId: st
 
 export async function refundQpayInvoiceById(authToken: string, invoiceId: string): Promise<object> {
   try {
-    const headers = createBearerAuthHeader(authToken);
     const { data } = await sendRequest<object>({
       url: `${QPAY_BASE_URL}/payment/refund/${invoiceId}`,
       method: 'POST',
-      params: { headers }
+      headers: createBearerAuthHeader(authToken)
     });
     return data;
   } catch (error: unknown) {
@@ -101,11 +95,10 @@ export async function refundQpayInvoiceById(authToken: string, invoiceId: string
 
 export async function getQpayInvoicesByList(authToken: string): Promise<object> {
   try {
-    const headers = createBearerAuthHeader(authToken);
     const { data } = await sendRequest<object>({
       url: `${QPAY_BASE_URL}/payment/list`,
       method: 'GET',
-      params: { headers }
+      headers: createBearerAuthHeader(authToken)
     });
     return data;
   } catch (error: unknown) {

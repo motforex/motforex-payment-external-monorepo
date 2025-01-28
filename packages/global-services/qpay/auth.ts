@@ -10,11 +10,10 @@ import { createBasicAuthHeader, createBearerAuthHeader, logger, sendRequest } fr
  */
 export async function getQpayAuthToken(username: string, password: string): Promise<QpayAuthTokenResponse> {
   try {
-    const headers = createBasicAuthHeader(username, password);
     const { data } = await sendRequest<QpayAuthTokenResponse>({
       url: `${QPAY_BASE_URL}/auth/token`,
       method: 'POST',
-      params: { headers }
+      headers: createBasicAuthHeader(username, password)
     });
     return data;
   } catch (error: unknown) {
@@ -30,11 +29,10 @@ export async function getQpayAuthToken(username: string, password: string): Prom
  */
 export async function refreshQpayAuthToken(refreshToken: string): Promise<QpayAuthTokenResponse> {
   try {
-    const headers = createBearerAuthHeader('refresh_token', refreshToken);
     const { data } = await sendRequest<QpayAuthTokenResponse>({
       url: `${QPAY_BASE_URL}/auth/refresh`,
       method: 'POST',
-      params: { headers }
+      headers: createBearerAuthHeader('refresh_token', refreshToken)
     });
     return data;
   } catch (error: unknown) {

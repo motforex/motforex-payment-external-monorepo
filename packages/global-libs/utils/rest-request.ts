@@ -80,9 +80,11 @@ export async function sendRequest<Response = unknown, Request = Record<string, u
 ): Promise<AxiosResponse<Response>> {
   try {
     const response = await axios.request<Response, AxiosResponse<Response>, Request>(params);
+    console.log(`Response from ${params.method?.toUpperCase()} request to ${params.url}`, response.data);
     return response;
   } catch (error: unknown) {
     logger.error(`Error occurred while invoking ${params.method?.toUpperCase()} request to ${params.url}`);
+    logger.error(`Error: ${JSON.stringify(error)}`);
     throw error;
   }
 }

@@ -17,12 +17,11 @@ export async function createGolomtMerchInvoice(secret: string, tok: string, req:
     // Extract the required fields from the request
     const { transactionId, amount, callbackUrl } = req;
     const checksum = generateSha256Checksum(secret, [transactionId, `${amount}`, MERCH_RETURN_TYPE, callbackUrl]);
-    const headers = createBearerAuthHeader(tok);
     // Send the request to the Golomt API
     const { data } = await sendRequest<GolomtInvoice>({
       url: `${GOLOMT_E_COMMERCE_BASE}/api/invoice`,
       method: 'POST',
-      params: { headers },
+      headers: createBearerAuthHeader(tok),
       data: {
         checksum,
         transactionId,
@@ -42,12 +41,11 @@ export async function createGolomtMerchInvoice(secret: string, tok: string, req:
 export async function checkGolomtMerchInvoice(sKey: string, token: string, id: string): Promise<object> {
   try {
     const checksum = generateSha256Checksum(sKey, [id, id]);
-    const headers = createBearerAuthHeader(token);
 
     const { data } = await sendRequest<GolomtInvoiceCheck>({
       url: `${GOLOMT_E_COMMERCE_BASE}/api/inquiry/${id}`,
       method: 'GET',
-      params: { headers },
+      headers: createBearerAuthHeader(token),
       data: { checksum, transactionId: id }
     });
     return GolomtInvoiceCheckSchema.parse(data);

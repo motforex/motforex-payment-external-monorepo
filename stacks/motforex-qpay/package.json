@@ -17,19 +17,22 @@
   "homepage": "https://github.com/theDashpuntsag/serverless-ts-template#readme",
   "dependencies": {
     "@motforex/dynamo": "workspace:*",
+    "@motforex/global-services": "workspace:*",
     "aws-lambda": "^1.0.7",
     "axios": "^1.7.7",
+    "lodash": "^4.17.21",
     "winston": "^3.17.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
     "@motforex/global-libs": "workspace:*",
     "@motforex/global-types": "workspace:*",
     "@motforex/typescript-config": "workspace:*",
-    "@eslint/js": "^9.15.0",
     "@serverless/eslint-config": "^5.1.0",
     "@serverless/typescript": "^3.38.0",
     "@types/aws-lambda": "^8.10.147",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^22.10.6",
     "eslint": "^9.18.0",
     "globals": "^15.14.0",

@@ -4,7 +4,7 @@ export const InvoiceStatusSchema = z.enum(['INITIAL', 'PENDING', 'SUCCESSFUL', '
 
 export const InvoiceSchema = z.object({
   // General config props
-  invoiceId: z.string(),
+  id: z.string(),
   referenceId: z.number(),
   method: z.string(),
   regenerationCount: z.number(),
@@ -19,3 +19,5 @@ export const InvoiceSchema = z.object({
   postDate: z.string(),
   createdAt: z.number()
 });
+
+export type Invoice = z.infer<typeof InvoiceSchema>;
