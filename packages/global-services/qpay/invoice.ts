@@ -1,13 +1,12 @@
+import type { QpayCreateInvoiceRequest as CreateRequest, QpayCheckPayment, QpaySimpleInvoice } from './qpay.types';
+
 import { createBearerAuthHeader, logger, sendRequest } from '@motforex/global-libs';
 import {
   QpayCheckPaymentSchema,
   QpayGetPayment,
   QpayGetPaymentSchema,
   QpaySimpleInvoiceSchema,
-  QpaySimpleResponse,
-  type QpayCreateInvoiceRequest as CreateRequest,
-  type QpayCheckPayment,
-  type QpaySimpleInvoice
+  QpaySimpleResponse
 } from './qpay.types';
 import { QPAY_BASE_URL } from './constants';
 

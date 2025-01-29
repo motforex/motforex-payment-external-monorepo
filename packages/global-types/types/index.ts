@@ -1,3 +1,4 @@
-export * from './api-function.types';
-export * from './util.types';
+export * from './api-function';
 export * from './invoice';
+export * from './payment-request';
+export * from './util.types';
