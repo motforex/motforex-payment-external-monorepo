@@ -1,4 +1,5 @@
 import type { AWS } from '@serverless/typescript';
+import { createQpayInvoice, checkQpayInvoiceAsClient, checkQpayInvoiceAsAdmin } from '@/functions/qpay';
 import { postTestFunction } from '@/functions/test';
 
 const serverlessConfig: AWS = {
@@ -32,6 +33,9 @@ const serverlessConfig: AWS = {
   },
 
   functions: {
+    createQpayInvoice,
+    checkQpayInvoiceAsClient,
+    checkQpayInvoiceAsAdmin,
     postTestFunction
   },
   package: { individually: true },

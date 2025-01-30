@@ -1,35 +1,17 @@
-import { authenticatedApiFunctionConfig, defaultApiFunctionConfig, generatePathname } from './configs';
+import { adminHeader, defaultConfig, userHeader } from './constants';
 
-export function createDefaultFunction(dirname: string, handlerName: string, other: object = {}) {
+export function generatePathname(context: string): string {
+  return `${context.split(process.cwd())[1].substring(1).replace(/\\/g, '/')}`;
+}
+
+export function createDefaultFunc(dirname: string, handlerName: string, other: object = {}) {
   return {
     handler: `${generatePathname(dirname)}/handler.${handlerName}`,
     ...other
   };
 }
 
-export function createDefaultApiFunction(
-  dirname: string,
-  funcName: string,
-  method: string,
-  url: string,
-  other: object = {}
-): object {
-  return {
-    handler: `${generatePathname(dirname)}/handler.${funcName}`,
-    events: [
-      {
-        http: {
-          method: method,
-          path: url,
-          ...defaultApiFunctionConfig
-        }
-      }
-    ],
-    ...other
-  };
-}
-
-export function createAuthenticatedApiFunction(
+export function createDefaultApiGatewayFunc(
   dirname: string,
   handler: string,
   method: string,
@@ -43,7 +25,7 @@ export function createAuthenticatedApiFunction(
         http: {
           method: method,
           path: url,
-          ...authenticatedApiFunctionConfig
+          ...defaultConfig
         }
       }
     ],
@@ -51,22 +33,60 @@ export function createAuthenticatedApiFunction(
   };
 }
 
-export function createScheduledFunc(
+export function createUserAuthApiGatewayFunc(
   dir: string,
   handler: string,
-  schedule: string[],
-  name?: string,
-  description = 'description',
+  method: string,
+  url: string,
   other: object = {}
-) {
+): object {
+  return {
+    handler: `${generatePathname(dir)}/handler.${handler}`,
+    events: [
+      {
+        http: {
+          method: method,
+          path: url,
+          ...userHeader
+        }
+      }
+    ],
+    ...other
+  };
+}
+
+export function createAdminAuthApiGatewayFunc(
+  dir: string,
+  handler: string,
+  method: string,
+  url: string,
+  other: object = {}
+): object {
+  return {
+    handler: `${generatePathname(dir)}/handler.${handler}`,
+    events: [
+      {
+        http: {
+          method: method,
+          path: url,
+          ...adminHeader
+        }
+      }
+    ],
+    ...other
+  };
+}
+
+export function createScheduledFunc(dir: string, handler: string, schedule: string[], other: object = {}) {
   return {
     handler: `${generatePathname(dir)}/handler.${handler}`,
     events: [
       {
         schedule: {
-          rate: schedule,
-          name: name ? name : handler,
-          description: description,
+          rate: schedule, // Executes every 1 hour
+          enabled: true,
+          name: handler,
+          description: 'Scheduled event for refreshing UT tokens',
           ...other
         }
       }

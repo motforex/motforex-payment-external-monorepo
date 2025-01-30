@@ -1,3 +1,3 @@
-import { createDefaultApiFunction } from '@motforex/global-libs';
+import { createDefaultApiGatewayFunc } from '@motforex/global-libs';
 
-export const postTestFunction = createDefaultApiFunction(__dirname, 'postTestFunction', 'post', '/test/test');
+export const postTestFunction = createDefaultApiGatewayFunc(__dirname, 'postTestFunction', 'post', '/test/test');

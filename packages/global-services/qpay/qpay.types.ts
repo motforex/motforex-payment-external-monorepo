@@ -13,13 +13,13 @@ export const QpayAuthTokenResponseSchema = z.object({
 export type QpayAuthTokenResponse = z.infer<typeof QpayAuthTokenResponseSchema>;
 
 export const QpayCreateInvoiceRequestSchema = z.object({
-  invoiceCode: z.string(),
-  invoice: z.string(),
-  description: z.string(),
+  invoice_code: z.string(),
+  sender_invoice_no: z.string(),
+  invoice_receiver_code: z.string(),
+  invoice_description: z.string(),
+  sender_branch_code: z.string(),
   amount: z.number(),
-  callbackUrl: z.string(),
-  receiverCode: z.string().optional(),
-  senderBranchCode: z.string().optional()
+  callback_url: z.string()
 });
 
 export type QpayCreateInvoiceRequest = z.infer<typeof QpayCreateInvoiceRequestSchema>;

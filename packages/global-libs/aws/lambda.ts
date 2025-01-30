@@ -34,7 +34,7 @@ const lambdaClient = new LambdaClient({ region: 'ap-southeast-1' });
 async function invokeLambdaFunc<T>(
   fnName: string,
   payload: object,
-  invokeType: InvocationType
+  invokeType: InvocationType = 'RequestResponse'
 ): Promise<GenericFuncResponse<T>> {
   try {
     const response: InvokeCommandOutput = await lambdaClient.send(

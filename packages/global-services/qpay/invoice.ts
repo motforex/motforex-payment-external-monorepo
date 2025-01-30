@@ -27,7 +27,7 @@ export async function createSimpleQpayInvoice(authToken: string, invoice: Create
   }
 }
 
-export async function checkQpayInvoiceStatus(authToken: string, invoiceId: string): Promise<QpayCheckPayment> {
+export async function checkQpayInvoice(authToken: string, invoiceId: string): Promise<QpayCheckPayment> {
   try {
     // Create headers for the request, including the Bearer token for authorization
     const { data } = await sendRequest<QpayCheckPayment>({
