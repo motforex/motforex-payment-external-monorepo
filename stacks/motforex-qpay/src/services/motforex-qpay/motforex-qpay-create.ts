@@ -21,6 +21,7 @@ import { MOTFOREX_QPAY_INVOICE_CODE, QPAY_TOKEN_PARAMETER } from './motforex-qpa
 import { getCurrentDateAsString } from '../utility';
 import { markPaymentInvoiceAsExpired } from '../payment-invoice/payment-invoice-expired';
 import { checkAuthorization } from '@motforex/global-libs';
+import { checkInvoiceFromQpay } from './motforex-qpay-check';
 
 export const REGENERATION_COUNT = 5;
 export const EXPIRY_TIME = 300000;
@@ -34,7 +35,7 @@ export const EXPIRY_TIME = 300000;
  */
 export async function createMotforexQpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const {} = checkAuthorization(metadata, 'createMotforexQpayInvoice');
+    const { email } = checkAuthorization(metadata, 'create-Motforex-Qpay-Invoice');
     const [depositRequest, invoice] = await Promise.all([
       getValidDepositRequest(id, [STATUS_PENDING]),
       getPaymentInvoiceById(id)
@@ -105,9 +106,12 @@ async function regenerateQpayInvoice(invoice: PaymentInvoice): Promise<APIRespon
   }
 
   // Check if the older invoice is not paid
+  if (await checkInvoiceFromQpay(qpayAuthToken, invoice)) {
+    logger.info(`Older invoice is already paid: ${id}`);
+    return formatInvoiceAsResponse(invoice);
+  }
 
   // Create new Qpay invoice
-
   const qpayInvoice = await createSimpleQpayInvoice(qpayAuthToken, createQpayInvoiceRequest);
   logger.info(`Qpay invoice created successfully: ${JSON.stringify(qpayInvoice)}`);
 

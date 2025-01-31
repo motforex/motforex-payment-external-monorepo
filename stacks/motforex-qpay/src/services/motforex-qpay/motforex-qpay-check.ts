@@ -1,5 +1,5 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata, PaymentInvoice, PaymentRequest } from '@motforex/global-types';
+import type { RequestMetadata as Metadata, PaymentInvoice } from '@motforex/global-types';
 import { formatApiResponse, handleApiFuncError, logger } from '@motforex/global-libs';
 import { getValidInvoiceRecord } from '../utility';
 import { checkQpayInvoice, formatInvoiceAsResponse, QpayCheckPayment } from '@motforex/global-services';
