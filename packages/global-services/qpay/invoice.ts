@@ -32,7 +32,7 @@ export async function checkQpayInvoice(authToken: string, invoiceId: string): Pr
     // Create headers for the request, including the Bearer token for authorization
     const { data } = await sendRequest<QpayCheckPayment>({
       url: `${QPAY_BASE_URL}/payment/check`,
-      method: 'GET',
+      method: 'POST',
       headers: createBearerAuthHeader(authToken),
       data: {
         object_type: 'INVOICE',

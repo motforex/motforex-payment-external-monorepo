@@ -58,7 +58,7 @@ export async function checkMotforexQpayInvoiceAsAdmin(metadata: Metadata, id: nu
 export async function checkInvoiceFromQpay(qpayToken: string, invoice: PaymentInvoice): Promise<boolean> {
   try {
     logger.info(`Checking invoice from Qpay: ${invoice.id}, QpayInvoice: ${invoice.providerId}`);
-    const checkResponse: QpayCheckPayment = await checkQpayInvoice(qpayToken, invoice.providerId);
+    const checkResponse: QpayCheckPayment = await checkQpayInvoice(qpayToken, `${invoice.providerInfo}`);
 
     if (checkResponse.count === 0) {
       logger.info(`Qpay invoice is not paid yet! QpayInvoice: ${invoice.providerId}`);

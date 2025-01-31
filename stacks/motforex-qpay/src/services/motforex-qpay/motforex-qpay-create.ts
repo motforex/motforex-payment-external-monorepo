@@ -11,7 +11,7 @@ import {
 } from '@motforex/global-libs';
 
 import { getValidDepositRequest } from '../utility';
-import { createPaymentInvoice, getPaymentInvoiceById } from '@/repository/invoice-record';
+import { createPaymentInvoice, getPaymentInvoiceById, updatePaymentInvoice } from '@/repository/invoice-record';
 import {
   createSimpleQpayInvoice,
   formatInvoiceAsResponse,
@@ -19,9 +19,11 @@ import {
 } from '@motforex/global-services';
 import { MOTFOREX_QPAY_INVOICE_CODE, QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
 import { getCurrentDateAsString } from '../utility';
-import { markPaymentInvoiceAsExpired } from '../payment-invoice/payment-invoice-expired';
+import { markPaymentInvoiceAsExpired, markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 import { checkAuthorization } from '@motforex/global-libs';
 import { checkInvoiceFromQpay } from './motforex-qpay-check';
+import { cancelQpayInvoice } from './motforex-qpay-cancel';
+import { executeDepositRequestById } from '../deposit-request/deposit-request-reject';
 
 export const REGENERATION_COUNT = 5;
 export const EXPIRY_TIME = 300000;
@@ -37,7 +39,7 @@ export async function createMotforexQpayInvoice(metadata: Metadata, id: number):
   try {
     const { email } = checkAuthorization(metadata, 'create-Motforex-Qpay-Invoice');
     const [depositRequest, invoice] = await Promise.all([
-      getValidDepositRequest(id, [STATUS_PENDING]),
+      getValidDepositRequest(id, [STATUS_PENDING], email),
       getPaymentInvoiceById(id)
     ]);
 
@@ -60,12 +62,13 @@ export async function createMotforexQpayInvoice(metadata: Metadata, id: number):
     }
 
     const currentDate = Date.now();
-    if (invoice.expiryDate < currentDate) {
-      logger.info(`Invoice has not expired for deposit request: ${id}`);
+    if (invoice.expiryDate > currentDate) {
+      logger.info(`Invoice haven't expired for deposit request: ${id}`);
       return formatInvoiceAsResponse(invoice);
     }
+    logger.info(`Invoice expiry date: ${invoice.expiryDate}, Current date: ${currentDate}`);
 
-    logger.info(`Invoice has expired for deposit request: ${id}`);
+    logger.info(`Invoice have expired for deposit request: ${id}`);
     if (invoice.regenerationCount <= 0) {
       logger.info(`Invoice regeneration count is zero for deposit request: ${id}`);
       const updateInvoice = await markPaymentInvoiceAsExpired(invoice);
@@ -79,13 +82,15 @@ export async function createMotforexQpayInvoice(metadata: Metadata, id: number):
 }
 
 /**
- * Regenerate Qpay invoice for the deposit request.
+ * Regenerate Qpay invoice for the deposit request. If the invoice is not paid, it will cancel the older invoice and create a new one.
+ * If the invoice is paid, it will return the invoice as is.
  *
  * @param invoice
  * @returns
  */
 async function regenerateQpayInvoice(invoice: PaymentInvoice): Promise<APIResponse> {
   const { id, transactionAmount } = invoice;
+  logger.info(`Regenerating Qpay invoice for deposit request: ${id}`);
 
   const invoiceNumber = `${id}${getCurrentDateAsString()}`;
 
@@ -108,14 +113,30 @@ async function regenerateQpayInvoice(invoice: PaymentInvoice): Promise<APIRespon
   // Check if the older invoice is not paid
   if (await checkInvoiceFromQpay(qpayAuthToken, invoice)) {
     logger.info(`Older invoice is already paid: ${id}`);
+    await executeDepositRequestById(id, 'Qpay invoice is paid by CREATE-CHECK');
+    await markPaymentInvoiceAsSuccessful(invoice);
     return formatInvoiceAsResponse(invoice);
   }
 
+  await cancelQpayInvoice(qpayAuthToken, invoice.providerId);
   // Create new Qpay invoice
-  const qpayInvoice = await createSimpleQpayInvoice(qpayAuthToken, createQpayInvoiceRequest);
-  logger.info(`Qpay invoice created successfully: ${JSON.stringify(qpayInvoice)}`);
+  const { invoice_id, qPay_shortUrl, qr_text, qr_image, urls } = await createSimpleQpayInvoice(
+    qpayAuthToken,
+    createQpayInvoiceRequest
+  );
+  logger.info(`Qpay invoice regenerated! successfully: ${JSON.stringify(invoice_id)}`);
 
-  return formatInvoiceAsResponse(invoice);
+  // update the invoice
+  const updateInvoice = await updatePaymentInvoice({
+    ...invoice,
+    regenerationCount: invoice.regenerationCount - 1,
+    expiryDate: Date.now() + EXPIRY_TIME,
+    providerId: invoice_id,
+    providerInfo: invoiceNumber,
+    metadata: { qPay_shortUrl, qr_text, qr_image, urls }
+  });
+  logger.info(`Qpay Invoice regenerated successfully: ${JSON.stringify(updateInvoice.id)}`);
+  return formatInvoiceAsResponse(updateInvoice);
 }
 
 /**
@@ -128,9 +149,9 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
   const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId } = depositRequest;
   logger.info(`Creating new Qpay invoice for deposit request: ${id}`);
 
-  const amountInMnt = amountWithCommission.amount * conversionRate;
+  const transactionAmount = amountWithCommission.amount * conversionRate;
   logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
-  logger.info(`The converted AmountInMNT: ${amountInMnt}`);
+  logger.info(`The converted AmountInMNT: ${transactionAmount}`);
 
   const invoiceNumber = `${id}${getCurrentDateAsString()}`;
 
@@ -140,7 +161,7 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
     invoice_receiver_code: invoiceNumber,
     invoice_description: `MOTFOREX DEPOSIT ${id}`,
     sender_branch_code: 'MAIN',
-    amount: amountInMnt,
+    amount: transactionAmount,
     callback_url: `https://api.motforex.com/payments/v1/qpay/callback/${id}` // Callback URL for the invoice
   });
 
@@ -150,8 +171,11 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
     throw new CustomError('QPAY token is not found in the parameter store!', 500);
   }
 
-  const qpayInvoice = await createSimpleQpayInvoice(qpayAuthToken, createQpayInvoiceRequest);
-  logger.info(`Qpay invoice created successfully: ${JSON.stringify(qpayInvoice)}`);
+  const { invoice_id, qPay_shortUrl, qr_text, qr_image, urls } = await createSimpleQpayInvoice(
+    qpayAuthToken,
+    createQpayInvoiceRequest
+  );
+  logger.info(`Qpay invoice created successfully: ${JSON.stringify(invoice_id)}`);
 
   const invoice = await createPaymentInvoice(
     PaymentInvoiceSchema.parse({
@@ -159,26 +183,27 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
       id: id,
       referenceId: id,
       referenceType: 'DEPOSIT',
-      providerId: invoiceNumber,
+      providerId: invoice_id,
+      providerInfo: invoiceNumber,
       regenerationCount: REGENERATION_COUNT,
       expiryDate: Date.now() + EXPIRY_TIME,
       merchantMethod: 'QPAY',
       userId: userId,
       // Amount props
       conversionRate,
-      transactionAmount: amountInMnt,
+      transactionAmount,
       transactionCurrency,
       amountInUsd,
       // Status props
-      invoiceStatus: 'PENDING',
-      executionStatus: 'PENDING',
+      invoiceStatus: STATUS_PENDING,
+      executionStatus: STATUS_PENDING,
       message: 'Qpay invoice created successfully',
-      metadata: qpayInvoice,
+      metadata: { qPay_shortUrl, qr_text, qr_image, urls },
       postDate: new Date().toISOString(),
       createdAt: Date.now()
     })
   );
 
-  logger.info(`New invoice created successfully: ${JSON.stringify(invoice)}`);
+  logger.info(`New invoice created successfully: ${JSON.stringify(invoice.id)}`);
   return formatApiResponse(depositRequest);
 }

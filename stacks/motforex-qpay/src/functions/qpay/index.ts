@@ -1,6 +1,10 @@
-import { createAdminAuthApiGatewayFunc, createDefaultFunc, createUserAuthApiGatewayFunc } from '@motforex/global-libs';
+import {
+  createAdminAuthApiGatewayFunc,
+  createScheduledFunc,
+  createUserAuthApiGatewayFunc
+} from '@motforex/global-libs';
 
-export const handleQpayToken = createDefaultFunc(__dirname, 'handleQpayToken');
+export const handleQpayToken = createScheduledFunc(__dirname, 'handleQpayToken', ['cron(0 0/12 * * ? *)']);
 export const createQpayInvoice = createUserAuthApiGatewayFunc(__dirname, 'createQpayInvoice', 'post', '/invoice/{id}');
 
 export const checkQpayInvoiceAsClient = createUserAuthApiGatewayFunc(

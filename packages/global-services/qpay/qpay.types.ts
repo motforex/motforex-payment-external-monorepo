@@ -29,7 +29,7 @@ export const QpaySimpleInvoiceSchema = z.object({
   qr_text: z.string(),
   qr_image: z.string(),
   qPay_shortUrl: z.string(),
-  urls: z.array(z.object({}))
+  urls: z.array(z.record(z.any()))
 });
 
 export type QpaySimpleInvoice = z.infer<typeof QpaySimpleInvoiceSchema>;
