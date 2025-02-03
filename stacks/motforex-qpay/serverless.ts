@@ -3,8 +3,9 @@ import {
   handleQpayToken,
   createQpayInvoice,
   checkQpayInvoiceAsClient,
-  checkQpayInvoiceAsAdmin
-} from '@/functions/qpay';
+  checkQpayInvoiceAsAdmin,
+  getHandleQpayInvoiceCallback
+} from '@/functions/motforex-qpay';
 import { postTestFunction } from '@/functions/test';
 
 const serverlessConfig: AWS = {
@@ -42,7 +43,8 @@ const serverlessConfig: AWS = {
     createQpayInvoice,
     checkQpayInvoiceAsClient,
     checkQpayInvoiceAsAdmin,
-    postTestFunction
+    postTestFunction,
+    getHandleQpayInvoiceCallback
   },
   package: { individually: true },
   custom: {

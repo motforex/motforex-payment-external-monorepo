@@ -5,18 +5,31 @@ import {
 } from '@motforex/global-libs';
 
 export const handleQpayToken = createScheduledFunc(__dirname, 'handleQpayToken', ['cron(0 0/12 * * ? *)']);
-export const createQpayInvoice = createUserAuthApiGatewayFunc(__dirname, 'createQpayInvoice', 'post', '/invoice/{id}');
+
+export const createQpayInvoice = createUserAuthApiGatewayFunc(
+  __dirname,
+  'createQpayInvoice',
+  'post',
+  '/v1/invoice/{id}'
+);
 
 export const checkQpayInvoiceAsClient = createUserAuthApiGatewayFunc(
   __dirname,
   'checkQpayInvoiceAsClient',
-  'get',
-  '/invoice/{id}'
+  'post',
+  '/v1/invoice/{id}/check'
 );
 
 export const checkQpayInvoiceAsAdmin = createAdminAuthApiGatewayFunc(
   __dirname,
   'checkQpayInvoiceAsAdmin',
-  'get',
-  '/invoice/admin/{id}'
+  'post',
+  '/b1/invoice/admin/{id}/check'
+);
+
+export const getHandleQpayInvoiceCallback = createUserAuthApiGatewayFunc(
+  __dirname,
+  'getHandleQpayInvoiceCallback',
+  'post',
+  '/invoice/{id}/callback'
 );

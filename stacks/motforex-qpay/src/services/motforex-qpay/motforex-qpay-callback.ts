@@ -1,23 +1,22 @@
+import { getPaymentInvoiceById } from '@/repository/invoice-record';
 import { handleApiFuncError, logger } from '@motforex/global-libs';
-import { PaymentInvoice } from '@motforex/global-types';
+import { markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 
-export async function handleMotforexQpayCallback(providerId: string): Promise<void> {
+export async function handleMotforexQpayCallback(id: number): Promise<void> {
   try {
-    logger.info(`Handling Motforex Qpay callback: ${providerId}`);
+    logger.info(`Handling Motforex Qpay callback: ${id}`);
 
-    // await
-    logger.info(`Qpay callback handled successfully: ${providerId}`);
+    // Finding payment invoice by id
+    const invoice = await getPaymentInvoiceById(id);
+    if (!invoice || invoice.invoiceStatus !== 'PENDING') {
+      logger.error(`Payment invoice is unavailable: ${id}`);
+      return;
+    }
+
+    // Marking payment invoice as successful
+    await markPaymentInvoiceAsSuccessful(invoice);
+    logger.info(`Qpay callback handled successfully: ${id}`);
   } catch (error: unknown) {
     handleApiFuncError(error);
-  }
-}
-
-export async function executeDepositRequestByInvoice(invoice: PaymentInvoice): Promise<void> {
-  try {
-    logger.info(`Executing deposit request by invoice: ${invoice.id}`);
-
-    logger.info(`Deposit request executed successfully: ${invoice.id}`);
-  } catch (error: unknown) {
-    logger.error(`Error occurred on executeDepositRequestByInvoice: ${JSON.stringify(error)}`);
   }
 }

@@ -7,7 +7,9 @@ export async function cancelQpayInvoice(qpayToken: string, invoiceId: string): P
     const response = await cancelQpayInvoiceStatus(qpayToken, invoiceId);
     logger.info(`Qpay invoice cancelled: ${invoiceId} response: ${JSON.stringify(response)}`);
   } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(`Error occurred on cancelQpayInvoice: ${error.message}`);
+    }
     logger.error(`Error occurred on cancelQpayInvoice: ${JSON.stringify(error)}`);
-    throw error;
   }
 }

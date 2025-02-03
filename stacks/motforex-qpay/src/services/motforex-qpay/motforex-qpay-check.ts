@@ -1,8 +1,11 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata, PaymentInvoice } from '@motforex/global-types';
-import { formatApiResponse, handleApiFuncError, logger } from '@motforex/global-libs';
-import { getValidInvoiceRecord } from '../utility';
+
+import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, formatInvoiceAsResponse, QpayCheckPayment } from '@motforex/global-services';
+import { getValidatedInvoiceAndRequest } from './motforex-qpay-utils';
+import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
+import { markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 
 /**
  *
@@ -14,14 +17,32 @@ import { checkQpayInvoice, formatInvoiceAsResponse, QpayCheckPayment } from '@mo
  */
 export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const paymentInvoice = await getValidInvoiceRecord(id);
+    const { email, depositRequest, invoice } = await getValidatedInvoiceAndRequest(metadata, id);
 
-    if (paymentInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`Invoice is not available for checking: ${id} status:${paymentInvoice.invoiceStatus}`);
-      return formatInvoiceAsResponse(paymentInvoice);
+    if (depositRequest.email !== email) {
+      logger.error(`Invalid email for Qpay invoice creation!`);
+      throw new CustomError('Invalid request for Qpay invoice creation!', 400);
     }
 
-    return formatApiResponse({});
+    if (!invoice) {
+      logger.error(`Invoice does not exist for deposit request: ${id}`);
+      throw new CustomError('Invoice does not exist for the deposit request!', 404);
+    }
+
+    const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
+    if (!qpayAuthToken) {
+      logger.error('QPAY token is not found in the parameter store!');
+      throw new CustomError('QPAY token is not found in the parameter store!', 500);
+    }
+
+    // If the invoice is not paid yet, return the invoice
+    if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
+      logger.info(`Qpay invoice is not paid yet!`);
+      return formatInvoiceAsResponse(invoice);
+    }
+
+    // Mark the invoice as successful
+    return formatInvoiceAsResponse(await markPaymentInvoiceAsSuccessful(invoice));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -38,9 +59,27 @@ export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: n
  */
 export async function checkMotforexQpayInvoiceAsAdmin(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const paymentInvoice = await getValidInvoiceRecord(id);
+    const { invoice } = await getValidatedInvoiceAndRequest(metadata, id);
 
-    return formatApiResponse({});
+    if (!invoice) {
+      logger.error(`Invoice does not exist for deposit request: ${id}`);
+      throw new CustomError('Invoice does not exist for the deposit request!', 404);
+    }
+
+    const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
+    if (!qpayAuthToken) {
+      logger.error('QPAY token is not found in the parameter store!');
+      throw new CustomError('QPAY token is not found in the parameter store!', 500);
+    }
+
+    // If the invoice is not paid yet, return the invoice
+    if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
+      logger.info(`Qpay invoice is not paid yet!`);
+      return formatInvoiceAsResponse(invoice);
+    }
+
+    // Mark the invoice as successful
+    return formatInvoiceAsResponse(await markPaymentInvoiceAsSuccessful(invoice));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
