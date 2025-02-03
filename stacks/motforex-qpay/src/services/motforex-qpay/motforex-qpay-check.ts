@@ -79,7 +79,6 @@ export async function checkMotforexQpayInvoice(invoice: PaymentInvoice | undefin
   }
 
   if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
-    logger.info(`Qpay invoice is not paid yet!`);
     return invoice;
   }
 
@@ -99,7 +98,7 @@ export async function checkMotforexQpayInvoice(invoice: PaymentInvoice | undefin
 export async function checkInvoiceFromQpay(qpayToken: string, invoice: PaymentInvoice): Promise<boolean> {
   try {
     logger.info(`Checking invoice from Qpay: ${invoice.id}, QpayInvoice: ${invoice.providerId}`);
-    const checkResponse: QpayCheckPayment = await checkQpayInvoice(qpayToken, `${invoice.providerInfo}`);
+    const checkResponse: QpayCheckPayment = await checkQpayInvoice(qpayToken, `${invoice.providerId}`);
 
     if (checkResponse.count === 0) {
       logger.info(`Qpay invoice is not paid yet! QpayInvoice: ${invoice.providerId}`);
@@ -110,8 +109,11 @@ export async function checkInvoiceFromQpay(qpayToken: string, invoice: PaymentIn
     logger.info(`Qpay invoice check response: ${JSON.stringify(checkResponse)}`);
 
     const roundedAmount = roundToTwoDecimalPlaces(invoice.transactionAmount);
+    logger.info(`Rounded amount: ${roundedAmount}`);
+    logger.info(`Paid amount: ${checkResponse.paid_amount}`);
     const isPaid = checkResponse.paid_amount !== undefined && Math.abs(checkResponse.paid_amount - roundedAmount) <= 1;
 
+    logger.info(`Qpay invoice is paid: ${isPaid}, QpayInvoice: ${invoice.providerId}`);
     return isPaid;
   } catch (error: unknown) {
     logger.error(`Error occurred while checking invoice from Qpay: ${JSON.stringify(error)}`);

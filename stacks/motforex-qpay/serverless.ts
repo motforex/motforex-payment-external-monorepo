@@ -1,9 +1,9 @@
 import type { AWS } from '@serverless/typescript';
 import {
   handleQpayToken,
-  createQpayInvoice,
-  checkQpayInvoiceAsClient,
-  checkQpayInvoiceAsAdmin,
+  postCreateQpayInvoice,
+  postCheckQpayInvoiceAsClient,
+  postCheckQpayInvoiceAsAdmin,
   getHandleQpayInvoiceCallback
 } from '@/functions/motforex-qpay';
 import { postTestFunction } from '@/functions/test';
@@ -40,11 +40,12 @@ const serverlessConfig: AWS = {
 
   functions: {
     handleQpayToken,
-    createQpayInvoice,
-    checkQpayInvoiceAsClient,
-    checkQpayInvoiceAsAdmin,
-    postTestFunction,
-    getHandleQpayInvoiceCallback
+    postCreateQpayInvoice,
+    postCheckQpayInvoiceAsClient,
+    postCheckQpayInvoiceAsAdmin,
+    getHandleQpayInvoiceCallback,
+    // Test function
+    postTestFunction
   },
   package: { individually: true },
   custom: {

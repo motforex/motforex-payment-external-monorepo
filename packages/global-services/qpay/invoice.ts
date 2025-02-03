@@ -1,6 +1,12 @@
 import type { QpayCreateInvoiceRequest as CreateRequest, QpayCheckPayment, QpaySimpleInvoice } from './qpay.types';
 
-import { createBearerAuthHeader, logger, sendRequest } from '@motforex/global-libs';
+import {
+  createBearerAuthHeader,
+  handleApiFuncError,
+  handleDefaultError,
+  logger,
+  sendRequest
+} from '@motforex/global-libs';
 import {
   QpayCheckPaymentSchema,
   QpayGetPayment,
@@ -59,8 +65,8 @@ export async function cancelQpayInvoice(authToken: string, invoiceId: string): P
     });
     return data;
   } catch (error: unknown) {
-    logger.info(`Error occurred on cancelQpayInvoice(): ${JSON.stringify(error)}`);
-    throw error;
+    handleDefaultError(error);
+    throw new Error('Failed to cancel the Qpay invoice');
   }
 }
 

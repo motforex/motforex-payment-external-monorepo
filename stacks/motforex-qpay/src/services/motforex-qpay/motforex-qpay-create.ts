@@ -16,9 +16,10 @@ import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
 import { getCurrentDateAsString } from '../utility';
 import { markPaymentInvoiceAsExpired, markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 import { checkInvoiceFromQpay } from './motforex-qpay-check';
-import { cancelQpayInvoice } from './motforex-qpay-cancel';
+import { cancelMotforexInvoice } from './motforex-qpay-cancel';
 import { buildQpayInvoiceRequest } from '../qpay/qpay-utils';
 import { getValidatedInvoiceAndRequest } from './motforex-qpay-utils';
+import { format } from 'path';
 
 export const REGENERATION_COUNT = 5;
 export const EXPIRY_TIME = 300000;
@@ -98,7 +99,7 @@ async function regenerateQpayInvoice(invoice: PaymentInvoice): Promise<APIRespon
   }
 
   // IF the older invoice is NOT-PAID
-  await cancelQpayInvoice(qpayAuthToken, invoice.providerId);
+  await cancelMotforexInvoice(qpayAuthToken, invoice.providerId);
 
   // Create new Qpay invoice
   const { invoice_id, qPay_shortUrl, qr_text, qr_image, urls } = await createSimpleQpayInvoice(
@@ -135,7 +136,8 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
   const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId } = depositRequest;
   logger.info(`Creating new Qpay invoice for deposit request: ${id}`);
 
-  const transactionAmount = amountWithCommission.amount * conversionRate;
+  // const transactionAmount = amountWithCommission.amount * conversionRate;
+  const transactionAmount = 10;
   logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
   logger.info(`The converted AmountInMNT: ${transactionAmount}`);
 
@@ -182,5 +184,5 @@ async function createNewQpayInvoice(depositRequest: PaymentRequest): Promise<API
   );
 
   logger.info(`New invoice created successfully: ${JSON.stringify(invoice.id)}`);
-  return formatApiResponse(depositRequest);
+  return formatInvoiceAsResponse(invoice);
 }
