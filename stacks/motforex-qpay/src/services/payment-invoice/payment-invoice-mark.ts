@@ -1,7 +1,7 @@
 import type { PaymentInvoice } from '@motforex/global-types';
 
+import { executeDepositRequestById, markDepositRequestAsExpired } from '@motforex/global-services';
 import { updatePaymentInvoice } from '@/repository/invoice-record';
-import { executeDepositRequestById } from '../deposit-request';
 import { logger } from '@motforex/global-libs';
 
 export async function markPaymentInvoiceAsSuccessful(invoice: PaymentInvoice): Promise<PaymentInvoice> {
@@ -19,6 +19,7 @@ export async function markPaymentInvoiceAsSuccessful(invoice: PaymentInvoice): P
 export async function markPaymentInvoiceAsExpired(invoice: PaymentInvoice): Promise<PaymentInvoice> {
   try {
     logger.info(`Expiring payment invoice: ${invoice.id}`);
+    await markDepositRequestAsExpired(invoice.id, 'Qpay invoice is expired');
     return await updatePaymentInvoice({ ...invoice, invoiceStatus: 'EXPIRED', executionStatus: 'EXPIRED' });
   } catch (error: unknown) {
     logger.error(`Error expiring payment invoice: ${invoice.id}`);

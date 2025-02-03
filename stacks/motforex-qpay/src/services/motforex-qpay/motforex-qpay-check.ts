@@ -23,7 +23,6 @@ export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: n
       logger.error(`Invalid email for Qpay invoice creation!`);
       throw new CustomError('Invalid request for Qpay invoice creation!', 400);
     }
-
     // Check if the invoice is paid
     return await formatInvoiceAsResponse(await checkMotforexQpayInvoice(invoice));
   } catch (error: unknown) {

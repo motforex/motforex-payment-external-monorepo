@@ -2,13 +2,7 @@ import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata, PaymentInvoice, PaymentRequest } from '@motforex/global-types';
 
 import { PaymentInvoiceSchema, STATUS_PENDING } from '@motforex/global-types';
-import {
-  CustomError,
-  formatApiResponse,
-  getParameterStoreVal,
-  handleApiFuncError,
-  logger
-} from '@motforex/global-libs';
+import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 
 import { createPaymentInvoice, updatePaymentInvoice } from '@/repository/invoice-record';
 import { createSimpleQpayInvoice, formatInvoiceAsResponse } from '@motforex/global-services';
@@ -19,7 +13,6 @@ import { checkInvoiceFromQpay } from './motforex-qpay-check';
 import { cancelMotforexInvoice } from './motforex-qpay-cancel';
 import { buildQpayInvoiceRequest } from '../qpay/qpay-utils';
 import { getValidatedInvoiceAndRequest } from './motforex-qpay-utils';
-import { format } from 'path';
 
 export const REGENERATION_COUNT = 5;
 export const EXPIRY_TIME = 300000;
