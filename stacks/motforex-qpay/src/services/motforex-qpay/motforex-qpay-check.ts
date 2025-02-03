@@ -18,31 +18,14 @@ import { markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
     const { email, depositRequest, invoice } = await getValidatedInvoiceAndRequest(metadata, id);
-
+    // Check if the email is valid
     if (depositRequest.email !== email) {
       logger.error(`Invalid email for Qpay invoice creation!`);
       throw new CustomError('Invalid request for Qpay invoice creation!', 400);
     }
 
-    if (!invoice) {
-      logger.error(`Invoice does not exist for deposit request: ${id}`);
-      throw new CustomError('Invoice does not exist for the deposit request!', 404);
-    }
-
-    const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
-    if (!qpayAuthToken) {
-      logger.error('QPAY token is not found in the parameter store!');
-      throw new CustomError('QPAY token is not found in the parameter store!', 500);
-    }
-
-    // If the invoice is not paid yet, return the invoice
-    if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
-      logger.info(`Qpay invoice is not paid yet!`);
-      return formatInvoiceAsResponse(invoice);
-    }
-
-    // Mark the invoice as successful
-    return formatInvoiceAsResponse(await markPaymentInvoiceAsSuccessful(invoice));
+    // Check if the invoice is paid
+    return await formatInvoiceAsResponse(await checkMotforexQpayInvoice(invoice));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -59,30 +42,49 @@ export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: n
  */
 export async function checkMotforexQpayInvoiceAsAdmin(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
+    // Check if the invoice is valid
     const { invoice } = await getValidatedInvoiceAndRequest(metadata, id);
 
-    if (!invoice) {
-      logger.error(`Invoice does not exist for deposit request: ${id}`);
-      throw new CustomError('Invoice does not exist for the deposit request!', 404);
-    }
-
-    const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
-    if (!qpayAuthToken) {
-      logger.error('QPAY token is not found in the parameter store!');
-      throw new CustomError('QPAY token is not found in the parameter store!', 500);
-    }
-
-    // If the invoice is not paid yet, return the invoice
-    if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
-      logger.info(`Qpay invoice is not paid yet!`);
-      return formatInvoiceAsResponse(invoice);
-    }
-
-    // Mark the invoice as successful
-    return formatInvoiceAsResponse(await markPaymentInvoiceAsSuccessful(invoice));
+    // Check if the invoice is paid
+    return await formatInvoiceAsResponse(await checkMotforexQpayInvoice(invoice));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
+}
+
+/**
+ *
+ * Check Motforex Qpay invoice. Checks the invoiceStatus of the PaymentInvoice and if its status is PENDING, it will check the invoice from Qpay.'
+ * If the invoice is paid, it will update the PaymentInvoice status to PAID, and executes Deposit Request.
+ *
+ *
+ * @param invoice
+ * @returns
+ */
+export async function checkMotforexQpayInvoice(invoice: PaymentInvoice | undefined): Promise<PaymentInvoice> {
+  if (!invoice) {
+    logger.error(`Invoice does not exist for deposit request!`);
+    throw new CustomError('Invoice does not exist for the deposit request!', 404);
+  }
+
+  if (invoice.invoiceStatus !== 'PENDING') {
+    logger.info(`Invoice is not in PENDING status!`);
+    return invoice;
+  }
+
+  const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
+  if (!qpayAuthToken) {
+    logger.error('QPAY token is not found in the parameter store!');
+    throw new CustomError('QPAY token is not found in the parameter store!', 500);
+  }
+
+  if (!(await checkInvoiceFromQpay(qpayAuthToken, invoice))) {
+    logger.info(`Qpay invoice is not paid yet!`);
+    return invoice;
+  }
+
+  // Mark the invoice as successful
+  return await markPaymentInvoiceAsSuccessful(invoice);
 }
 
 /**

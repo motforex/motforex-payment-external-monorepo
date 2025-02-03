@@ -30,6 +30,6 @@ export const checkQpayInvoiceAsAdmin = createAdminAuthApiGatewayFunc(
 export const getHandleQpayInvoiceCallback = createUserAuthApiGatewayFunc(
   __dirname,
   'getHandleQpayInvoiceCallback',
-  'post',
+  'get',
   '/invoice/{id}/callback'
 );
