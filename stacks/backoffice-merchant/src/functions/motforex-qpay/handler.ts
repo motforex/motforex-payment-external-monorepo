@@ -1,0 +1,31 @@
+import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs';
+import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
+
+import { CustomError, extractMetadata, formatApiResponse, handleApiFuncError, middyfy } from '@motforex/global-libs';
+import { checkMotforexQpayInvoice, handleMotforexQpayCallback, handleMotfxQpayAuthToken } from '@/services';
+
+export const handleQpayToken = async (): Promise<void> => {
+  await handleMotfxQpayAuthToken();
+};
+
+const checkQpayInvoiceAsAdminFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+  try {
+    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    return await checkMotforexQpayInvoice(extractMetadata(event), Number(event.pathParameters.id));
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const getHandleQpayInvoiceCallbackFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+  try {
+    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    await handleMotforexQpayCallback(Number(event.pathParameters.id));
+    return formatApiResponse({ message: 'Qpay callback handled successfully' });
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+export const checkQpayInvoiceAsAdmin = middyfy(checkQpayInvoiceAsAdminFunc);
+export const handleQpayInvoiceCallback = middyfy(getHandleQpayInvoiceCallbackFunc);
