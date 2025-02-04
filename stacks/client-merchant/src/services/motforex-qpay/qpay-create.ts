@@ -4,12 +4,12 @@ import type { RequestMetadata as Metadata, PaymentInvoice, PaymentRequest } from
 import { createSimpleQpayInvoice, formatInvoiceAsResponse, getCurrentDateAsString } from '@motforex/global-services';
 import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 import { markPaymentInvoiceAsExpired, markPaymentInvoiceAsSuccessful } from '../payment-invoice';
-import { buildQpayInvoiceRequest, getValidatedInvoiceAndRequest } from './motforex-qpay-utils';
+import { buildQpayInvoiceRequest, getValidatedInvoiceAndRequest } from './qpay-utils';
 import { createPaymentInvoice, updatePaymentInvoice } from '@/repository/invoice-record';
 import { PaymentInvoiceSchema, STATUS_PENDING } from '@motforex/global-types';
-import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
-import { checkInvoiceFromQpay } from './motforex-qpay-check';
-import { cancelMotforexInvoice } from './motforex-qpay-cancel';
+import { QPAY_TOKEN_PARAMETER } from './qpay-constants';
+import { checkInvoiceFromQpay } from './qpay-check';
+import { cancelMotforexInvoice } from './qpay-cancel';
 
 export const REGENERATION_COUNT = 5;
 export const EXPIRY_TIME = 300000;

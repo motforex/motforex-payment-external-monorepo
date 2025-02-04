@@ -3,8 +3,8 @@ import type { RequestMetadata as Metadata, PaymentInvoice } from '@motforex/glob
 
 import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, formatInvoiceAsResponse, QpayCheckPayment } from '@motforex/global-services';
-import { getValidatedInvoiceAndRequest } from './motforex-qpay-utils';
-import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
+import { getValidatedInvoiceAndRequest } from './qpay-utils';
+import { QPAY_TOKEN_PARAMETER } from './qpay-constants';
 import { markPaymentInvoiceAsSuccessful } from '../payment-invoice';
 
 /**

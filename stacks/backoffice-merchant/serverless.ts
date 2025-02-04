@@ -1,5 +1,5 @@
 import type { AWS } from '@serverless/typescript';
-import { handleQpayToken, postCheckQpayInvoiceAsAdmin, getHandleQpayInvoiceCallback } from '@/functions/motforex-qpay';
+import { handleQpayToken, postCheckQpayInvoiceAsAdmin, getHandleQpayInvoiceCallback } from '@/functions/qpay';
 import { postTestFunction } from '@/functions/test';
 
 const serverlessConfig: AWS = {

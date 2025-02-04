@@ -1,6 +1,6 @@
 import { handleDefaultError, logger, updateParameterStoreVal } from '@motforex/global-libs';
 import { getQpayAuthToken } from '@motforex/global-services';
-import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
+import { QPAY_TOKEN_PARAMETER } from './qpay-constants';
 
 const MOTFOREX_QPAY_USERNAME = process.env.MOTFOREX_QPAY_USERNAME;
 const MOTFOREX_QPAY_PASSWORD = process.env.MOTFOREX_QPAY_PASSWORD;
