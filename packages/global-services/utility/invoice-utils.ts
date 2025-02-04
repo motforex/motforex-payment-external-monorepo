@@ -1,9 +1,9 @@
-import type { PaymentInvoice } from '@motforex/global-types';
+import type { MerchantInvoice } from '@motforex/global-types';
 
 import { formatApiResponse } from '@motforex/global-libs';
 import { PaymentInvoiceResponseSchema } from '@motforex/global-types';
 
-export function formatInvoiceAsResponse(invoice: PaymentInvoice) {
+export function formatInvoiceAsResponse(invoice: MerchantInvoice) {
   const { invoiceStatus, executionStatus, transactionAmount, transactionCurrency, metadata, message } = invoice;
   return formatApiResponse(
     PaymentInvoiceResponseSchema.parse({

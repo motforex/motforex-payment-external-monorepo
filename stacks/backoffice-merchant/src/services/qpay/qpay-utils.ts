@@ -1,4 +1,4 @@
-import type { PaymentInvoice, PaymentRequest, RequestMetadata } from '@motforex/global-types';
+import type { MerchantInvoice, PaymentRequest, RequestMetadata } from '@motforex/global-types';
 
 import { QpayCreateInvoiceRequest, QpayCreateInvoiceRequestSchema } from '@motforex/global-services';
 import { checkAuthorization, CustomError, logger } from '@motforex/global-libs';
@@ -10,7 +10,7 @@ import { MOTFOREX_QPAY_INVOICE_CODE } from '.';
 interface ValidatedResponse {
   email: string;
   depositRequest: PaymentRequest;
-  invoice: PaymentInvoice | undefined;
+  invoice: MerchantInvoice | undefined;
 }
 
 export async function getValidatedInvoiceAndRequest(metadata: RequestMetadata, id: number): Promise<ValidatedResponse> {

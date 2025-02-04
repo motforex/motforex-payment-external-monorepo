@@ -1,8 +1,8 @@
-import type { PaymentInvoice, PaymentRequest } from '@motforex/global-types';
+import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
 import { CustomError, logger } from '@motforex/global-libs';
 import { getDepositReqById } from '@/repository/deposit-requests';
-import { getPaymentInvoiceById } from '@/repository/invoice-record';
+import { getMerchantInvoiceById } from '@/repository/invoice-record';
 
 /**
  * Get valid deposit request by id. If status is provided, it will check the status of the deposit request.
@@ -47,9 +47,9 @@ export async function getValidDepositRequest(id: number, status: string[], email
  * @returns
  *
  */
-export async function getValidInvoiceRecord(id: number, status?: string[], userId?: string): Promise<PaymentInvoice> {
+export async function getValidInvoiceRecord(id: number, status?: string[], userId?: string): Promise<MerchantInvoice> {
   try {
-    const invoice = await getPaymentInvoiceById(id);
+    const invoice = await getMerchantInvoiceById(id);
     if (!invoice) {
       logger.warn(`INVOICE:${id} is not found!`);
       throw new CustomError(`Bad request! Cannot find Invoice:${id}`, 400);

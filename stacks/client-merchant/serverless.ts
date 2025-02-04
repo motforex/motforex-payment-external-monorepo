@@ -1,5 +1,6 @@
 import type { AWS } from '@serverless/typescript';
-import { postCreateQpayInvoice, postCheckQpayInvoice } from '@/functions/motforex-qpay';
+import { postCreateQpayInvoice, postCheckQpayInvoice } from '@/functions/qpay';
+import { createGolomtMerchInvoice, createSocialPayInvoice, checkGolomtMerchInvoice } from '@/functions/golomt-merchant';
 import { postTestFunction } from '@/functions/test';
 
 const serverlessConfig: AWS = {
@@ -27,6 +28,8 @@ const serverlessConfig: AWS = {
     },
     iam: { role: 'arn:aws:iam::786487424160:role/payments-service-role' },
     environment: {
+      MOTFOREX_GOLOMT_MERCHANT_SECRET: '${ssm:/motforex/payments/golomt/card-merchant/secret-key}',
+      MOTFOREX_GOLOMT_MERCHANT_TOKEN: '${ssm:/motforex/payments/golomt/card-merchant/token}',
       MOTFOREX_QPAY_USERNAME: '${ssm:/motforex/payments/qpay/username}',
       MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}'
     }
@@ -36,6 +39,10 @@ const serverlessConfig: AWS = {
     // Client qpay functions
     postCreateQpayInvoice,
     postCheckQpayInvoice,
+    // Golomt merchant functions
+    createGolomtMerchInvoice,
+    createSocialPayInvoice,
+    checkGolomtMerchInvoice,
     // Test function
     postTestFunction
   },

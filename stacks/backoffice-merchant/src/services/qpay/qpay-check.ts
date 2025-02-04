@@ -1,5 +1,5 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata, PaymentInvoice } from '@motforex/global-types';
+import type { RequestMetadata as Metadata, MerchantInvoice } from '@motforex/global-types';
 
 import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, formatInvoiceAsResponse, QpayCheckPayment } from '@motforex/global-services';
@@ -37,7 +37,7 @@ export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): 
  * @param invoice
  * @returns
  */
-export async function checkMotforexQpayInv(invoice: PaymentInvoice | undefined): Promise<PaymentInvoice> {
+export async function checkMotforexQpayInv(invoice: MerchantInvoice | undefined): Promise<MerchantInvoice> {
   if (!invoice) {
     logger.error(`Invoice does not exist for deposit request!`);
     throw new CustomError('Invoice does not exist for the deposit request!', 404);
@@ -71,7 +71,7 @@ export async function checkMotforexQpayInv(invoice: PaymentInvoice | undefined):
  * @returns - True if the invoice is paid, false otherwise
  *
  **/
-export async function checkInvoiceFromQpay(qpayToken: string, invoice: PaymentInvoice): Promise<boolean> {
+export async function checkInvoiceFromQpay(qpayToken: string, invoice: MerchantInvoice): Promise<boolean> {
   try {
     logger.info(`Checking invoice from Qpay: ${invoice.id}, QpayInvoice: ${invoice.providerId}`);
     const checkResponse: QpayCheckPayment = await checkQpayInvoice(qpayToken, `${invoice.providerId}`);

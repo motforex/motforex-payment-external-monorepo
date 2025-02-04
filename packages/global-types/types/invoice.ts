@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const InvoiceStatusSchema = z.enum(['INITIAL', 'PENDING', 'SUCCESSFUL', 'UNSUCCESSFUL', 'EXPIRED', 'CANCELLED']);
 
-export const PaymentInvoiceSchema = z.object({
+export const MerchantInvoiceSchema = z.object({
   // General config props
   id: z.number(),
   referenceId: z.number(),
@@ -28,7 +28,7 @@ export const PaymentInvoiceSchema = z.object({
   createdAt: z.number()
 });
 
-export type PaymentInvoice = z.infer<typeof PaymentInvoiceSchema>;
+export type MerchantInvoice = z.infer<typeof MerchantInvoiceSchema>;
 
 export const PaymentInvoiceResponseSchema = z.object({
   invoiceStatus: InvoiceStatusSchema,

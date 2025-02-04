@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-export const GolomtCreateInvoice = z.object({
+export const GolomtCreateInvoiceSchema = z.object({
   amount: z.number(),
-  transactionId: z.string(),
-  callbackUrl: z.string()
+  callback: z.string(),
+  transactionId: z.string()
 });
 
-export type GolomtCreateInvoice = z.infer<typeof GolomtCreateInvoice>;
+export type GolomtCreateInvoice = z.infer<typeof GolomtCreateInvoiceSchema>;
 
 export const GolomtCreateInvoiceRequestSchema = z.object({
   amount: z.string(),

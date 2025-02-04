@@ -1,4 +1,4 @@
-import type { PaymentInvoice, PaymentRequest } from '@motforex/global-types';
+import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
 import { CustomError, logger } from '@motforex/global-libs';
 import { getDepositReqById } from '@/repository/deposit-requests';
@@ -47,7 +47,7 @@ export async function getValidDepositRequest(id: number, status: string[], email
  * @returns
  *
  */
-export async function getValidInvoiceRecord(id: number, status?: string[], userId?: string): Promise<PaymentInvoice> {
+export async function getValidInvoiceRecord(id: number, status?: string[], userId?: string): Promise<MerchantInvoice> {
   try {
     const invoice = await getPaymentInvoiceById(id);
     if (!invoice) {

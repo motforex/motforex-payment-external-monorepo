@@ -1,5 +1,5 @@
 {
-  "name": "motforex-qpay-serverless",
+  "name": "motforex-merchant-backoffice",
   "version": "0.0.0",
   "description": "A serverless framework template for typescript",
   "main": "serverless.ts",

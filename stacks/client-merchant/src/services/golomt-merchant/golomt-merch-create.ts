@@ -1,23 +1,44 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata } from '@motforex/global-types';
 
-import { formatApiResponse, handleApiFuncError } from '@motforex/global-libs';
+import {
+  createNewGolomtMerchantInvoice,
+  createNewSocialpayInvoice,
+  regenerateGolomtMerchantInvoice,
+  regenerateSocialpayInvoice
+} from './golomt-merch-create-utils';
+import { handleInvoiceCreation } from '../merchant-invoice';
 
-export const REGENERATION_COUNT = 5;
-export const EXPIRY_TIME = 600000;
-
+/**
+ * Create Motforex Golomt Merchant invoice for the deposit request.
+ *
+ * @param metadata - Request metadata
+ * @param id - Invoice ID
+ * @returns - API response
+ */
 export async function createMotforexGolomtMerchantInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
-  try {
-    return formatApiResponse({ message: 'Qpay callback handled successfully' });
-  } catch (error: unknown) {
-    return handleApiFuncError(error);
-  }
+  return handleInvoiceCreation({
+    metadata,
+    id,
+    createNewInvoice: createNewGolomtMerchantInvoice,
+    regenerateInvoice: regenerateGolomtMerchantInvoice,
+    invoiceType: 'Card'
+  });
 }
 
+/**
+ * Create Motforex Socialpay invoice for the deposit request.
+ *
+ * @param metadata - Request metadata
+ * @param id - Invoice ID
+ * @returns - API response
+ */
 export async function createMotforexSocialpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
-  try {
-    return formatApiResponse({ message: 'Qpay callback handled successfully' });
-  } catch (error: unknown) {
-    return handleApiFuncError(error);
-  }
+  return handleInvoiceCreation({
+    metadata,
+    id,
+    createNewInvoice: createNewSocialpayInvoice,
+    regenerateInvoice: regenerateSocialpayInvoice,
+    invoiceType: 'Socialpay'
+  });
 }
