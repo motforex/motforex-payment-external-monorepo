@@ -6,16 +6,16 @@ import {
 
 export const handleQpayToken = createScheduledFunc(__dirname, 'handleQpayToken', ['cron(0 0/12 * * ? *)']);
 
-export const postCheckQpayInvoiceAsAdmin = createAdminAuthApiGatewayFunc(
+export const postCheckQpayInvoice = createAdminAuthApiGatewayFunc(
   __dirname,
-  'checkQpayInvoice',
+  'postCheckQpayInvoice',
   'post',
-  '/v1/qpay/invoice/admin/{id}/check'
+  '/v1/qpay/invoice/{id}/check'
 );
 
-export const getHandleQpayInvoiceCallback = createUserAuthApiGatewayFunc(
+export const getHandleQpayCallback = createUserAuthApiGatewayFunc(
   __dirname,
-  'getHandleQpayInvoiceCallback',
+  'getHandleQpayCallback',
   'get',
   '/v1/qpay/invoice/{id}/callback'
 );

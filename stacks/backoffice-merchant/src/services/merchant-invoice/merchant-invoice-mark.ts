@@ -4,7 +4,7 @@ import { executeDepositRequestById, markDepositRequestAsExpired } from '@motfore
 import { updatePaymentInvoice } from '@/repository/invoice-record';
 import { logger } from '@motforex/global-libs';
 
-export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {
+export async function markMerchantInvoiceAsSuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
     logger.info(`Marking payment invoice as paid: ${invoice.id}`);
     const updatedInvoice: MerchantInvoice = { ...invoice, invoiceStatus: 'SUCCESSFUL' };
@@ -16,23 +16,23 @@ export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): 
   }
 }
 
-export async function markPaymentInvoiceAsExpired(invoice: MerchantInvoice): Promise<MerchantInvoice> {
+export async function markMerchantInvoiceAsExpired(invoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
-    logger.info(`Expiring payment invoice: ${invoice.id}`);
+    logger.info(`Expiring merchant invoice: ${invoice.id}`);
     await markDepositRequestAsExpired(invoice.id, 'Qpay invoice is expired');
     return await updatePaymentInvoice({ ...invoice, invoiceStatus: 'EXPIRED', executionStatus: 'EXPIRED' });
   } catch (error: unknown) {
-    logger.error(`Error expiring payment invoice: ${invoice.id}`);
+    logger.error(`Error expiring merchant invoice: ${invoice.id}`);
     throw error;
   }
 }
 
-export async function markPaymentInvoiceAsUnsuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {
+export async function markMerchantInvoiceAsUnsuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
-    logger.info(`Expiring payment invoice: ${invoice.id}`);
+    logger.info(`Unsuccessful merchant invoice: ${invoice.id}`);
     return await updatePaymentInvoice({ ...invoice, invoiceStatus: 'UNSUCCESSFUL', executionStatus: 'UNSUCCESSFUL' });
   } catch (error: unknown) {
-    logger.error(`Error expiring payment invoice: ${invoice.id}`);
+    logger.error(`Error expiring merchant invoice: ${invoice.id}`);
     throw error;
   }
 }

@@ -18,21 +18,21 @@ export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): 
 
 export async function markPaymentInvoiceAsExpired(invoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
-    logger.info(`Expiring payment invoice: ${invoice.id}`);
+    logger.info(`Expiring merchant invoice: ${invoice.id}`);
     await markDepositRequestAsExpired(invoice.id, 'Qpay invoice is expired');
     return await updateMerchantInvoice({ ...invoice, invoiceStatus: 'EXPIRED', executionStatus: 'EXPIRED' });
   } catch (error: unknown) {
-    logger.error(`Error expiring payment invoice: ${invoice.id}`);
+    logger.error(`Error expiring merchant invoice: ${invoice.id}`);
     throw error;
   }
 }
 
 export async function markPaymentInvoiceAsUnsuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
-    logger.info(`Expiring payment invoice: ${invoice.id}`);
+    logger.info(`Expiring merchant invoice: ${invoice.id}`);
     return await updateMerchantInvoice({ ...invoice, invoiceStatus: 'UNSUCCESSFUL', executionStatus: 'UNSUCCESSFUL' });
   } catch (error: unknown) {
-    logger.error(`Error expiring payment invoice: ${invoice.id}`);
+    logger.error(`Error expiring merchant invoice: ${invoice.id}`);
     throw error;
   }
 }

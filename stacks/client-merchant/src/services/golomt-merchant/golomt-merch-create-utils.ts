@@ -42,7 +42,7 @@ export async function createNewSocialpayInvoice(depositRequest: Payment, locale:
  * @param merchantInvoice - The invoice to regenerate.
  */
 export async function regenerateGolomtMerchantInvoice(merchantInvoice: MerchantInvoice): Promise<MerchantInvoice> {
-  return regenerateInvoice(merchantInvoice, 'payments');
+  return regenerateInvoice(merchantInvoice, 'payment');
 }
 
 /**
