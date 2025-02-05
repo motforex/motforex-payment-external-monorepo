@@ -107,6 +107,6 @@ export function buildQpayInvoiceRequest(id: number, amount: number, invoiceNumbe
     invoice_description: `MOTFOREX DEPOSIT ${id}`,
     sender_branch_code: 'MAIN',
     amount,
-    callback_url: `https://api-admin.motforex.com/mechant/v1/qpay/invoice/${id}/callback`
+    callback_url: `https://api-backoffice.motforex.com/mechant/v1/qpay/invoice/${id}/callback`
   });
 }
