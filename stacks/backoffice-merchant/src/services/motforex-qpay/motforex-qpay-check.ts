@@ -1,5 +1,5 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { MerchantInvoice, RequestMetadata as Metadata } from '@motforex/global-types';
+import type { RequestMetadata as Metadata, MerchantInvoice } from '@motforex/global-types';
 
 import {
   checkAuthorization,
@@ -12,6 +12,8 @@ import { formatInvoiceAsResponse } from '@motforex/global-services';
 import { getValidInvoicePayment, markMerchantInvoiceAsSuccessful } from '../merchant-invoice';
 import { isQpayInvoicePaid } from '../qpay';
 import { MOTFOREX_QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
+import { reexecuteDepositRequest } from '../merchant-invoice';
+import { STATUS_PENDING } from '@motforex/global-types';
 
 /**
  * Checks the status of a Motforex Qpay invoice.
@@ -26,13 +28,18 @@ export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): 
     const { email } = checkAuthorization(metadata, 'check-motforex-qpay-invoice');
     const merchantInvoice = await getValidInvoicePayment(id, ['qpay'], email);
 
-    // Check MerchantInvoice status
-    if (merchantInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`Invoice is not in PENDING status!`);
-      return formatInvoiceAsResponse(merchantInvoice);
+    // Handling the pending status of the invoice
+    if (merchantInvoice.invoiceStatus === STATUS_PENDING) {
+      return formatInvoiceAsResponse(await checkValidMotforexQpayInvoice(merchantInvoice));
     }
 
-    return formatInvoiceAsResponse(await checkValidMotforexQpayInvoice(merchantInvoice));
+    // Handling case where the invoice is successful but the execution is not.
+    if (merchantInvoice.invoiceStatus === 'SUCCESSFUL' && merchantInvoice.executionStatus !== 'SUCCESSFUL') {
+      return formatInvoiceAsResponse(await reexecuteDepositRequest(merchantInvoice));
+    }
+
+    logger.info(`Invoice is not in PENDING status!`);
+    return formatInvoiceAsResponse(merchantInvoice);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -48,6 +55,7 @@ export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): 
  */
 export async function checkValidMotforexQpayInvoice(merchantInvoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
+    logger.info(`Checking invoice from Qpay: ${merchantInvoice.id}, QpayInvoice: ${merchantInvoice.providerId}`);
     // Check if the MerchantInvoice is paid
     const qpayAuthToken = await getParameterStoreVal(MOTFOREX_QPAY_TOKEN_PARAMETER);
     if (!qpayAuthToken) {

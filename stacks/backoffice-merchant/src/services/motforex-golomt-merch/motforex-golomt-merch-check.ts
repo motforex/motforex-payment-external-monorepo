@@ -2,7 +2,7 @@ import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { MerchantInvoice, RequestMetadata as Metadata } from '@motforex/global-types';
 
 import { checkAuthorization, CustomError, handleApiFuncError, logger } from '@motforex/global-libs';
-import { getValidInvoicePayment, markMerchantInvoiceAsSuccessful } from '../merchant-invoice';
+import { getValidInvoicePayment, markMerchantInvoiceAsSuccessful, reexecuteDepositRequest } from '../merchant-invoice';
 import { formatInvoiceAsResponse } from '@motforex/global-services';
 import { isPaidOnGolomtMerch } from '../golomt-merch/golomt-merchant-check';
 import { GOLOMT_MERCHANT_SECRET, GOLOMT_MERCHANT_TOKEN } from './motforex-golomt-merch-constants';
@@ -21,12 +21,17 @@ export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: nu
     const merchantInvoice = await getValidInvoicePayment(id, ['card', 'socialpay'], email);
 
     // Check MerchantInvoice status
-    if (merchantInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`Invoice is not in PENDING status!`);
-      return formatInvoiceAsResponse(merchantInvoice);
+    if (merchantInvoice.invoiceStatus === 'PENDING') {
+      return formatInvoiceAsResponse(await checkValidMotforexGolomtMerchInvoice(merchantInvoice));
     }
 
-    return formatInvoiceAsResponse(await checkValidMotforexGolomtMerchInvoice(merchantInvoice));
+    // Handling case where the invoice is successful but the execution is not.
+    if (merchantInvoice.invoiceStatus === 'SUCCESSFUL' && merchantInvoice.executionStatus !== 'SUCCESSFUL') {
+      return formatInvoiceAsResponse(await reexecuteDepositRequest(merchantInvoice));
+    }
+
+    logger.info(`Invoice is not in PENDING status!`);
+    return formatInvoiceAsResponse(merchantInvoice);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -40,6 +45,7 @@ export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: nu
  */
 export async function checkValidMotforexGolomtMerchInvoice(merchantInvoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
+    logger.info(`Checking Invoice: ${merchantInvoice.id}, Golomt-Merchant-Invoice: ${merchantInvoice.providerId}`);
     if (!GOLOMT_MERCHANT_SECRET || !GOLOMT_MERCHANT_TOKEN) {
       logger.error('Golomt-Merchant secret or token is not found!');
       throw new CustomError('Unable to process Golomt-Merchant-Invoice', 500);
