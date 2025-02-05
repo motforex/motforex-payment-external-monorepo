@@ -40,13 +40,13 @@ export async function createGolomtMerchInvoice(secret: string, tok: string, req:
 export async function checkGolomtMerchInvoice(sKey: string, token: string, id: string): Promise<GolomtInvoiceCheck> {
   try {
     const checksum = generateSha256Checksum(sKey, [id, id]);
-
     const { data } = await sendRequest<GolomtInvoiceCheck>({
-      url: `${GOLOMT_E_COMMERCE_BASE}/api/inquiry/${id}`,
-      method: 'GET',
+      url: `${GOLOMT_E_COMMERCE_BASE}/api/inquiry`,
+      method: 'POST',
       headers: createBearerAuthHeader(token),
       data: { checksum, transactionId: id }
     });
+
     return GolomtInvoiceCheckSchema.parse(data);
   } catch (error: unknown) {
     logger.info(`Error occurred on checkGolomtMerchInvoice(): ${JSON.stringify(error)}`);

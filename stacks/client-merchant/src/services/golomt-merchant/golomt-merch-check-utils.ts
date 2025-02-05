@@ -9,7 +9,7 @@ export async function isPaidOnGolomtMerch(key: string, tkn: string, transactionI
     const { amount, status, errorDesc, errorCode, cardNumber } = await checkGolomtMerchInvoice(key, tkn, transactionId);
 
     logger.info(`Golomt Merchant invoice check: ${JSON.stringify({ errorDesc, errorCode })}`);
-    logger.info(`Golomt Merchant invoice check: AMOUNT:${amount} STATUS:${status} CARD_NUMBER:${cardNumber}`);
+    logger.info(`Golomt Merchant invoice check: amount:${amount} status:${status} cardNumber:${cardNumber}`);
 
     return errorCode === ERROR_CODE_SUCCESS;
   } catch (error: unknown) {

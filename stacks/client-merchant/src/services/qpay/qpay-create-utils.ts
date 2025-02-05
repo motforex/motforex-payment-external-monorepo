@@ -93,8 +93,10 @@ export async function regenerateQpayInvoice(merchantInvoice: MerchantInvoice): P
 
   // If the older invoice is PAID
   if (await isPaidOnQpay(qpayAuthToken, merchantInvoice)) {
+    logger.info(`Qpay invoice is already paid!`);
     return await markPaymentInvoiceAsSuccessful(merchantInvoice);
   }
+  logger.info(`Qpay invoice is not paid yet!`);
 
   // IF the older invoice is NOT-PAID
   await cancelMotforexInvoice(qpayAuthToken, merchantInvoice.providerId);
@@ -121,7 +123,7 @@ export async function regenerateQpayInvoice(merchantInvoice: MerchantInvoice): P
     'providerId = :oldProviderId',
     { ':oldProviderId': merchantInvoice.providerId }
   );
-
   logger.info(`Qpay Invoice regenerated successfully: ${JSON.stringify(updatedInvoice.id)}`);
+
   return updatedInvoice;
 }

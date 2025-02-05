@@ -37,11 +37,11 @@ export const GolomtInvoiceCheckSchema = z.object({
   bank: z.string(),
   errorDesc: z.string(),
   checksum: z.string(),
-  errorCode: z.string().optional(),
+  errorCode: z.string().optional().nullable(),
   cardHolder: z.string(),
   transactionId: z.string(),
   cardNumber: z.string(),
-  token: z.string()
+  token: z.string().optional().nullable()
 });
 
 export type GolomtInvoiceCheck = z.infer<typeof GolomtInvoiceCheckSchema>;
