@@ -1,11 +1,11 @@
 import type { MerchantInvoice } from '@motforex/global-types';
 
-import { createRecord, getRecordByKey, updateRecord } from '@motforex/dynamo';
+import { getRecordByKey, queryRecords, QueryRequest, updateRecord } from '@motforex/dynamo';
 import { omit } from 'lodash';
 
 const INVOICE_RECORD_TABLE_NAME = 'motforex-payment-invoice';
 
-export async function getPaymentInvoiceById(id: number, projection?: string): Promise<MerchantInvoice | undefined> {
+export async function getMerchantInvoiceById(id: number, projection?: string): Promise<MerchantInvoice | undefined> {
   return await getRecordByKey<MerchantInvoice>({
     tableName: INVOICE_RECORD_TABLE_NAME,
     key: { id },
@@ -13,12 +13,15 @@ export async function getPaymentInvoiceById(id: number, projection?: string): Pr
   });
 }
 
-export async function createPaymentInvoice(invoice: MerchantInvoice): Promise<MerchantInvoice> {
-  await createRecord<MerchantInvoice>({ tableName: INVOICE_RECORD_TABLE_NAME, item: invoice });
-  return invoice;
+export async function getMerchantInvoiceByQuery(queryRequest: QueryRequest, projection?: string) {
+  return await queryRecords<MerchantInvoice>({
+    tableName: INVOICE_RECORD_TABLE_NAME,
+    queryRequest: queryRequest,
+    projectionExpression: projection
+  });
 }
 
-export async function updatePaymentInvoice(
+export async function updateMerchantInvoice(
   invoice: MerchantInvoice,
   condition?: string,
   extra?: Record<string, any>

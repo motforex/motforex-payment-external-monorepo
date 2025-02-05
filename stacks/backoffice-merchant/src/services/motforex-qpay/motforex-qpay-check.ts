@@ -24,7 +24,7 @@ import { MOTFOREX_QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
 export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
     const { email } = checkAuthorization(metadata, 'check-motforex-qpay-invoice');
-    const merchantInvoice = await getValidInvoicePayment(id, 'qpay', email);
+    const merchantInvoice = await getValidInvoicePayment(id, ['qpay'], email);
 
     // Check MerchantInvoice status
     if (merchantInvoice.invoiceStatus !== 'PENDING') {
@@ -59,11 +59,11 @@ export async function checkValidMotforexQpayInvoice(merchantInvoice: MerchantInv
       logger.info(`Qpay invoice is paid!`);
       return await markMerchantInvoiceAsSuccessful(merchantInvoice);
     }
-    logger.info(`Qpay invoice is not paid yet!`);
 
+    logger.info(`Qpay invoice is not paid yet!`);
     return merchantInvoice;
   } catch (error: unknown) {
     logger.error(`Error occurred while checking invoice from Qpay: ${JSON.stringify(error)}`);
-    throw new CustomError('Error occurred while checking invoice from Qpay', 500);
+    throw new CustomError('Error occurred while checking invoice!', 500);
   }
 }

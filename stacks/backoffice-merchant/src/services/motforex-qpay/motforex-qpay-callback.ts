@@ -4,7 +4,7 @@ import { checkValidMotforexQpayInvoice } from './motforex-qpay-check';
 
 export async function handleQpayCallback(id: number): Promise<void> {
   try {
-    const merchantInvoice = await getValidInvoicePayment(id, 'qpay');
+    const merchantInvoice = await getValidInvoicePayment(id, ['qpay']);
 
     // Check MerchantInvoice status
     if (merchantInvoice.invoiceStatus !== 'PENDING') {

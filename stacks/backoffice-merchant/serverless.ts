@@ -1,4 +1,5 @@
 import type { AWS } from '@serverless/typescript';
+import { postCheckGolomtMerch, postReceiveGolomtMerchCallback } from '@/functions/golomt-merchant';
 import { handleQpayToken, postCheckQpayInvoice, getHandleQpayCallback } from '@/functions/qpay';
 import { postTestFunction } from '@/functions/test';
 
@@ -33,6 +34,10 @@ const serverlessConfig: AWS = {
   },
 
   functions: {
+    // Golomt merchant functions
+    postCheckGolomtMerch,
+    postReceiveGolomtMerchCallback,
+    // Qpay functions
     handleQpayToken,
     postCheckQpayInvoice,
     getHandleQpayCallback,
