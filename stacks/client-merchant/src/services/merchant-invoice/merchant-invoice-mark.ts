@@ -1,7 +1,7 @@
 import type { MerchantInvoice } from '@motforex/global-types';
 
 import { executeDepositRequestById, markDepositRequestAsExpired } from '@motforex/global-services';
-import { updateMerchantInvoice } from '@/repository/invoice-record';
+import { updateMerchantInvoice } from '@/repository/merchant-invoice';
 import { logger } from '@motforex/global-libs';
 
 export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): Promise<MerchantInvoice> {

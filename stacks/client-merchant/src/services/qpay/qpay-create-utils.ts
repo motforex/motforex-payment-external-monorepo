@@ -5,7 +5,7 @@ import { createSimpleQpayInvoice, getCurrentDateAsString } from '@motforex/globa
 import { MerchantInvoiceSchema, STATUS_PENDING } from '@motforex/global-types';
 import { buildQpayInvoiceRequest } from '../merchant-invoice/merchant-invoice-utils';
 import { MOTFOREX_QPAY_EXPIRY_TIME, QPAY_TOKEN_PARAMETER, MOTFOREX_QPAY_REGENERATION_COUNT } from './qpay-constants';
-import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/invoice-record';
+import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/merchant-invoice';
 import { isPaidOnQpay } from './qpay-check';
 import { markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
 import { cancelMotforexInvoice } from './qpay-cancel';
@@ -55,6 +55,7 @@ export async function createNewQpayInvoice(
       expiryDate: Date.now() + MOTFOREX_QPAY_EXPIRY_TIME,
       merchantMethod: 'QPAY',
       userId: userId,
+      all: 1,
       // Amount props
       conversionRate,
       transactionAmount,

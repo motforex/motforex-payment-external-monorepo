@@ -2,7 +2,7 @@ import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
 import { CustomError, logger } from '@motforex/global-libs';
 import { getDepositReqById } from '@/repository/deposit-requests';
-import { getMerchantInvoiceById } from '@/repository/invoice-record';
+import { getMerchantInvoiceById } from '@/repository/merchant-invoice';
 
 /**
  * Get valid deposit request by id. If status is provided, it will check the status of the deposit request.

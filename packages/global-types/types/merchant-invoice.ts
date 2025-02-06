@@ -19,6 +19,7 @@ export const MerchantInvoiceSchema = z.object({
   transactionAmount: z.number(),
   transactionCurrency: z.string(),
   amountInUsd: z.number(),
+  all: z.number(),
   // Status props
   invoiceStatus: InvoiceStatusSchema,
   executionStatus: InvoiceStatusSchema,

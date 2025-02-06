@@ -2,8 +2,7 @@ import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
 import { CustomError, extractMetadata, formatApiResponse, handleApiFuncError, middyfy } from '@motforex/global-libs';
-import { checkMotforexGolomtMerchInvoice } from '@/services/motforex-golomt-merch/motforex-golomt-merch-check';
-import { receiveGolomtMerchPushNotification } from '@/services';
+import { checkMotforexGolomtMerchInvoice, receiveGolomtMerchPushNotification } from '@/services/motforex-golomt-merch';
 import { GolomtMerchantCallbackRequest as GolomtCallbackReq } from '@/types';
 
 const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {

@@ -4,12 +4,12 @@ export const postCreateQpayInvoice = createUserAuthApiGatewayFunc(
   __dirname,
   'createQpayInvoice',
   'post',
-  '/v1/qpay/invoice/{id}'
+  '/v1/invoice/qpay/{id}'
 );
 
 export const postCheckQpayInvoice = createUserAuthApiGatewayFunc(
   __dirname,
   'checkQpayInvoice',
   'post',
-  '/v1/qpay/invoice/{id}/check'
+  '/v1/invoice/qpay/{id}/check'
 );

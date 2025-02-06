@@ -6,7 +6,7 @@ import { formatInvoiceAsResponse } from '@motforex/global-services';
 import { markPaymentInvoiceAsExpired } from '../merchant-invoice';
 import { QpayCreateInvoiceRequest, QpayCreateInvoiceRequestSchema } from '@motforex/global-services';
 import { checkAuthorization, handleApiFuncError, CustomError, logger } from '@motforex/global-libs';
-import { getMerchantInvoiceById } from '@/repository/invoice-record';
+import { getMerchantInvoiceById } from '@/repository/merchant-invoice';
 import { getValidDepositRequest } from '../utility';
 import { STATUS_PENDING } from '@motforex/global-types';
 import { MOTFOREX_QPAY_INVOICE_CODE } from '../qpay';
@@ -107,6 +107,6 @@ export function buildQpayInvoiceRequest(id: number, amount: number, invoiceNumbe
     invoice_description: `MOTFOREX DEPOSIT ${id}`,
     sender_branch_code: 'MAIN',
     amount,
-    callback_url: `https://api-backoffice.motforex.com/mechant/v1/qpay/invoice/${id}/callback`
+    callback_url: `https://api-backoffice.motforex.com/mechant/v1/invoice/qpay/${id}/callback`
   });
 }

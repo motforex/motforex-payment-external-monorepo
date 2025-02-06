@@ -6,12 +6,12 @@ export const postCheckQpayInvoice = createAdminAuthApiGatewayFunc(
   __dirname,
   'postCheckQpayInvoice',
   'post',
-  '/v1/qpay/invoice/{id}/check'
+  '/v1/invoice/qpay/{id}/check'
 );
 
 export const getHandleQpayCallback = createDefaultApiGatewayFunc(
   __dirname,
   'getHandleQpayCallback',
   'get',
-  '/v1/qpay/invoice/{id}/callback'
+  '/v1/invoice/qpay/{id}/callback'
 );

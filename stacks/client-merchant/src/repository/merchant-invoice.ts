@@ -3,7 +3,7 @@ import type { MerchantInvoice } from '@motforex/global-types';
 import { createRecord, getRecordByKey, updateRecord } from '@motforex/dynamo';
 import { omit } from 'lodash';
 
-const INVOICE_RECORD_TABLE_NAME = 'motforex-payment-invoice';
+const INVOICE_RECORD_TABLE_NAME = 'motforex-merchant-invoice';
 
 export async function getMerchantInvoiceById(id: number, projection?: string): Promise<MerchantInvoice | undefined> {
   return await getRecordByKey<MerchantInvoice>({

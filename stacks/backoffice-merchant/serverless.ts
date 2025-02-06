@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 import { postCheckGolomtMerch, postReceiveGolomtMerchCallback } from '@/functions/golomt-merchant';
 import { handleQpayToken, postCheckQpayInvoice, getHandleQpayCallback } from '@/functions/qpay';
 import { postTestFunction } from '@/functions/test';
+import { getMerchantInvoiceByQuery, getMerchantInvoiceTableDesc } from '@/functions/merchant-invoice';
 
 const serverlessConfig: AWS = {
   service: 'motforex-backoffice-merchant',
@@ -42,6 +43,8 @@ const serverlessConfig: AWS = {
     postCheckQpayInvoice,
     getHandleQpayCallback,
     // Test function
+    getMerchantInvoiceTableDesc,
+    getMerchantInvoiceByQuery,
     postTestFunction
   },
   package: { individually: true },

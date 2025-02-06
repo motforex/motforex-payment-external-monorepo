@@ -12,7 +12,7 @@ import {
   GOLOMT_MERCHANT_SECRET,
   GOLOMT_MERCHANT_TOKEN
 } from './golomt-merch-configs';
-import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/invoice-record';
+import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/merchant-invoice';
 import { isPaidOnGolomtMerch } from './golomt-merch-check-utils';
 import { markPaymentInvoiceAsSuccessful, markPaymentInvoiceAsUnsuccessful } from '../merchant-invoice';
 
@@ -117,6 +117,7 @@ async function createInvoiceForDeposit(
       regenerationCount: GOLOMT_MERCHANT_REGENERATION_COUNT,
       expiryDate: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
       merchantMethod: merchMethod,
+      all: 1,
       userId,
       conversionRate,
       transactionAmount,

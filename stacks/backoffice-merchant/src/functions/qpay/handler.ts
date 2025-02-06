@@ -2,7 +2,7 @@ import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
 import { CustomError, extractMetadata, formatApiResponse, handleApiFuncError, middyfy } from '@motforex/global-libs';
-import { checkMotforexQpayInvoice, handleMotfxQpayAuthToken } from '@/services';
+import { checkMotforexQpayInvoice, handleMotfxQpayAuthToken } from '@/services/motforex-qpay';
 
 export const handleQpayToken = async (): Promise<void> => {
   await handleMotfxQpayAuthToken();
