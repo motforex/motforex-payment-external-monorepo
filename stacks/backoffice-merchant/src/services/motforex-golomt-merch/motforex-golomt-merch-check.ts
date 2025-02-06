@@ -17,8 +17,8 @@ import { GOLOMT_MERCHANT_SECRET, GOLOMT_MERCHANT_TOKEN } from './motforex-golomt
  */
 export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'check-motforex-qpay-invoice');
-    const merchantInvoice = await getValidInvoicePayment(id, ['card', 'socialpay'], email);
+    checkAuthorization(metadata, 'check-motforex-qpay-invoice');
+    const merchantInvoice = await getValidInvoicePayment(id, ['card', 'socialpay']);
 
     // Check MerchantInvoice status
     if (merchantInvoice.invoiceStatus === 'PENDING') {

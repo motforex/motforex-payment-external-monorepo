@@ -25,8 +25,8 @@ import { STATUS_PENDING } from '@motforex/global-types';
  */
 export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'check-motforex-qpay-invoice');
-    const merchantInvoice = await getValidInvoicePayment(id, ['qpay'], email);
+    checkAuthorization(metadata, 'check-motforex-qpay-invoice');
+    const merchantInvoice = await getValidInvoicePayment(id, ['qpay']);
 
     // Handling the pending status of the invoice
     if (merchantInvoice.invoiceStatus === STATUS_PENDING) {
