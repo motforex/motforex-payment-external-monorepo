@@ -29,6 +29,7 @@ export async function getValidatedInvoiceAndRequest(
   payment: string[],
   email?: string
 ): Promise<ValidatedResponse> {
+  // Run both async operations concurrently.
   const [depositRequest, merchantInvoice] = await Promise.all([
     getValidDepositRequest(id, [STATUS_PENDING], email),
     getMerchantInvoiceById(id)
@@ -36,13 +37,22 @@ export async function getValidatedInvoiceAndRequest(
 
   const { status, paymentMethodTitle } = depositRequest;
 
+  // Ensure the depositRequest has the correct status.
   if (status !== STATUS_PENDING) {
-    logger.error(`Invalid status for Qpay invoice creation!`);
+    logger.error('Invalid status for Qpay invoice creation!');
     throw new CustomError('Invalid status for Qpay invoice creation!', 400);
   }
 
-  if (paymentMethodTitle && !payment.includes(paymentMethodTitle.toLocaleLowerCase())) {
-    logger.error(`Invalid payment method for Qpay invoice creation!`);
+  // If a paymentMethodTitle exists, validate that at least one provided payment method matches.
+  if (!paymentMethodTitle) {
+    logger.error('No payment method title found for Qpay invoice creation!');
+    throw new CustomError('No payment method title found for Qpay invoice creation!', 400);
+  }
+
+  // Check if none of the provided payment methods are included in the paymentMethod string.
+  const paymentMethod = paymentMethodTitle.toLowerCase();
+  if (!payment.some((p) => paymentMethod.includes(p.toLowerCase()))) {
+    logger.error('Invalid payment method for Qpay invoice creation!');
     throw new CustomError('Invalid payment method for Qpay invoice creation!', 400);
   }
 
