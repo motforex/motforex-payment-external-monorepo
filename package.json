@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "offline:backoffice-merchant": "cd stacks/backoffice-merchant && sls offline start --reloadHandler",
-    "offline:client-merchant": "cd stacks/client-merchant && sls offline start --reloadHandler"
+    "offline:client-merchant": "cd stacks/client-merchant && sls offline start --reloadHandler",
+    "offline:backoffice-bank-transaction": "cd stacks/backoffice-bank-transaction && sls offline start --reloadHandler"
   },
   "private": true,
   "workspaces": [

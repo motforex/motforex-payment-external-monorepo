@@ -1,13 +1,10 @@
 import type { AWS } from '@serverless/typescript';
-import { postCheckGolomtMerch, postReceiveGolomtMerchCallback } from '@/functions/golomt-merchant';
-import { handleQpayToken, postCheckQpayInvoice, getHandleQpayCallback } from '@/functions/qpay';
-import { postTestFunction } from '@/functions/test';
-import { getMerchantInvoiceByQuery, getMerchantInvoiceTableDesc } from '@/functions/merchant-invoice';
+import { getStatementItems } from '@/functions/bank-gateway';
 
 const serverlessConfig: AWS = {
-  service: 'motforex-backoffice-merchant',
+  service: 'motforex-backoffice-bank-transaction',
   frameworkVersion: '4',
-  app: 'motforex-backoffice-merchant',
+  app: 'motforex-backoffice-bank-transaction',
   plugins: ['serverless-offline', 'serverless-prune-plugin'],
   provider: {
     name: 'aws',
@@ -37,17 +34,7 @@ const serverlessConfig: AWS = {
   },
 
   functions: {
-    // Golomt merchant functions
-    postCheckGolomtMerch,
-    postReceiveGolomtMerchCallback,
-    // Qpay functions
-    handleQpayToken,
-    postCheckQpayInvoice,
-    getHandleQpayCallback,
-    // Test function
-    getMerchantInvoiceTableDesc,
-    getMerchantInvoiceByQuery,
-    postTestFunction
+    getStatementItems
   },
   package: { individually: true },
   custom: {

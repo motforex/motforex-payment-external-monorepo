@@ -4,12 +4,12 @@ export const postCheckGolomtMerch = createAdminAuthApiGatewayFunc(
   __dirname,
   'postCheckGolomtMerch',
   'post',
-  '/v1/golomt-merch/invoice/{id}/check'
+  '/v1/invoice/golomt-merch/{id}/check'
 );
 
 export const postReceiveGolomtMerchCallback = createDefaultApiGatewayFunc(
   __dirname,
   'postReceiveGolomtMerchCallback',
   'post',
-  '/v1/golomt-merch/invoice/callback'
+  '/v1/invoice/golomt-merch/callback'
 );

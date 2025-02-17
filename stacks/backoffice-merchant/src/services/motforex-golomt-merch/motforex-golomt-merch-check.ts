@@ -46,6 +46,7 @@ export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: nu
 export async function checkValidMotforexGolomtMerchInvoice(merchantInvoice: MerchantInvoice): Promise<MerchantInvoice> {
   try {
     logger.info(`Checking Invoice: ${merchantInvoice.id}, Golomt-Merchant-Invoice: ${merchantInvoice.providerId}`);
+    console.log('Golomt-Merchant secret:', GOLOMT_MERCHANT_SECRET);
     if (!GOLOMT_MERCHANT_SECRET || !GOLOMT_MERCHANT_TOKEN) {
       logger.error('Golomt-Merchant secret or token is not found!');
       throw new CustomError('Unable to process Golomt-Merchant-Invoice', 500);
