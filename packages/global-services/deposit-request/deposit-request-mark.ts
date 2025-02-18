@@ -14,7 +14,7 @@ export async function markDepositRequestAsExpired(id: number, message: string): 
     const result = await invokeLambdaFunc('motforex-admin-deposit-request-prod-markDepositReqExpiredPrivate', {
       id,
       message,
-      executer: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
+      executor: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
       secret: encryptSecret(Date.now(), MOTFOREX_DEPOSIT_SECRET_KEY)
     });
     logger.info(`Id:${id} markDepositRequestAsExpired result: ${JSON.stringify(result)}`);
@@ -46,7 +46,7 @@ export async function markDepositRequestAsFailed(id: number, message: string): P
     const result = await invokeLambdaFunc('motforex-admin-deposit-request-prod-markDepositReqFailedPrivate', {
       id,
       message,
-      executer: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
+      executor: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
       secret: encryptSecret(Date.now(), MOTFOREX_DEPOSIT_SECRET_KEY)
     });
     logger.info(`Id:${id} markDepositRequestAsFailed result: ${JSON.stringify(result)}`);
@@ -77,7 +77,7 @@ export async function executeDepositRequestById(id: number, message: string): Pr
     const result = await invokeLambdaFunc('motforex-admin-deposit-request-prod-executeDepositReqPrivate', {
       id,
       message,
-      executer: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
+      executor: 'MOTFOREX_GOLOMT_MERCHANT_STACK',
       secret: encryptSecret(Date.now(), MOTFOREX_DEPOSIT_SECRET_KEY)
     });
 
