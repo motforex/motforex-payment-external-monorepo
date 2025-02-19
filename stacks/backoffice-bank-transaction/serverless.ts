@@ -1,5 +1,5 @@
 import type { AWS } from '@serverless/typescript';
-import { getStatementItems } from '@/functions/bank-gateway';
+import { getStatementItems, getStatementItemsCount } from '@/functions/bank-gateway';
 
 const serverlessConfig: AWS = {
   service: 'motforex-backoffice-bank-transaction',
@@ -34,7 +34,8 @@ const serverlessConfig: AWS = {
   },
 
   functions: {
-    getStatementItems
+    getStatementItems,
+    getStatementItemsCount
   },
   package: { individually: true },
   custom: {

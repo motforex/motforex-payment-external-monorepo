@@ -6,3 +6,10 @@ export const getStatementItems = createAdminAuthApiGatewayFunc(
   'get',
   '/v1/statement-items'
 );
+
+export const getStatementItemsCount = createAdminAuthApiGatewayFunc(
+  __dirname,
+  'getStatementItemsCount',
+  'get',
+  '/v1/statement-items/count'
+);
