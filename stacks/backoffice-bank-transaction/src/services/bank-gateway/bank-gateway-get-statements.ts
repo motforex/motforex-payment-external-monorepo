@@ -2,12 +2,13 @@ import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata } from '@motforex/global-types';
 
 import { formatApiResponse, handleApiFuncError, sendRequest } from '@motforex/global-libs';
+import { BANK_GATEWAY_ADDRESS } from '@/constants';
 
 export async function getStatementItems(metadata: Metadata): Promise<APIResponse> {
   try {
     const { queryParams } = metadata;
     const { data } = await sendRequest({
-      url: 'http://52.76.74.131:8087/api/statement-items',
+      url: `${BANK_GATEWAY_ADDRESS}/api/statement-items`,
       method: 'GET',
       params: queryParams
     });
@@ -21,7 +22,7 @@ export async function getStatementItemsCount(metadata: Metadata): Promise<APIRes
   try {
     const { queryParams } = metadata;
     const { data } = await sendRequest({
-      url: 'http://52.76.74.131:8087/api/statement-items/count',
+      url: `${BANK_GATEWAY_ADDRESS}/api/statement-items/count`,
       method: 'GET',
       params: queryParams
     });

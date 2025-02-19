@@ -1,10 +1,28 @@
 import type { AWS } from '@serverless/typescript';
 import { getStatementItems, getStatementItemsCount } from '@/functions/bank-gateway';
+import {
+  getDepositExecutions,
+  getDepositExecutionsCount,
+  getDepositExecutionById,
+  putDepositExecution,
+  postReprocessDepositExecution,
+  postSolveDepositExecution
+} from '@/functions/bank-matcher-deposit';
+import {
+  getWithdrawExecutions,
+  getWithdrawExecutionsCount,
+  getWithdrawExecutionById,
+  refreshWithdrawExecution,
+  putWithdrawExecution,
+  postSolveWithdrawExecution,
+  postRevalidateWithdrawExecution,
+  postExecuteWithdrawExecution
+} from '@/functions/bank-matcher-withdraw';
 
 const serverlessConfig: AWS = {
-  service: 'motforex-backoffice-bank-transaction',
+  service: 'motforex-backoffice-bank',
   frameworkVersion: '4',
-  app: 'motforex-backoffice-bank-transaction',
+  app: 'motforex-backoffice-bank',
   plugins: ['serverless-offline', 'serverless-prune-plugin'],
   provider: {
     name: 'aws',
@@ -35,7 +53,23 @@ const serverlessConfig: AWS = {
 
   functions: {
     getStatementItems,
-    getStatementItemsCount
+    getStatementItemsCount,
+    // Bank Matcher Deposit
+    getDepositExecutions,
+    getDepositExecutionsCount,
+    getDepositExecutionById,
+    putDepositExecution,
+    postReprocessDepositExecution,
+    postSolveDepositExecution,
+    // Bank Matcher Withdrawal
+    getWithdrawExecutions,
+    getWithdrawExecutionsCount,
+    getWithdrawExecutionById,
+    refreshWithdrawExecution,
+    putWithdrawExecution,
+    postSolveWithdrawExecution,
+    postRevalidateWithdrawExecution,
+    postExecuteWithdrawExecution
   },
   package: { individually: true },
   custom: {

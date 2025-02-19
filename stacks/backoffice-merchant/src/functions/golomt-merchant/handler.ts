@@ -7,7 +7,8 @@ import { GolomtMerchantCallbackRequest as GolomtCallbackReq } from '@/types';
 
 const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    if (!event.pathParameters || !event.pathParameters.id)
+      throw new CustomError(`Bad request, missing path parameter!`, 400);
     return await checkMotforexGolomtMerchInvoice(extractMetadata(event), Number(event.pathParameters.id));
   } catch (error: unknown) {
     return handleApiFuncError(error);
