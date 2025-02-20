@@ -37,53 +37,55 @@ export type ProcessStatus = z.infer<typeof ProcessStatusSchema>;
 
 // DepositExecution Schema
 export const DepositExecutionSchema = z.object({
+  id: z.number(),
   // Statement item information
   statementItemId: z.number(), // Long (required)
   statementDescription: z.string(), // required
   statementAmount: z.number(), // BigDecimal (required)
   statementCurrency: z.string(), // required
-  statementAmountInUsd: z.number().optional(), // BigDecimal (optional)
-  statementOwnerAccount: z.string().optional(),
-  userEmail: z.string().optional(),
+  statementAmountInUsd: z.number().nullable().optional(), // BigDecimal (optional)
+  statementOwnerAccount: z.string().nullable().optional(),
+  userEmail: z.string().nullable(),
 
   // Deposit request information
-  depositRequestId: z.number().optional(), // Long (optional)
-  depositAmountInUsd: z.number().optional(), // BigDecimal (optional)
-  depositAmount: z.number().optional(), // BigDecimal (optional)
-  fixedAmount: z.number().optional(), // BigDecimal (optional)
-  conversionRate: z.string().optional(),
-  isAmountMatched: z.boolean().optional(),
+  depositRequestId: z.number().nullable().optional(), // Long (optional)
+  depositAmountInUsd: z.number().nullable().optional(), // BigDecimal (optional)
+  depositAmount: z.number().nullable().optional(), // BigDecimal (optional)
+  fixedAmount: z.number().nullable().optional(), // BigDecimal (optional)
+  conversionRate: z.string().nullable().optional(),
+  isAmountMatched: z.boolean().nullable().optional(),
 
   // Status information
   status: ProcessStatusSchema, // required
-  message: z.string().max(255).optional(),
-  createdAt: z.date(), // Instant (required)
-  updatedAt: z.date().optional() // Instant (optional)
+  message: z.string().max(255).nullable(),
+  createdAt: z.string(), // Instant (required)
+  updatedAt: z.string().nullable().optional() // Instant (optional)
 });
 
 export type DepositExecution = z.infer<typeof DepositExecutionSchema>;
 
 // WithdrawExecution Schema
 export const WithdrawExecutionSchema = z.object({
+  id: z.number(),
   // Withdraw request Data
   withdrawId: z.number(), // Long (required)
   withdrawAmount: z.number(), // BigDecimal (required)
-  withdrawAccountNumber: z.string().optional(),
-  withdrawAccountName: z.string().optional(),
-  withdrawBankName: BankTypeSchema.optional(),
+  withdrawAccountNumber: z.string().nullable().optional(),
+  withdrawAccountName: z.string().nullable().optional(),
+  withdrawBankName: BankTypeSchema.nullable().optional(),
   userEmail: z.string(), // required
 
   // Withdraw execution data
-  checkedAccountOwner: z.string().optional(),
-  conversionRate: z.number().optional(), // BigDecimal (optional)
-  amountInMnt: z.number().optional(), // BigDecimal (optional)
+  checkedAccountOwner: z.string().nullable().optional(),
+  conversionRate: z.number().nullable().optional(), // BigDecimal (optional)
+  amountInMnt: z.number().nullable().optional(), // BigDecimal (optional)
   transactionBankName: BankTypeSchema.optional(),
 
   // Status information
   status: ProcessStatusSchema, // required
   message: z.string().max(255).optional(),
-  createdAt: z.date(), // Instant (required)
-  updatedAt: z.date().optional() // Instant (optional)
+  createdAt: z.string(), // Instant (required)
+  updatedAt: z.string().nullable().optional() // Instant (optional)
 });
 
 export type WithdrawExecution = z.infer<typeof WithdrawExecutionSchema>;
