@@ -1,7 +1,7 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata } from '@motforex/global-types';
 
-import { createNewQpayInvoice, regenerateQpayInvoice } from './qpay-create-utils';
+import { createNewQpayInvoice, regenerateQpayInvoice } from './motforex-qpay-create-utils';
 import { handleInvoiceCreation } from '../merchant-invoice';
 
 /**

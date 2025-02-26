@@ -35,6 +35,13 @@ export const putWithdrawExecution = createAdminAuthApiGatewayFunc(
   '/v1/withdraw-executions/{id}'
 );
 
+export const postRejectWithdrawExecution = createAdminAuthApiGatewayFunc(
+  __dirname,
+  'postRejectWithdrawExecution',
+  'POST',
+  '/v1/withdraw-executions/{id}/reject'
+);
+
 export const postSolveWithdrawExecution = createAdminAuthApiGatewayFunc(
   __dirname,
   'postSolveWithdrawExecution',

@@ -4,7 +4,7 @@ import type { RequestMetadata as Metadata, MerchantInvoice } from '@motforex/glo
 import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, formatInvoiceAsResponse } from '@motforex/global-services';
 import { getValidatedInvoiceAndRequest } from '../merchant-invoice/merchant-invoice-utils';
-import { QPAY_TOKEN_PARAMETER } from './qpay-constants';
+import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
 import { markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
 
 /**
