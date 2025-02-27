@@ -21,7 +21,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   }
 
   // Check if the invoice is paid
-  if (!(await isDemoMastersInvoicePaid(qpayAuthToken, eventPurchase))) {
+  if (await isDemoMastersInvoicePaid(qpayAuthToken, eventPurchase)) {
     logger.info(`Event purchase is paid! EventPurchase:${id}`);
     const result = await invokeLambdaFunc('motforex-client-demo-competition-prod-purchase', {
       body: { userId: eventPurchase.userId, amountInUsd: eventPurchase.amountInTransactionCurrency }

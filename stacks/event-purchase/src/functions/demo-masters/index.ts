@@ -1,5 +1,12 @@
 import { createUserAuthApiGatewayFunc } from '@motforex/global-libs';
 
+export const getDemoMastersRate = createUserAuthApiGatewayFunc(
+  __dirname,
+  'getDemoMastersRate',
+  'GET',
+  '/v1/demo-masters/rate'
+);
+
 export const getDemoMastersInvoice = createUserAuthApiGatewayFunc(
   __dirname,
   'getDemoMastersInvoice',

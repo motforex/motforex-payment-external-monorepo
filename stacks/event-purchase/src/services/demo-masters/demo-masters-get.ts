@@ -1,8 +1,7 @@
 import { getEventPurchaseByQuery } from '@/repository/demo-masters-repository';
-import { getDayStartTimestamp } from '../utils/date-utils';
 
 export async function getEventPurchasesByIdAndEventName(userId: string) {
-  const key = `${userId}~${getDayStartTimestamp()}`;
+  const key = `${userId}~${`demo-masters`}`;
   console.log(key);
   return await getEventPurchaseByQuery(
     {
