@@ -32,7 +32,7 @@ export const adminHeader = {
       'X-Api-Key',
       'X-Amz-Security-Token',
       'X-Amz-User-Agent',
-      'permissionToken'
+      'Permission'
     ]
   }
 };
