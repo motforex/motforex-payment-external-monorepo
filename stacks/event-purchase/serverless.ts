@@ -1,11 +1,15 @@
 import type { AWS } from '@serverless/typescript';
-import { postCreateQpayInvoice, postCheckQpayInvoice } from '@/functions/qpay';
-import { createGolomtMerchInvoice, createSocialPayInvoice, checkGolomtMerchInvoice } from '@/functions/golomt-merchant';
+import {
+  getDemoMastersInvoice,
+  postCreateDemoMastersInvoice,
+  postCheckDemoMastersInvoice,
+  getHandleDemoMastersQpayCallback
+} from '@/functions/demo-masters';
 
 const serverlessConfig: AWS = {
-  service: 'motforex-client-merchant',
+  service: 'motforex-event-purchase',
   frameworkVersion: '4',
-  app: 'motforex-client-merchant',
+  app: 'motforex-event-purchase',
   plugins: ['serverless-offline', 'serverless-prune-plugin'],
   provider: {
     name: 'aws',
@@ -35,13 +39,10 @@ const serverlessConfig: AWS = {
   },
 
   functions: {
-    // Client qpay functions
-    postCreateQpayInvoice,
-    postCheckQpayInvoice,
-    // Golomt merchant functions
-    createGolomtMerchInvoice,
-    createSocialPayInvoice,
-    checkGolomtMerchInvoice
+    getDemoMastersInvoice,
+    postCreateDemoMastersInvoice,
+    postCheckDemoMastersInvoice,
+    getHandleDemoMastersQpayCallback
   },
   package: { individually: true },
   custom: {

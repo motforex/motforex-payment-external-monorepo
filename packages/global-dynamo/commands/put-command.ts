@@ -1,5 +1,5 @@
 import type { PutCommandInput } from '@aws-sdk/lib-dynamodb';
-import type { CustomPutCommandInput } from '../types/dynamo.types';
+import type { CustomPutCommandInput } from '../types';
 import { extractExpAttributeNamesFromString, replaceReservedKeywordsFromProjection } from '../utils';
 
 /**

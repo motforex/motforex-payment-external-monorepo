@@ -115,7 +115,7 @@ async function createInvoiceForDeposit(
       providerId: transactionId,
       providerInfo: invoice,
       regenerationCount: GOLOMT_MERCHANT_REGENERATION_COUNT,
-      expiryDate: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
+      expireAt: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
       merchantMethod: merchMethod,
       all: 1,
       userId,
