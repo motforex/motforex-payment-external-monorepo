@@ -47,8 +47,7 @@ export async function createNewEventPurchase(userId: string): Promise<EventPurch
   const dayStartTimestamp = getDayStartTimestamp();
   const conversionRate = await getUsdMntBuyRate();
   logger.info(`Current USD to MNT buy rate: ${conversionRate}`);
-  const amountInTransactionCurrency = MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE;
-
+  const amountInTransactionCurrency = Number(MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE * conversionRate).toFixed(2);
   // Sending request to Qpay
   const id = shuffleString(`${currentDateAsString}${userId.substring(0, 5)}`);
   const createQpayInvoiceRequest = QpayCreateInvoiceRequestSchema.parse({

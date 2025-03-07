@@ -30,6 +30,11 @@ export async function updateWithdrawExecutionByApi(metadata: Metadata, id: numbe
     }
 
     const body = WithdrawExecutionSchema.parse(metadata.body);
+    if (body.status === 'EXECUTED') {
+      logger.warn(`User:${email} is trying to update the status to 'EXECUTED'`);
+      throw new CustomError('Bad request! You cannot update the status to EXECUTED', 400);
+    }
+
     const { data } = await sendRequest<WithdrawExecution>({
       url: `${BANK_MATCHER_ADDRESS}/api/withdraw-executions/${id}`,
       method: 'PUT',

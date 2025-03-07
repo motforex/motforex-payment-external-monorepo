@@ -6,8 +6,8 @@ import { getWithdrawExecutionRaw } from './bank-matcher-withdraw-get';
 
 export async function solveWithdrawRequestByApi(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'solve-Withdraw-Execution');
-    logger.info(`User ${email} is solving deposit execution with id ${id}`);
+    const { email } = checkAuthorization(metadata, 'Solve-Withdraw-Execution');
+    logger.info(`User ${email} is solving withdraw-execution with id ${id}`);
 
     const withdrawExecution = await getWithdrawExecutionRaw(id);
 
@@ -23,16 +23,14 @@ export async function solveWithdrawRequestByApi(metadata: Metadata, id: number):
     }
     logger.info(`Withdraw execution with id ${id} is in a valid state`);
 
-    const body = {
-      ...withdrawExecution,
-      status: 'SOLVED',
-      message: metadata.body.message || `Solved by user ${email}`
-    };
-
     const { data } = await sendRequest<WithdrawExecution>({
       url: `${BANK_MATCHER_ADDRESS}/api/withdraw-executions/${id}`,
       method: 'PUT',
-      data: body
+      data: {
+        ...withdrawExecution,
+        status: 'SOLVED',
+        message: metadata.body.message || `Solved by user ${email}`
+      }
     });
     return formatApiResponse(data || {});
   } catch (error: unknown) {
@@ -42,6 +40,9 @@ export async function solveWithdrawRequestByApi(metadata: Metadata, id: number):
 
 export async function revalidateWithdrawRequestByApi(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
+    const { email } = checkAuthorization(metadata, 'Revalidate-Withdraw-Execution');
+    logger.info(`User ${email} is revalidating withdraw-execution with id ${id}`);
+
     const { data } = await sendRequest<WithdrawExecution[]>({
       url: `${BANK_MATCHER_ADDRESS}/api/v1/withdraw-executions/${id}/revalidate`,
       method: 'POST'
@@ -54,11 +55,15 @@ export async function revalidateWithdrawRequestByApi(metadata: Metadata, id: num
 
 export async function executeWithdrawRequestByApi(metadata: Metadata, id: number): Promise<APIResponse> {
   try {
+    const { email } = checkAuthorization(metadata, 'Execute-Withdraw-Execution');
+    logger.info(`User ${email} is executing withdraw-execution with id ${id}`);
+
     const { data } = await sendRequest<WithdrawExecution[]>({
       url: `${BANK_MATCHER_ADDRESS}/api/v1/withdraw-executions/${id}/execute`,
       method: 'POST'
     });
-    return formatApiResponse(data || {});
+
+    return formatApiResponse(data);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
