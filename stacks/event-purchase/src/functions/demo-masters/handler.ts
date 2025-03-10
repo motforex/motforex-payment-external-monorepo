@@ -10,16 +10,17 @@ import {
   logger,
   middyfy
 } from '@motforex/global-libs';
-import { createDemoMastersPurchase } from '@/services/demo-masters';
-import { checkDemoMastersInvoice } from '@/services/demo-masters/demo-masters-check';
-import { getEventPurchasesByIdAndEventName } from '@/services/demo-masters/demo-masters-get';
-import { handleDemoMastersQpayCallback } from '@/services/demo-masters/demo-masters-callback';
-import { getUsdMntSellRate } from '@/services/custom-config/rate-config-service';
+import {
+  checkDemoMastersInvoice,
+  createDemoMastersPurchase,
+  getEventPurchasesByIdAndEventName,
+  handleDemoMastersQpayCallback
+} from '@/services/demo-masters';
+import { getUsdMntBuyRate } from '@/services/custom-config';
 
-const getDemoMastersRateFunc: ApiFuncType<null> = async (event) => {
+const getDemoMastersRateFunc: ApiFuncType<null> = async () => {
   try {
-    const { sub: userId } = checkAuthorization(extractMetadata(event), 'demo-masters-create-invoice');
-    return formatApiResponse({ rate: await getUsdMntSellRate() });
+    return formatApiResponse({ rate: await getUsdMntBuyRate() });
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }

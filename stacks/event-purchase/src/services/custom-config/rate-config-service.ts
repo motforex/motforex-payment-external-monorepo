@@ -1,5 +1,5 @@
 import { getCustomConfigByCode } from '@/repository/custom-config-repository';
-import { getCustomConfigTypedValue } from './custom-config-utilts';
+import { getCustomConfigTypedValue } from './custom-config-utils';
 import { CustomError, logger } from '@motforex/global-libs';
 import { RATE_USD_MNT_BUY, RATE_USD_MNT_SELL } from '@/constants';
 
