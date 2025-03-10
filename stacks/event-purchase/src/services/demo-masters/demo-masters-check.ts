@@ -24,11 +24,17 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   if (await isDemoMastersInvoicePaid(qpayAuthToken, eventPurchase)) {
     logger.info(`Event purchase is paid! EventPurchase:${id}`);
     const result = await invokeLambdaFunc('motforex-client-demo-competition-prod-purchase', {
-      body: { userId: eventPurchase.userId, amountInUsd: eventPurchase.amountInTransactionCurrency }
+      body: { userId: eventPurchase.userId, amountInUsd: eventPurchase.amountInUsd }
     });
+
     if (result.statusCode !== 200) {
       logger.error(`Failed to update the purchase in the client! EventPurchase:${id}`);
-      await updateEventPurchase({ ...eventPurchase, status: 'FAILED' });
+      logger.error(`Response:${result}`);
+      await updateEventPurchase({
+        ...eventPurchase,
+        status: 'FAILED',
+        message: 'Failed to update the purchase in the client!'
+      });
       throw new CustomError('Failed assign trading account!', 500);
     }
     logger.info(`Event purchase is paid! Response:${result}`);
