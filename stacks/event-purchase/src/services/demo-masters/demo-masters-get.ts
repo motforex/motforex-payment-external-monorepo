@@ -2,7 +2,10 @@ import { getEventPurchaseByQuery } from '@/repository/demo-masters-repository';
 import { QueryRequest } from '@motforex/dynamo';
 
 export async function getEventPurchasesByQuery(queryRequest: QueryRequest) {
-  return await getEventPurchaseByQuery(queryRequest);
+  return await getEventPurchaseByQuery(
+    queryRequest,
+    'id, userId, email, invoice, postDate, status, amountInUsd, amountInTransactionCurrency, conversionRate'
+  );
 }
 
 export async function getEventPurchasesByIdAndEventName(userId: string) {

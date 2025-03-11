@@ -7,61 +7,52 @@ import { CustomError, logger } from '@motforex/global-libs';
 type EventType = ValidatedAPIGatewayProxyEvent<object | null>;
 
 /**
- * Extracts and validates query parameters from an API Gateway event, merging them with default query values.
+ * Extracts and validates query parameters from an API Gateway event, applying defaults conditionally.
  *
  * @param event - The API Gateway event containing query string parameters
- * @param query - Default query parameters to fall back to or merge with
+ * @param query - Default query parameters to use when no parameters are provided or when only a matching index is given
  * @returns Validated QueryRequest object containing the merged and parsed parameters
- * @throws CustomError - If the parsed parameters don't match the QueryRequestSchema
+ * @throws CustomError - If the parsed parameters fail validation against QueryRequestSchema
  *
- * The function:
- * 1. Extracts query parameters from the event (defaults to empty object if none exist)
- * 2. If no index is provided or matches the default query's index:
- *    - Uses default query with a default limit of 10
- *    - Validates against schema
- * 3. Otherwise:
- *    - Merges event query params with defaults
- *    - Includes optional parameters only if present
- *    - Validates the merged result
+ * The function handles three cases:
+ * 1. No query parameters: Returns the default `query` after validation.
+ * 2. Only an index matching `query.indexName`: Merges with `query` defaults and validates.
+ * 3. Any other parameters: Uses only `queryParams` with a default limit of '10', including optional fields if present.
  *
  * Example usage:
  * ```typescript
- * const event = {
- *   queryStringParameters: {
- *     index: "users",
- *     pKey: "userId",
- *     limit: "5"
- *   }
- * };
- * const defaultQuery = {
- *   indexName: "users",
- *   pKey: "defaultId"
- * };
- *
- * try {
- *   const result = extractQueryParamsFromEvent(event, defaultQuery);
- *   // Returns: {
- *   //   indexName: "users",
- *   //   pKey: "userId",
- *   //   limit: "5"
- *   // }
- * } catch (error) {
- *   // Handles validation errors
- * }
+ * const event = { queryStringParameters: { index: "users" } };
+ * const defaultQuery = { indexName: "users", pKey: "defaultId", limit: "20" };
+ * const result = extractQueryParamsFromEvent(event, defaultQuery);
+ * // Returns: { indexName: "users", pKey: "defaultId", limit: "20" }
  * ```
  */
 export function extractQueryParamsFromEvent(event: EventType, query: QueryRequest): QueryRequest {
-  // Get query parameters from event, default to empty object if undefined
+  // Extract query parameters from the event, defaulting to an empty object if undefined
   const queryParams = event.queryStringParameters || {};
 
-  // Check if index is absent or matches the default query's index
-  if (queryParams.index === query.indexName) {
-    const parseResult = QueryRequestSchema.safeParse({
+  // Case 1: No query parameters provided
+  // Return the default `query` after ensuring it conforms to the schema
+  if (Object.keys(queryParams).length === 0) {
+    const parseResult = QueryRequestSchema.safeParse(query);
+    if (!parseResult.success) {
+      const errorDetails = parseResult.error.errors.map((err) => `${err.path}: ${err.message}`).join(', ');
+      logger.warn(`Invalid default query! ${errorDetails}`);
+      throw new CustomError(`Invalid default query! ${errorDetails}`, 400);
+    }
+    return parseResult.data;
+  }
+
+  // Case 2: Only an index is provided and it matches query.indexName
+  // Merge with defaults from `query` to provide a full set of parameters
+  const queryParamsKeys = Object.keys(queryParams);
+  if (queryParamsKeys.length === 1 && queryParams.index === query.indexName) {
+    const params = {
       indexName: query.indexName,
-      pKey: queryParams.pKey || query.pKey,
+      pKey: queryParams.pKey || query.pKey, // Use queryParams.pKey if provided, else query.pKey
       pKeyType: queryParams.pKeyType || query.pKeyType,
-      pKeyProp: queryParams.pKeyProps || query.pKeyProp,
-      limit: queryParams.limit || query.limit || '10',
+      pKeyProp: queryParams.pKeyProp || query.pKeyProp,
+      limit: queryParams.limit || query.limit || '10', // Fallback chain: queryParams -> query -> '10'
       sKey: queryParams.sKey || query.sKey,
       sKeyType: queryParams.sKeyType || query.sKeyType,
       sKeyProp: queryParams.sKeyProp || query.sKeyProp,
@@ -70,39 +61,42 @@ export function extractQueryParamsFromEvent(event: EventType, query: QueryReques
       skComparator: queryParams.skComparator || query.skComparator,
       lastEvaluatedKey: queryParams.lastEvaluatedKey || query.lastEvaluatedKey,
       sorting: queryParams.sorting || query.sorting
-    });
+    };
 
-    // Throw error if validation fails, including problematic field names
+    // Validate the merged parameters against the schema
+    const parseResult = QueryRequestSchema.safeParse(params);
     if (!parseResult.success) {
-      logger.warn(`Bad request!, ${parseResult.error.errors.map((err) => err.path).join(', ')}`);
-      throw new CustomError(`Bad request!, ${parseResult.error.errors.map((err) => err.path).join(', ')}`, 400);
+      const errorDetails = parseResult.error.errors.map((err) => `${err.path}: ${err.message}`).join(', ');
+      logger.warn(`Bad request! ${errorDetails}`);
+      throw new CustomError(`Bad request! ${errorDetails}`, 400);
     }
     return parseResult.data;
   }
 
-  // Validate the merged parameters against the schema
-  const parseResult = QueryRequestSchema.safeParse({
-    indexName: queryParams.index,
-    pKey: queryParams.pKey || query.pKey,
-    pKeyType: queryParams.pKeyType || query.pKeyType,
-    pKeyProp: queryParams.pKeyProps || query.pKeyProp,
-    limit: queryParams.limit || '10', // Default limit if not specified
-    ...(queryParams.sKey && { sKey: queryParams.sKey }),
+  // Case 3: Any other query parameters provided
+  // Build the result from queryParams only, with a default limit and optional fields as specified
+  const params = {
+    indexName: queryParams.index || query.indexName, // Fallback to query.indexName if index is missing
+    pKey: queryParams.pKey, // No default fallback; schema will enforce requirement
+    pKeyType: queryParams.pKeyType,
+    pKeyProp: queryParams.pKeyProp,
+    limit: queryParams.limit || '10', // Default to '10' if not provided
+    ...(queryParams.sKey && { sKey: queryParams.sKey }), // Include optional fields only if present
     ...(queryParams.sKeyType && { sKeyType: queryParams.sKeyType }),
     ...(queryParams.sKeyProp && { sKeyProp: queryParams.sKeyProp }),
     ...(queryParams.skValue2 && { skValue2: queryParams.skValue2 }),
     ...(queryParams.skValue2Type && { skValue2Type: queryParams.skValue2Type }),
     ...(queryParams.skComparator && { skComparator: queryParams.skComparator }),
-    ...(queryParams.limit && { limit: queryParams.limit }),
     ...(queryParams.lastEvaluatedKey && { lastEvaluatedKey: queryParams.lastEvaluatedKey }),
     ...(queryParams.sorting && { sorting: queryParams.sorting })
-  });
+  };
 
-  // Throw error if validation fails, including problematic field names
+  // Validate the constructed parameters against the schema
+  const parseResult = QueryRequestSchema.safeParse(params);
   if (!parseResult.success) {
-    logger.warn(`Bad request!, ${parseResult.error.errors.map((err) => err.path).join(', ')}`);
-    throw new CustomError(`Bad request!, ${parseResult.error.errors.map((err) => err.path).join(', ')}`, 400);
+    const errorDetails = parseResult.error.errors.map((err) => `${err.path}: ${err.message}`).join(', ');
+    logger.warn(`Bad request! ${errorDetails}`);
+    throw new CustomError(`Bad request! ${errorDetails}`, 400);
   }
-
   return parseResult.data;
 }
