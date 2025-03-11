@@ -14,13 +14,34 @@ import {
   checkDemoMastersInvoice,
   createDemoMastersPurchase,
   getEventPurchasesByIdAndEventName,
+  getEventPurchasesByQuery,
   handleDemoMastersQpayCallback
 } from '@/services/demo-masters';
 import { getUsdMntBuyRate } from '@/services/custom-config';
+import { extractQueryParamsFromEvent } from '@motforex/dynamo';
+import { STATUS_PENDING } from '@motforex/global-types';
 
 const getDemoMastersRateFunc: ApiFuncType<null> = async () => {
   try {
     return formatApiResponse({ rate: await getUsdMntBuyRate() });
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const getDemoMastersPurchaseByQueryFunc: ApiFuncType<null> = async (event) => {
+  try {
+    const { queryParams } = extractMetadata(event);
+    const result = await getEventPurchasesByQuery(
+      extractQueryParamsFromEvent(event, {
+        indexName: 'status-createdAt-index',
+        pKey: STATUS_PENDING,
+        pKeyType: 'S',
+        pKeyProp: 'status',
+        ...queryParams
+      })
+    );
+    return formatApiResponse(result);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -37,8 +58,11 @@ const getDemoMastersInvoiceFunc: ApiFuncType<null> = async (event) => {
 
 const postCreateDemoMastersInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    const { sub: userId } = checkAuthorization(extractMetadata(event), 'demo-masters-create-invoice');
-    const { id, amountInTransactionCurrency, amountInUsd, status, metadata } = await createDemoMastersPurchase(userId);
+    const { sub: userId, email } = checkAuthorization(extractMetadata(event), 'demo-masters-create-invoice');
+    const { id, amountInTransactionCurrency, amountInUsd, status, metadata } = await createDemoMastersPurchase(
+      userId,
+      email
+    );
     return formatApiResponse({ id, amountInTransactionCurrency, amountInUsd, status, metadata });
   } catch (error: unknown) {
     return handleApiFuncError(error);
@@ -68,6 +92,7 @@ const getHandleDemoMastersQpayCallbackFunc: ApiFuncType<null> = async (event): P
 
 export const getDemoMastersRate = middyfy(getDemoMastersRateFunc);
 export const getDemoMastersInvoice = middyfy(getDemoMastersInvoiceFunc);
+export const getDemoMastersPurchaseByQuery = middyfy(getDemoMastersPurchaseByQueryFunc);
 export const postCreateDemoMastersInvoice = middyfy(postCreateDemoMastersInvoiceFunc);
 export const postCheckDemoMastersInvoice = middyfy(postCheckDemoMastersInvoiceFunc);
 export const getHandleDemoMastersQpayCallback = middyfy(getHandleDemoMastersQpayCallbackFunc);

@@ -1,8 +1,9 @@
 import { MOTFOREX_QPAY_TOKEN_PARAMETER } from '@/constants';
-import { getEventPurchaseById, updateEventPurchase } from '@/repository/demo-masters-repository';
+import { updateEventPurchase } from '@/repository/demo-masters-repository';
 import { CustomError, getParameterStoreVal, invokeLambdaFunc, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, QpayCheckPayment } from '@motforex/global-services';
 import { EventPurchase } from '@motforex/global-types';
+import { getValidatedEventPurchaseById } from './demo-masters-utils';
 
 export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase> {
   const eventPurchase = await getValidatedEventPurchaseById(id);
@@ -29,7 +30,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
 
     if (result.statusCode !== 200) {
       logger.error(`Failed to update the purchase in the client! EventPurchase:${id}`);
-      logger.error(`Response:${result}`);
+      logger.error(`Response: ${JSON.stringify(result)}`);
       await updateEventPurchase({
         ...eventPurchase,
         status: 'FAILED',
@@ -37,6 +38,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
       });
       throw new CustomError('Failed assign trading account!', 500);
     }
+
     logger.info(`Event purchase is paid! Response:${result}`);
     return await updateEventPurchase({ ...eventPurchase, status: 'PAID' });
   }
@@ -44,17 +46,6 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   // Update the status of the event purchase
   logger.info(`Event purchase is not paid! EventPurchase:${id}`);
   return eventPurchase;
-}
-
-export async function getValidatedEventPurchaseById(id: string): Promise<EventPurchase> {
-  const result = await getEventPurchaseById(id);
-
-  if (!result) {
-    logger.error('Event purchase not found');
-    throw new CustomError('Bad request! Event purchase not found!', 400);
-  }
-
-  return result;
 }
 
 /**
@@ -71,6 +62,7 @@ async function isDemoMastersInvoicePaid(qpayToken: string, eventPurchase: EventP
 
   if (checkResponse.count === 0) {
     logger.info(`Qpay invoice is not paid yet! QpayInvoice: ${invoice}`);
+    logger.info(`Qpay invoice check response: ${JSON.stringify(checkResponse)}`);
     return false;
   }
 

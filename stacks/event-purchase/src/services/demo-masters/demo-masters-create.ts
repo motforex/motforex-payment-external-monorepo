@@ -18,7 +18,7 @@ import { getUsdMntBuyRate } from '../custom-config/rate-config-service';
  * @param userId - User id
  * @returns - Event purchase
  */
-export async function createDemoMastersPurchase(userId: string): Promise<EventPurchase> {
+export async function createDemoMastersPurchase(userId: string, email?: string): Promise<EventPurchase> {
   const eventPurchases = await getPurchasesByUserIdAndEvent(userId, 'demo-masters');
 
   // Check if user has reached the limit of purchases per day
@@ -32,7 +32,7 @@ export async function createDemoMastersPurchase(userId: string): Promise<EventPu
   logger.info(`User ${userId} has ${eventPurchases.length} purchases for demo-masters event`);
 
   // Create new event purchase
-  return await createNewEventPurchase(userId);
+  return await createNewEventPurchase(userId, email);
 }
 
 /**
@@ -41,13 +41,14 @@ export async function createDemoMastersPurchase(userId: string): Promise<EventPu
  * @param userId - User id
  * @returns - Event purchase
  */
-export async function createNewEventPurchase(userId: string): Promise<EventPurchase> {
+export async function createNewEventPurchase(userId: string, email?: string): Promise<EventPurchase> {
   // Calculating amount
   const currentDateAsString = getCurrentDateString();
   const dayStartTimestamp = getDayStartTimestamp();
   const conversionRate = await getUsdMntBuyRate();
   logger.info(`Current USD to MNT buy rate: ${conversionRate}`);
   const amountInTransactionCurrency = Number(MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE * conversionRate);
+  // const amountInTransactionCurrency = 10;
   // Sending request to Qpay
   const id = shuffleString(`${currentDateAsString}${userId.substring(0, 5)}`);
   const createQpayInvoiceRequest = QpayCreateInvoiceRequestSchema.parse({
@@ -57,7 +58,7 @@ export async function createNewEventPurchase(userId: string): Promise<EventPurch
     invoice_description: `MOTFOREX DEMO MASTERS ${id}`,
     sender_branch_code: 'MAIN',
     amount: amountInTransactionCurrency,
-    callback_url: `https://api-backoffice.motforex.com/events-purchase/v1/demo-masters/invoice/${id}/callback`
+    callback_url: `https://api.motforex.com/events-purchase/v1/demo-masters/invoice/${id}/callback`
   });
 
   const qpayAuthToken = await getParameterStoreVal(MOTFOREX_QPAY_TOKEN_PARAMETER);
@@ -78,6 +79,7 @@ export async function createNewEventPurchase(userId: string): Promise<EventPurch
     EventPurchaseSchema.parse({
       id,
       userId,
+      email,
       eventName: 'demo-masters',
       invoice: invoice_id,
       invoiceReference: invoice_id,

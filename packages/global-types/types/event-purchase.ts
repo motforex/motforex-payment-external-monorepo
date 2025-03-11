@@ -5,6 +5,7 @@ export const InvoiceReferenceSchema = z.object({});
 export const EventPurchaseSchema = z.object({
   id: z.string(),
   userId: z.string(),
+  email: z.string().optional(),
   // invoice info
   eventName: z.string(),
   invoice: z.string(),

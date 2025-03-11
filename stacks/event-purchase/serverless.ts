@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 import {
   getDemoMastersRate,
   getDemoMastersInvoice,
+  getDemoMastersPurchaseByQuery,
   postCreateDemoMastersInvoice,
   postCheckDemoMastersInvoice,
   getHandleDemoMastersQpayCallback
@@ -19,6 +20,7 @@ const serverlessConfig: AWS = {
     region: 'ap-southeast-1',
     profile: 'default',
     logRetentionInDays: 365,
+    memorySize: 512,
     timeout: 29,
     apiGateway: {
       minimumCompressionSize: 1024,
@@ -38,10 +40,10 @@ const serverlessConfig: AWS = {
       MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}'
     }
   },
-
   functions: {
     getDemoMastersRate,
     getDemoMastersInvoice,
+    getDemoMastersPurchaseByQuery,
     postCreateDemoMastersInvoice,
     postCheckDemoMastersInvoice,
     getHandleDemoMastersQpayCallback

@@ -1,4 +1,4 @@
-import { createUserAuthApiGatewayFunc } from '@motforex/global-libs';
+import { createDefaultApiGatewayFunc, createUserAuthApiGatewayFunc } from '@motforex/global-libs';
 
 export const getDemoMastersRate = createUserAuthApiGatewayFunc(
   __dirname,
@@ -12,6 +12,13 @@ export const getDemoMastersInvoice = createUserAuthApiGatewayFunc(
   'getDemoMastersInvoice',
   'GET',
   '/v1/demo-masters/invoice'
+);
+
+export const getDemoMastersPurchaseByQuery = createDefaultApiGatewayFunc(
+  __dirname,
+  'getDemoMastersPurchaseByQuery',
+  'GET',
+  '/v1/demo-masters/purchase'
 );
 
 export const postCreateDemoMastersInvoice = createUserAuthApiGatewayFunc(
