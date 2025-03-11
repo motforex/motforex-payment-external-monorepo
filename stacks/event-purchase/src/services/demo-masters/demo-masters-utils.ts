@@ -20,7 +20,7 @@ export async function getPurchasesByUserIdAndEvent(userId: string, event: string
 
     const { items } = await getEventPurchaseByQuery({
       indexName: 'userIdReferenceDateEventName-createdAt-index',
-      pKey: `${userId}~${event}~${dayStartTimestamp}`,
+      pKey: `${userId}~${dayStartTimestamp}~${event}`,
       pKeyType: 'S',
       pKeyProp: 'userIdReferenceDateEventName'
     });

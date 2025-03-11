@@ -92,7 +92,7 @@ export async function createNewEventPurchase(userId: string, email?: string): Pr
       // General config props
       userIdEventName: `${userId}~demo-masters`,
       userIdReferenceDate: `${userId}~${dayStartTimestamp}`,
-      userIdReferenceDateEventName: `${userId}~${dayStartTimestamp}~demo-masters`,
+      userIdReferenceDateEventName: `${userId}~${dayStartTimestamp}~${`demo-masters`}`,
       // General config props
       status: 'PENDING',
       message: `Invoice created successfully!`,
