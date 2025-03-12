@@ -5,7 +5,8 @@ import {
   getDemoMastersPurchaseByQuery,
   postCreateDemoMastersInvoice,
   postCheckDemoMastersInvoice,
-  getHandleDemoMastersQpayCallback
+  getHandleDemoMastersQpayCallback,
+  postAdminCheckDemoMastersInvoice
 } from '@/functions/demo-masters';
 
 const serverlessConfig: AWS = {
@@ -45,6 +46,7 @@ const serverlessConfig: AWS = {
     getDemoMastersInvoice,
     getDemoMastersPurchaseByQuery,
     postCreateDemoMastersInvoice,
+    postAdminCheckDemoMastersInvoice,
     postCheckDemoMastersInvoice,
     getHandleDemoMastersQpayCallback
   },

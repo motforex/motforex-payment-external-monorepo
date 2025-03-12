@@ -84,6 +84,18 @@ const postCheckDemoMastersInvoiceFunc: ApiFuncType<null> = async (event): Promis
   }
 };
 
+const postCheckAdminDemoMasterInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+  try {
+    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    const { id, amountInTransactionCurrency, amountInUsd, status } = await checkDemoMastersInvoice(
+      event.pathParameters.id
+    );
+    return formatApiResponse({ id, amountInTransactionCurrency, amountInUsd, status });
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
 const getHandleDemoMastersQpayCallbackFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   if (!event.pathParameters || !event.pathParameters.id) return formatApiResponse({});
   await handleDemoMastersQpayCallback(event.pathParameters.id);
@@ -95,4 +107,5 @@ export const getDemoMastersInvoice = middyfy(getDemoMastersInvoiceFunc);
 export const getDemoMastersPurchaseByQuery = middyfy(getDemoMastersPurchaseByQueryFunc);
 export const postCreateDemoMastersInvoice = middyfy(postCreateDemoMastersInvoiceFunc);
 export const postCheckDemoMastersInvoice = middyfy(postCheckDemoMastersInvoiceFunc);
+export const postAdminCheckDemoMastersInvoice = middyfy(postCheckAdminDemoMasterInvoiceFunc);
 export const getHandleDemoMastersQpayCallback = middyfy(getHandleDemoMastersQpayCallbackFunc);

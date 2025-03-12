@@ -35,6 +35,13 @@ export const postCheckDemoMastersInvoice = createUserAuthApiGatewayFunc(
   '/v1/demo-masters/invoice/{id}/check'
 );
 
+export const postAdminCheckDemoMastersInvoice = createDefaultApiGatewayFunc(
+  __dirname,
+  'postAdminCheckDemoMastersInvoice',
+  'POST',
+  '/v1/demo-masters/invoice/{id}/admin-check'
+);
+
 export const getHandleDemoMastersQpayCallback = createDefaultApiGatewayFunc(
   __dirname,
   'getHandleDemoMastersQpayCallback',
