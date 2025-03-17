@@ -9,9 +9,11 @@ import {
   postSolveDepositExecution
 } from '@/functions/bank-matcher-deposit';
 import {
+  // readBankWithdraw
   getWithdrawExecutions,
   getWithdrawExecutionsCount,
   getWithdrawExecutionById,
+  // executeBankWithdraw
   refreshWithdrawExecution,
   putWithdrawExecution,
   postSolveWithdrawExecution,

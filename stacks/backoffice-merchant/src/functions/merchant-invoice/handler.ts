@@ -1,12 +1,17 @@
 import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs';
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
-import { extractMetadata, handleApiFuncError, middyfy } from '@motforex/global-libs';
+import { checkAdminAuthorization, extractMetadata, handleApiFuncError, middyfy } from '@motforex/global-libs';
 import * as merchantInvoiceRepo from '@/services/merchant-invoice';
 import { extractQueryParamsFromEvent } from '@motforex/dynamo';
+import { verifyPermission } from '@motforex/global-services';
 
-const getMerchantInvoiceTableDescFunc: ApiFuncType<null> = async (): Promise<ApiFuncRes> => {
+const getMerchantInvoiceTableDescFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
+    const metadata = extractMetadata(event);
+    const { permission } = checkAdminAuthorization(metadata);
+    await verifyPermission(permission, ['bank:readInvoiceDeposit']);
+
     return await merchantInvoiceRepo.getMerchantInvoiceTableDesc();
   } catch (error: unknown) {
     return handleApiFuncError(error);
@@ -15,9 +20,13 @@ const getMerchantInvoiceTableDescFunc: ApiFuncType<null> = async (): Promise<Api
 
 const getMerchantInvoiceByQueryFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    const { queryParams } = extractMetadata(event);
+    const metadata = extractMetadata(event);
+    const { permission } = checkAdminAuthorization(metadata);
+    await verifyPermission(permission, ['bank:readInvoiceDeposit']);
+
+    const { queryParams } = metadata;
     return await merchantInvoiceRepo.getMerchantInvoiceByQuery(
-      extractQueryParamsFromEvent(event, 'all-createdAt-index', {
+      extractQueryParamsFromEvent(event, {
         indexName: 'all-createdAt-index',
         pKey: '1',
         pKeyType: 'N',

@@ -14,6 +14,8 @@ export type AuthorizationData = {
   ipAddress: string;
 };
 
+export type AdminAuthorizationData = AuthorizationData & { permission: string };
+
 export const extractMetadata = (event: ExtendedAPIGatewayProxyEvent): RequestMetadata => {
   try {
     const ipAddress = event.requestContext.identity.sourceIp;
@@ -55,4 +57,19 @@ export function checkAuthorization(metadata: RequestMetadata, funcName = 'Functi
 
   logger.info(`${funcName.toUpperCase()} email:${email} IP:${ipAddress}`);
   return { email, sub, ipAddress };
+}
+
+export function checkAdminAuthorization(metadata: RequestMetadata, funcName = 'Function'): AdminAuthorizationData {
+  // Validating metadata
+  const { ipAddress, token, headers } = metadata;
+  if (!token || !ipAddress) throw new CustomError('Unable to process! Missing token or IP address', 400);
+
+  const permission = headers['permission'] as string;
+
+  // Validating user data
+  const { email, sub } = extractCognitoToken(token);
+  if (!email || !sub) throw new CustomError('User credentials are missing!', 400);
+
+  logger.info(`${funcName.toUpperCase()} email:${email} IP:${ipAddress}`);
+  return { email, sub, ipAddress, permission };
 }

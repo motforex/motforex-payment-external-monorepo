@@ -1,15 +1,28 @@
 import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs';
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
-import { CustomError, extractMetadata, formatApiResponse, handleApiFuncError, middyfy } from '@motforex/global-libs';
+import {
+  checkAdminAuthorization,
+  CustomError,
+  extractMetadata,
+  formatApiResponse,
+  handleApiFuncError,
+  middyfy
+} from '@motforex/global-libs';
 import { checkMotforexGolomtMerchInvoice, receiveGolomtMerchPushNotification } from '@/services/motforex-golomt-merch';
 import { GolomtMerchantCallbackRequest as GolomtCallbackReq } from '@/types';
+import { verifyPermission } from '@motforex/global-services';
 
 const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
-    return await checkMotforexGolomtMerchInvoice(extractMetadata(event), Number(event.pathParameters.id));
+
+    const metadata = extractMetadata(event);
+    const { permission } = checkAdminAuthorization(metadata);
+    await verifyPermission(permission, ['bank:executeInvoiceDeposit']);
+
+    return await checkMotforexGolomtMerchInvoice(metadata, Number(event.pathParameters.id));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
