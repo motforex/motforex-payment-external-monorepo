@@ -15,7 +15,7 @@ const getDepositExecutionsFunc: ApiFuncType<null> = async (event): Promise<ApiFu
   try {
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:readBankDeposit']);
+    await verifyPermission(permission, ['deposit:readBankDeposit']);
 
     return await bankMatcherDeService.getDepositExecutions(metadata);
   } catch (error: unknown) {
@@ -27,7 +27,7 @@ const getDepositExecutionsCountFunc: ApiFuncType<null> = async (event): Promise<
   try {
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:readBankDeposit']);
+    await verifyPermission(permission, ['deposit:readBankDeposit']);
 
     return await bankMatcherDeService.getDepositExecutionsCount(metadata);
   } catch (error: unknown) {
@@ -41,7 +41,7 @@ const getDepositExecutionByIdFunc: ApiFuncType<{ id: number }> = async (event): 
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:readBankDeposit']);
+    await verifyPermission(permission, ['deposit:readBankDeposit']);
 
     return await bankMatcherDeService.getDepositExecutionById(Number(event.pathParameters?.id));
   } catch (error: unknown) {
@@ -55,7 +55,7 @@ const putDepositExecutionFunc: ApiFuncType<{ id: number }> = async (event): Prom
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:executeBankDeposit']);
+    await verifyPermission(permission, ['deposit:executeBankDeposit']);
     return await bankMatcherDeService.updateDepositExecution(metadata, Number(event.pathParameters?.id));
   } catch (error: unknown) {
     return handleApiFuncError(error);
@@ -68,7 +68,7 @@ const postReprocessDepositExecutionFunc: ApiFuncType<{ id: number }> = async (ev
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:executeBankDeposit']);
+    await verifyPermission(permission, ['deposit:executeBankDeposit']);
 
     return await bankMatcherDeService.reprocessDepositExecution(metadata, Number(event.pathParameters?.id));
   } catch (error: unknown) {
@@ -83,7 +83,7 @@ const postSolveDepositExecutionFunc: ApiFuncType<{ id: number }> = async (event)
 
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:executeBankDeposit']);
+    await verifyPermission(permission, ['deposit:executeBankDeposit']);
 
     return await bankMatcherDeService.solveDepositExecutionByApi(metadata, Number(event.pathParameters?.id));
   } catch (error: unknown) {
