@@ -22,7 +22,7 @@ const postCheckQpayInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFu
 
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:executeInvoiceDeposit']);
+    await verifyPermission(permission, ['deposit:executeInvoiceDeposit']);
 
     return await checkMotforexQpayInvoice(extractMetadata(event), Number(event.pathParameters.id));
   } catch (error: unknown) {

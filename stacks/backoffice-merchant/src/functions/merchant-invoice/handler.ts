@@ -10,7 +10,7 @@ const getMerchantInvoiceTableDescFunc: ApiFuncType<null> = async (event): Promis
   try {
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:readInvoiceDeposit']);
+    await verifyPermission(permission, ['deposit:readInvoiceDeposit']);
 
     return await merchantInvoiceRepo.getMerchantInvoiceTableDesc();
   } catch (error: unknown) {
@@ -22,7 +22,7 @@ const getMerchantInvoiceByQueryFunc: ApiFuncType<null> = async (event): Promise<
   try {
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:readInvoiceDeposit']);
+    await verifyPermission(permission, ['deposit:readInvoiceDeposit']);
 
     const { queryParams } = metadata;
     return await merchantInvoiceRepo.getMerchantInvoiceByQuery(

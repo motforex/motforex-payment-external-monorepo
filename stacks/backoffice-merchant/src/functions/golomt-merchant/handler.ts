@@ -20,7 +20,7 @@ const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFu
 
     const metadata = extractMetadata(event);
     const { permission } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['bank:executeInvoiceDeposit']);
+    await verifyPermission(permission, ['deposit:executeInvoiceDeposit']);
 
     return await checkMotforexGolomtMerchInvoice(metadata, Number(event.pathParameters.id));
   } catch (error: unknown) {
