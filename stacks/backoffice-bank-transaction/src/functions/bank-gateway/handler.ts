@@ -7,10 +7,11 @@ import { verifyPermission } from '@motforex/global-services';
 
 const getStatementItemsFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    const { permission } = checkAdminAuthorization(event);
+    const metadata = extractMetadata(event);
+    const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:readBankDeposit']);
 
-    return await bankGatewayService.getStatementItems(extractMetadata(event));
+    return await bankGatewayService.getStatementItems(metadata);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -18,10 +19,11 @@ const getStatementItemsFunc: ApiFuncType<null> = async (event): Promise<ApiFuncR
 
 const getStatementItemsCountFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    const { permission } = checkAdminAuthorization(event);
+    const metadata = extractMetadata(event);
+    const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:readBankDeposit']);
 
-    return await bankGatewayService.getStatementItemsCount(extractMetadata(event));
+    return await bankGatewayService.getStatementItemsCount(metadata);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
