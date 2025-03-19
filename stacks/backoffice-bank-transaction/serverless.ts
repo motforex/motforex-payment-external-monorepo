@@ -34,6 +34,7 @@ const serverlessConfig: AWS = {
     profile: 'default',
     logRetentionInDays: 365,
     timeout: 29,
+    memorySize: 512,
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -52,7 +53,6 @@ const serverlessConfig: AWS = {
       MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}'
     }
   },
-
   functions: {
     getStatementItems,
     getStatementItemsCount,

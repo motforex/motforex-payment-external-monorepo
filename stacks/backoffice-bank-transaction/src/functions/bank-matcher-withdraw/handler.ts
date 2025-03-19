@@ -16,7 +16,7 @@ const getWithdrawExecutionsFunc: ApiFuncType<null> = async (event): Promise<ApiF
     // Extract metadata from the event
     const metadata = extractMetadata(event);
     // Check admin authorization
-    const { permission } = checkAdminAuthorization(event);
+    const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['withdraw:readBankWithdraw']);
     // Get withdraw executions
     return await bankMatcherWithdrawService.getWithdrawExecutions(metadata);
@@ -30,7 +30,7 @@ const getWithdrawExecutionsCountFunc: ApiFuncType<null> = async (event): Promise
     // Extract metadata from the event
     const metadata = extractMetadata(event);
     // Check admin authorization
-    const { permission } = checkAdminAuthorization(event);
+    const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['withdraw:readBankWithdraw']);
     // Get withdraw executions
     return await bankMatcherWithdrawService.getWithdrawExecutionsCount(metadata);
