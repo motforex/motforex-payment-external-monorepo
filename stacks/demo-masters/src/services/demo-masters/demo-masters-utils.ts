@@ -25,7 +25,6 @@ export async function getPurchasesByUserIdAndEvent(userId: string, event: string
       pKeyProp: 'userIdReferenceDateEventName'
     });
 
-    logger.info(`Fetched event purchase for user ${userId} and event ${event}: ${JSON.stringify(items)}`);
     return items;
   } catch (error) {
     logger.error(`Error fetching event purchase for user ${userId} and event ${event}:`, error);

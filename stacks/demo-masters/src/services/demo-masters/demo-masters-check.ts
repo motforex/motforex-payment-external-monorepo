@@ -2,7 +2,7 @@ import { MOTFOREX_QPAY_TOKEN_PARAMETER } from '@/constants';
 import { updateEventPurchase } from '@/repository/demo-masters-repository';
 import { CustomError, getParameterStoreVal, invokeLambdaFunc, logger } from '@motforex/global-libs';
 import { checkQpayInvoice, QpayCheckPayment } from '@motforex/global-services';
-import { EventPurchase } from '@motforex/global-types';
+import { EventPurchase, STATUS_PAID, STATUS_PENDING } from '@motforex/global-types';
 import { getValidatedEventPurchaseById } from './demo-masters-utils';
 
 export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase> {
@@ -26,7 +26,8 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
     logger.info(`Event purchase is paid! EventPurchase:${id}`);
     await updateEventPurchase(
       { ...eventPurchase, status: 'PAID', message: 'The payment is successfully paid' },
-      '#status = PENDING'
+      `#status = :pending`,
+      { ':pending': STATUS_PENDING }
     );
 
     const result = await invokeLambdaFunc('motforex-client-demo-competition-prod-purchase', {
@@ -45,7 +46,11 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
     }
 
     logger.info(`Event purchase is paid! Response:${result}`);
-    return await updateEventPurchase({ ...eventPurchase, status: 'PAID' });
+    return await updateEventPurchase(
+      { ...eventPurchase, status: 'PAID', message: 'All operation finished' },
+      `#status = :paid`,
+      { ':paid': STATUS_PAID }
+    );
   }
 
   // Update the status of the event purchase
