@@ -1,5 +1,5 @@
 import { logger } from '@motforex/global-libs';
-import { getValidDepositById } from './deposit-utils-service';
+import { getValidDepositById } from '../deposit-utils-service';
 import { STATUS_PENDING } from '@motforex/global-types';
 
 export async function createCoinbuysInvoice(id: number): Promise<object> {

@@ -1,3 +1,4 @@
+import { createCoinbuysInvoice } from '@/functions';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfig: AWS = {
@@ -25,9 +26,12 @@ const serverlessConfig: AWS = {
       }
     },
     iam: { role: 'arn:aws:iam::786487424160:role/payments-service-role' },
-    environment: {}
+    environment: {
+      COINSBUY_USERNAME: '${ssm:/motforex/transaction-match/b2b/login}',
+      COINSBUY_PASSWORD: '${ssm:/motforex/transaction-match/b2b/password}'
+    }
   },
-  functions: {},
+  functions: { createCoinbuysInvoice },
   package: { individually: true },
   custom: {
     prune: {

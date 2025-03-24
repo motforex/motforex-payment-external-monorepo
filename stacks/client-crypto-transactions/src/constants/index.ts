@@ -1,1 +1,1 @@
-const API_COINBUYS_BASE = 'https://api.coinbuys.io';
+export const API_COINBUYS_BASE = 'https://api.coinsbuy.com';

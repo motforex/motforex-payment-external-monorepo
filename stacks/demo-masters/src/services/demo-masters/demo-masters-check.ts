@@ -24,6 +24,11 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   // Check if the invoice is paid
   if (await isDemoMastersInvoicePaid(qpayAuthToken, eventPurchase)) {
     logger.info(`Event purchase is paid! EventPurchase:${id}`);
+    await updateEventPurchase(
+      { ...eventPurchase, status: 'PAID', message: 'The payment is successfully paid' },
+      '#status = PENDING'
+    );
+
     const result = await invokeLambdaFunc('motforex-client-demo-competition-prod-purchase', {
       body: { userId: eventPurchase.userId, amountInUsd: eventPurchase.amountInUsd }
     });
@@ -34,7 +39,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
       await updateEventPurchase({
         ...eventPurchase,
         status: 'FAILED',
-        message: 'Failed to update the purchase in the client!'
+        message: 'Failed to send account!'
       });
       throw new CustomError('Failed assign trading account!', 500);
     }
