@@ -1,8 +1,8 @@
 import { CognitoIdToken, QueryParams, RequestMetadata } from '@motforex/global-types';
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import * as jwt from 'jsonwebtoken';
 import { CustomError } from '../error';
 import { logger } from '../utils';
-import * as jwt from 'jsonwebtoken';
 
 interface ExtendedAPIGatewayProxyEvent extends Omit<APIGatewayProxyEvent, 'body'> {
   body?: any;
@@ -29,6 +29,12 @@ export const extractMetadata = (event: ExtendedAPIGatewayProxyEvent): RequestMet
   }
 };
 
+/**
+ * Decodes JWT
+ *
+ * @param token
+ * @returns
+ */
 export const extractJWTData = (token: string): object => {
   try {
     const decoded = jwt.decode(token, { complete: true });
@@ -41,24 +47,44 @@ export const extractJWTData = (token: string): object => {
   }
 };
 
+/**
+ *  Extracts cognito token and parses the output
+ *
+ * @param cognitoToken
+ * @returns
+ */
 export const extractCognitoToken = (cognitoToken: string): CognitoIdToken => {
   const res = extractJWTData(cognitoToken);
   return res as CognitoIdToken;
 };
 
+/**
+ *  Extracts the user-data(client) from the token and validates the user's permission
+ *
+ * @param metadata
+ * @param funcName
+ * @returns
+ */
 export function checkAuthorization(metadata: RequestMetadata, funcName = 'Function'): AuthorizationData {
   // Validating metadata
   const { ipAddress, token } = metadata;
-  if (!token || !ipAddress) throw new CustomError('Unable to process! Missing token or IP address', 400);
+  if (!token || !ipAddress) throw new CustomError('financeMessageErrorUnauthorized', 400);
 
   // Validating user data
   const { email, sub } = extractCognitoToken(token);
-  if (!email || !sub) throw new CustomError('User credentials are missing!', 400);
+  if (!email || !sub) throw new CustomError('financeMessageErrorUnauthorized', 400);
 
   logger.info(`${funcName.toUpperCase()} email:${email} IP:${ipAddress}`);
   return { email, sub, ipAddress };
 }
 
+/**
+ *  Extracts the user-data(admin) from the token and validates the user's permission
+ *
+ * @param metadata
+ * @param funcName
+ * @returns
+ */
 export function checkAdminAuthorization(metadata: RequestMetadata, funcName = 'Function'): AdminAuthorizationData {
   // Validating metadata
   const { ipAddress, token, headers } = metadata;

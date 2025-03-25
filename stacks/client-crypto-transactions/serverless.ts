@@ -1,4 +1,5 @@
-import { createCoinbuysInvoice } from '@/functions/coinsbuy';
+import { createCoinbuysInvoice, checkCoinsbuyInvoice, callbackCoinbuysInvoice } from '@/functions/coinsbuy';
+import { getCryptoBalanceByApi, updateCryptoBalancePrivately } from '@/functions/crypto-balance';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfig: AWS = {
@@ -31,7 +32,15 @@ const serverlessConfig: AWS = {
       COINSBUY_PASSWORD: '${ssm:/motforex/transaction-match/b2b/password}'
     }
   },
-  functions: { createCoinbuysInvoice },
+  functions: {
+    // The following functions are for coinsbuy
+    createCoinbuysInvoice,
+    checkCoinsbuyInvoice,
+    callbackCoinbuysInvoice,
+    // The following functions are for crypto-balance
+    getCryptoBalanceByApi,
+    updateCryptoBalancePrivately
+  },
   package: { individually: true },
   custom: {
     prune: {

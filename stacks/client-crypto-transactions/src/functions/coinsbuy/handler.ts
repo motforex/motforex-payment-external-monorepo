@@ -12,4 +12,22 @@ const createCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiF
   }
 };
 
+const checkCoinsbuyInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+  try {
+    return formatApiResponse({ response: await getCoinbuysAuthToken() });
+  } catch (error: unknown) {
+    return handleApiFuncErrorWithI18n(error);
+  }
+};
+
+const callbackCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+  try {
+    return formatApiResponse({ response: await getCoinbuysAuthToken() });
+  } catch (error: unknown) {
+    return handleApiFuncErrorWithI18n(error);
+  }
+};
+
 export const createCoinbuysInvoice = middyfy(createCoinbuysInvoiceFunc);
+export const checkCoinsbuyInvoice = middyfy(checkCoinsbuyInvoiceFunc);
+export const callbackCoinbuysInvoice = middyfy(callbackCoinbuysInvoiceFunc);
