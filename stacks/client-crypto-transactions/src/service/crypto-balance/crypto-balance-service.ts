@@ -47,7 +47,7 @@ export async function getCryptoBalance(userId: string, email: string): Promise<C
  */
 export async function updateCryptoBalance(request: UpdateCryptoBalanceRequest): Promise<CryptoBalanceRecord> {
   const { id, userId, email, operation, amountInUsd, updatedBy } = UpdateCryptoBalanceRequestSchema.parse(request);
-  logger.info(`Updating crypto balance for user: ${userId}-${email}, operation: ${operation}, amount: ${amountInUsd}`);
+  logger.info(`Updating crypto balance for user: ${email} id:${id}, operation: ${operation}, amount: ${amountInUsd}`);
   try {
     const cryptoBalanceRecord = await getCryptoBalanceRecordByUserId(userId);
 
@@ -79,7 +79,7 @@ export async function updateCryptoBalance(request: UpdateCryptoBalanceRequest): 
         throw new CustomError('Insufficient balance for withdrawal', 400);
       }
     }
-    logger.info(`New balance calculated for user: ${userId}-${email}, new balance: ${newBalance}`);
+    logger.info(`New balance calculated for user: ${userId} id:${id}, new balance: ${newBalance}`);
 
     const result = await updateCryptoBalanceRecord(
       CryptoBalanceRecordSchema.parse({
