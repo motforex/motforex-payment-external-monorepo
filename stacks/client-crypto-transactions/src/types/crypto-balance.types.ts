@@ -14,12 +14,12 @@ export const CryptoBalanceRecordSchema = z.object({
 export type CryptoBalanceRecord = z.infer<typeof CryptoBalanceRecordSchema>;
 
 export const UpdateCryptoBalanceRequestSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   userId: z.string(),
   email: z.string(),
   operation: z.enum(['DEPOSIT', 'WITHDRAWAL']),
   amountInUsd: z.number(),
-  updatedBy: z.number()
+  updatedBy: z.string()
 });
 
 export type UpdateCryptoBalanceRequest = z.infer<typeof UpdateCryptoBalanceRequestSchema>;

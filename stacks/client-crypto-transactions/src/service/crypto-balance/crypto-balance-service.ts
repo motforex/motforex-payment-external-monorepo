@@ -61,7 +61,7 @@ export async function updateCryptoBalance(request: UpdateCryptoBalanceRequest): 
           balanceInUsd: amountInUsd,
           lastProcessedItemOperation: 'DEPOSIT',
           lastProcessedItemId: id,
-          createdAt: new Date(),
+          createdAt: Date.now(),
           updatedAt: null,
           updatedBy
         })
@@ -87,7 +87,7 @@ export async function updateCryptoBalance(request: UpdateCryptoBalanceRequest): 
         balanceInUsd: newBalance,
         lastProcessedItemOperation: operation,
         lastProcessedItemId: id,
-        updatedAt: new Date()
+        updatedAt: Date.now()
       })
     );
     logger.info(`Record updated successfully!`);

@@ -2,7 +2,7 @@ import { CryptoBalanceRecord } from '@/types/crypto-balance.types';
 import { createRecord, getRecordByKey, updateRecord } from '@motforex/dynamo';
 import { omit } from 'lodash';
 
-const CRYPTO_BALANCE_RECORD_TABLE = 'crypto-balance-requests';
+const CRYPTO_BALANCE_RECORD_TABLE = 'motforex-crypto-balance-record';
 
 export async function getCryptoBalanceRecordByUserId(
   userId: string,
@@ -31,7 +31,7 @@ export async function updateCryptoBalanceRecord(
   await updateRecord<CryptoBalanceRecord>({
     tableName: CRYPTO_BALANCE_RECORD_TABLE,
     key: { userId: item.userId },
-    item: { ...omit(item, 'id') },
+    item: { ...omit(item, 'userId') },
     conditionExpression: condition,
     extraExpressionAttributeValues: extra,
     returnValues: 'NONE'
