@@ -1,10 +1,30 @@
-import { logger } from '@motforex/global-libs';
-import { getValidDepositById } from '../deposit-utils-service';
-import { STATUS_PENDING } from '@motforex/global-types';
+import { logger, sendRequest } from '@motforex/global-libs';
+import { PaymentRequest } from '@motforex/global-types';
+import { getCoinbuysAuthToken } from './coinbuys-auth-service';
+import { API_COINBUYS_BASE } from '@/constants';
 
-export async function createCoinbuysInvoice(id: number): Promise<object> {
+export async function createCoinbuysInvoice(depositRequest: PaymentRequest): Promise<object> {
   try {
-    const depositRequest = await getValidDepositById(id, [STATUS_PENDING]);
+    const coinsBuyAuthToken = await getCoinbuysAuthToken();
+
+    const response = await sendRequest({
+      url: `${API_COINBUYS_BASE}/deposit/`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/vnd.api+json'
+      },
+      data: {
+        data: {
+          type: 'deposit',
+          attributes: {
+            tracking_id: '',
+            callback_url: '',
+            payment_page_redirect_url: '',
+            payment_page_button_text: ''
+          }
+        }
+      }
+    });
 
     return {};
   } catch (error: unknown) {

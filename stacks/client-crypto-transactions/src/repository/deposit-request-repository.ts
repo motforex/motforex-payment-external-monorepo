@@ -4,8 +4,9 @@ import type { CustomQueryCommandOutput } from '@motforex/dynamo';
 import { getRecordByKey, queryRecords, QueryRequest, updateRecord } from '@motforex/dynamo';
 import { omit } from 'lodash';
 
-const DEPOSIT_REQUEST_TABLE = 'motforex-core-deposit-request';
 type QueryResponse = CustomQueryCommandOutput<Partial<PaymentRequest>>;
+
+const DEPOSIT_REQUEST_TABLE = 'motforex-core-deposit-request';
 
 export async function getDepositReqById(id: number, projectionExp?: string): Promise<PaymentRequest | undefined> {
   return await getRecordByKey<PaymentRequest>({

@@ -1,4 +1,4 @@
-import { createCoinbuysInvoice } from '@/functions';
+import { createCoinbuysInvoice } from '@/functions/coinsbuy';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfig: AWS = {

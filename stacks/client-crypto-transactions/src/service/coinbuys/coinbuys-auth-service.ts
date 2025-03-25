@@ -1,11 +1,13 @@
-import { sendRequest } from '@motforex/global-libs';
+import type { CoinsbuyAuthTokenResponse } from '@/types/coinsbuy.types';
+
+import { logger, sendRequest } from '@motforex/global-libs';
 import { API_COINBUYS_BASE } from '@/constants';
-import { CoinsbuyAuthTokenResponse, CoinsbuyAuthTokenResponseSchema } from '@/types/coinsbuy.types';
+import { CoinsbuyAuthTokenResponseSchema } from '@/types/coinsbuy.types';
 
 const COINSBUY_USERNAME = process.env.COINSBUY_USERNAME || 'username';
 const COINSBUY_PASSWORD = process.env.COINSBUY_PASSWORD || 'password';
 
-export async function getCoinbuysAuthToken() {
+export async function getCoinbuysAuthToken(): Promise<string> {
   const { data } = await sendRequest<CoinsbuyAuthTokenResponse>({
     url: `${API_COINBUYS_BASE}/token`,
     method: 'POST',
@@ -24,7 +26,9 @@ export async function getCoinbuysAuthToken() {
   });
 
   const parsedData = CoinsbuyAuthTokenResponseSchema.parse(data);
-  return parsedData;
+  logger.info(`Coinsbuy auth token response: ${JSON.stringify(parsedData.meta)}`);
+
+  return parsedData.data.attributes.access;
 }
 
 export async function refreshCoinbuysAuthToken() {}
