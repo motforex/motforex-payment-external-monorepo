@@ -1,5 +1,9 @@
 import { createCoinbuysInvoice, checkCoinsbuyInvoice, callbackCoinbuysInvoice } from '@/functions/coinsbuy';
-import { getCryptoBalanceByApi, updateCryptoBalancePrivately } from '@/functions/crypto-balance';
+import {
+  getCryptoBalanceByApi,
+  getCryptoBalancePrivately,
+  updateCryptoBalancePrivately
+} from '@/functions/crypto-balance';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfig: AWS = {
@@ -39,6 +43,7 @@ const serverlessConfig: AWS = {
     callbackCoinbuysInvoice,
     // The following functions are for crypto-balance
     getCryptoBalanceByApi,
+    getCryptoBalancePrivately,
     updateCryptoBalancePrivately
   },
   package: { individually: true },

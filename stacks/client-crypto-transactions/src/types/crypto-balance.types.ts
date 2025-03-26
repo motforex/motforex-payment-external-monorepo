@@ -7,7 +7,7 @@ export const CryptoBalanceRecordSchema = z.object({
   lastProcessedItemOperation: z.enum(['DEPOSIT', 'WITHDRAWAL']),
   lastProcessedItemId: z.number(),
   createdAt: z.number(),
-  updatedAt: z.number(),
+  updatedAt: z.number().nullable(),
   updatedBy: z.string()
 });
 
@@ -23,3 +23,17 @@ export const UpdateCryptoBalanceRequestSchema = z.object({
 });
 
 export type UpdateCryptoBalanceRequest = z.infer<typeof UpdateCryptoBalanceRequestSchema>;
+
+export const GetCryptoBalanceRequestSchema = z.object({
+  userId: z.string(),
+  email: z.string()
+});
+
+export type GetCryptoBalanceRequest = z.infer<typeof GetCryptoBalanceRequestSchema>;
+
+export const GetCryptoBalanceResponseSchema = z.object({
+  balanceInUsd: z.number(),
+  updatedAt: z.number().nullable()
+});
+
+export type GetCryptoBalanceResponse = z.infer<typeof GetCryptoBalanceResponseSchema>;

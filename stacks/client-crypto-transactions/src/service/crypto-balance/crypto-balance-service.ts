@@ -17,6 +17,7 @@ import { CustomError, logger } from '@motforex/global-libs';
  */
 export async function getCryptoBalance(userId: string, email: string): Promise<CryptoBalanceRecord> {
   try {
+    logger.info(`Getting crypto balance for user: ${userId}-${email}`);
     const cryptoBalanceRecord = await getCryptoBalanceRecordByUserId(userId);
     if (!cryptoBalanceRecord) {
       return await createCryptoBalanceRecord(
@@ -26,7 +27,7 @@ export async function getCryptoBalance(userId: string, email: string): Promise<C
           balanceInUsd: 0,
           lastProcessedItemOperation: 'DEPOSIT',
           lastProcessedItemId: 0,
-          createdAt: new Date(),
+          createdAt: Date.now(),
           updatedAt: null,
           updatedBy: email
         })
@@ -93,7 +94,7 @@ export async function updateCryptoBalance(request: UpdateCryptoBalanceRequest): 
     logger.info(`Record updated successfully!`);
     return result;
   } catch (error: unknown) {
-    logger.error(`Error occurred on updateCryptoBalance: ${error}`);
+    logger.error(`Error occurred on updateCryptoBalance: ${JSON.stringify(error)}`);
     throw new CustomError('Failed to update crypto balance');
   }
 }

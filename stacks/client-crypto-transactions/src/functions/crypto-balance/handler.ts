@@ -10,7 +10,12 @@ import {
   handleDefaultErrorWithI18n,
   middyfy
 } from '@motforex/global-libs';
-import { UpdateCryptoBalanceRequest, UpdateCryptoBalanceRequestSchema } from '@/types/crypto-balance.types';
+import {
+  GetCryptoBalanceRequest,
+  GetCryptoBalanceRequestSchema,
+  UpdateCryptoBalanceRequest,
+  UpdateCryptoBalanceRequestSchema
+} from '@/types/crypto-balance.types';
 import { getCryptoBalance, updateCryptoBalance } from '@/service/crypto-balance';
 
 const getCryptoBalanceByApiFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
@@ -21,6 +26,16 @@ const getCryptoBalanceByApiFunc: ApiFuncType<null> = async (event): Promise<ApiF
     return formatApiResponse({ balanceInUsd, updatedAt });
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);
+  }
+};
+
+export const getCryptoBalancePrivately = async (event: GetCryptoBalanceRequest) => {
+  try {
+    const { userId, email } = GetCryptoBalanceRequestSchema.parse(event);
+    const { balanceInUsd, updatedAt } = await getCryptoBalance(userId, email);
+    return formatResponse({ balanceInUsd, updatedAt });
+  } catch (error: unknown) {
+    return handleDefaultErrorWithI18n(error);
   }
 };
 
