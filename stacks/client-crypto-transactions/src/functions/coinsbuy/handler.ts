@@ -8,7 +8,9 @@ const createCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiF
   try {
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`financeMessageErrorBadRequestPathVariable`, 400);
-    return formatApiResponse({ response: await createCoinbuysInvoiceByDepositId(Number(event.pathParameters.id)) });
+
+    const result = await createCoinbuysInvoiceByDepositId(Number(event.pathParameters.id));
+    return formatApiResponse(result);
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);
   }
@@ -28,7 +30,8 @@ const callbackCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<Ap
   try {
     logger.info(`Path variable: ${event.pathParameters?.id}`);
     logger.info(`Query string: ${event.queryStringParameters}`);
-    logger.info(`Body: ${event.body}`);
+    logger.info(`Body: ${JSON.stringify(event.body)}`);
+
     return formatApiResponse(event.body || {});
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);

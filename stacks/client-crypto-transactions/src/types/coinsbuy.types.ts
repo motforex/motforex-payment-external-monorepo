@@ -24,3 +24,55 @@ export const CoinsbuyAuthTokenResponseSchema = z.object({
 });
 
 export type CoinsbuyAuthTokenResponse = z.infer<typeof CoinsbuyAuthTokenResponseSchema>;
+
+const WalletDataSchema = z.object({
+  type: z.literal('wallet'),
+  id: z.string()
+});
+
+const RelationshipsSchema = z.object({
+  currency: z.object({
+    data: WalletDataSchema.nullable()
+  }),
+
+  wallet: z.object({
+    data: WalletDataSchema.nullable()
+  })
+});
+
+const AttributesSchema = z.object({
+  status: z.number(),
+  address: z.null(),
+  address_type: z.string(),
+  label: z.string(),
+  tracking_id: z.string(),
+  confirmations_needed: z.number(),
+  time_limit: z.null(),
+  callback_url: z.string().url(),
+  inaccuracy: z.string(),
+  target_amount_requested: z.string(),
+  rate_requested: z.null(),
+  rate_expired_at: z.null(),
+  invoice_updated_at: z.null(),
+  payment_page: z.string().url(),
+  target_paid: z.string(),
+  source_amount_requested: z.string(),
+  target_paid_pending: z.string(),
+  assets: z.record(z.any()), // Empty object
+  destination: z.null(),
+  payment_page_redirect_url: z.string().url(),
+  payment_page_button_text: z.string(),
+  is_active: z.boolean()
+});
+
+// Main schema
+export const CoinsbuyDepositRequestResponseSchema = z.object({
+  data: z.object({
+    type: z.string(),
+    id: z.string(),
+    attributes: AttributesSchema,
+    relationships: RelationshipsSchema
+  })
+});
+
+export type CoinsbuyDepositRequestResponse = z.infer<typeof CoinsbuyDepositRequestResponseSchema>;

@@ -39,3 +39,5 @@ export const PaymentInvoiceResponseSchema = z.object({
   message: z.string().nullable(),
   metadata: z.record(z.any()).nullable()
 });
+
+export type PaymentInvoiceResponse = z.infer<typeof PaymentInvoiceResponseSchema>;
