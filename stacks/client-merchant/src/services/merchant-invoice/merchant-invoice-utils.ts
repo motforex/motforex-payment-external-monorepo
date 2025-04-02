@@ -51,12 +51,7 @@ export type HandleInvoiceCreationRequest = {
 export async function handleInvoiceCreation(request: HandleInvoiceCreationRequest): Promise<APIResponse> {
   try {
     const { metadata, id, createNewInvoice, regenerateInvoice, invoiceType } = request;
-    const { email, depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(metadata, id);
-
-    if (depositRequest.email !== email) {
-      logger.error(`Invalid email for ${invoiceType} invoice creation!`);
-      throw new CustomError(`Invalid request for ${invoiceType} invoice creation!`, 400);
-    }
+    const { depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(metadata, id);
 
     if (!depositRequest.paymentMethodTitle.toUpperCase().includes(invoiceType.toUpperCase())) {
       logger.error(`Invalid payment method for ${invoiceType}-invoice creation!`);
@@ -121,11 +116,6 @@ export async function getValidatedInvoiceAndRequest(metadata: RequestMetadata, i
     getValidDepositRequest(id, [STATUS_PENDING], email),
     getMerchantInvoiceById(id)
   ]);
-
-  if (depositRequest.status !== STATUS_PENDING) {
-    logger.error(`Invalid status for invoice creation!`);
-    throw new CustomError('Invalid status for invoice creation!', 400);
-  }
 
   return { email, depositRequest, merchantInvoice };
 }

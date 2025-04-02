@@ -1,6 +1,6 @@
 import type { PaymentRequest } from '@motforex/global-types';
 
-import { getDepositReqById } from '@/repository/deposit-request-repository';
+import { getDepositReqById } from '@/repository/deposit-request';
 import { CustomError, logger } from '@motforex/global-libs';
 
 export async function getValidDepositById(id: number, statusArr?: string[], email?: string): Promise<PaymentRequest> {

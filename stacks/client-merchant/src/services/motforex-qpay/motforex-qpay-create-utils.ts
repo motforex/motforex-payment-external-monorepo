@@ -27,8 +27,8 @@ export async function createNewQpayInvoice(
   const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId } = depositRequest;
   logger.info(`Creating new Qpay invoice for deposit request: ${id} ${locale}`);
 
-  // const transactionAmount = amountWithCommission.amount * conversionRate;
-  const transactionAmount = 10;
+  const transactionAmount = amountWithCommission.amount * conversionRate;
+  // const transactionAmount = 10;
   logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
   logger.info(`The converted AmountInMNT: ${transactionAmount}`);
 
@@ -87,7 +87,7 @@ export async function createNewQpayInvoice(
  * @returns
  */
 export async function regenerateQpayInvoice(merchantInvoice: MerchantInvoice): Promise<MerchantInvoice> {
-  const { id, transactionAmount } = merchantInvoice;
+  const { id, transactionAmount, regenerationCount, providerId } = merchantInvoice;
   logger.info(`Regenerating Qpay invoice for deposit request: ${id}`);
 
   const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
@@ -119,14 +119,14 @@ export async function regenerateQpayInvoice(merchantInvoice: MerchantInvoice): P
   const updatedInvoice = await updateMerchantInvoice(
     {
       ...merchantInvoice,
-      regenerationCount: merchantInvoice.regenerationCount - 1,
+      regenerationCount: regenerationCount - 1,
       expiryDate: Date.now() + MOTFOREX_QPAY_EXPIRY_TIME,
       providerId: invoice_id,
       providerInfo: invoiceNumber,
       metadata: { qPay_shortUrl, qr_text, qr_image, urls }
     },
     'providerId = :oldProviderId',
-    { ':oldProviderId': merchantInvoice.providerId }
+    { ':oldProviderId': providerId }
   );
   logger.info(`Qpay Invoice regenerated successfully: ${JSON.stringify(updatedInvoice.id)}`);
 

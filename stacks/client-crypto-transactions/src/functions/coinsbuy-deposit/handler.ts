@@ -1,15 +1,28 @@
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs';
 
-import { CustomError, formatApiResponse, handleApiFuncErrorWithI18n, logger, middyfy } from '@motforex/global-libs';
-import { createCoinbuysInvoiceByDepositId } from '@/service/deposit-request-service';
+import {
+  checkAuthorization,
+  CustomError,
+  extractMetadata,
+  formatApiResponse,
+  handleApiFuncErrorWithI18n,
+  logger,
+  middyfy
+} from '@motforex/global-libs';
+import { createCoinbuysInvoiceByDepositId } from '@/service/coinsbuy-deposit/coinsbuy-deposit-service';
+import { coinsbuyDepositCallbackService } from '@/service/coinsbuy-deposit/coinsbuy-deposit-callback-service';
+import { CoinsbuyDepositSchema } from '@/types/coinsbuy.types';
 
 const createCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`financeMessageErrorBadRequestPathVariable`, 400);
 
-    const result = await createCoinbuysInvoiceByDepositId(Number(event.pathParameters.id));
+    const { email } = checkAuthorization(extractMetadata(event));
+    const id = Number(event.pathParameters.id);
+
+    const result = await createCoinbuysInvoiceByDepositId(id, email);
     return formatApiResponse(result);
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);
@@ -32,7 +45,10 @@ const callbackCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<Ap
     logger.info(`Query string: ${event.queryStringParameters}`);
     logger.info(`Body: ${JSON.stringify(event.body)}`);
 
-    return formatApiResponse(event.body || {});
+    const parsedBody = CoinsbuyDepositSchema.parse(event.body);
+
+    await coinsbuyDepositCallbackService(parsedBody);
+    return formatApiResponse({});
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);
   }

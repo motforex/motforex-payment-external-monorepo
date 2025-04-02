@@ -1,4 +1,4 @@
-import { createCoinbuysInvoice, checkCoinsbuyInvoice, callbackCoinbuysInvoice } from '@/functions/coinsbuy';
+import { createCoinbuysInvoice, checkCoinsbuyInvoice, callbackCoinbuysInvoice } from '@/functions/coinsbuy-deposit';
 import {
   getCryptoBalanceByApi,
   getCryptoBalancePrivately,

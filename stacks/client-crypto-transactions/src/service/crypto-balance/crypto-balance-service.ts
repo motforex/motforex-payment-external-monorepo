@@ -5,7 +5,7 @@ import {
   createCryptoBalanceRecord,
   getCryptoBalanceRecordByUserId,
   updateCryptoBalanceRecord
-} from '@/repository/crypto-balance-request-repository';
+} from '@/repository/crypto-balance-request';
 import { CustomError, logger } from '@motforex/global-libs';
 
 /**

@@ -1,5 +1,7 @@
+import { RequestMetadataSchema } from '@motforex/global-types';
 import { z } from 'zod';
 
+//------------------------------------- INVOICE REQUEST -----------------------------------------------
 export const CoinsbuyAuthTokenDataSchema = z.object({
   type: z.string().optional(), // Allow `type` to be undefined
   id: z.string().nullable().optional(),
@@ -31,13 +33,9 @@ const WalletDataSchema = z.object({
 });
 
 const RelationshipsSchema = z.object({
-  currency: z.object({
-    data: WalletDataSchema.nullable()
-  }),
-
-  wallet: z.object({
-    data: WalletDataSchema.nullable()
-  })
+  currency: z.object({ data: WalletDataSchema.nullable() }),
+  wallet: z.object({ data: WalletDataSchema.nullable() }),
+  transfer: z.object({ data: WalletDataSchema.nullable() })
 });
 
 const AttributesSchema = z.object({
@@ -76,3 +74,42 @@ export const CoinsbuyDepositRequestResponseSchema = z.object({
 });
 
 export type CoinsbuyDepositRequestResponse = z.infer<typeof CoinsbuyDepositRequestResponseSchema>;
+
+//------------------------------------- DEPOSIT REQUEST -----------------------------------------------
+const destinationSchema = z.object({
+  address_type: z.string().nullable(),
+  address: z.string()
+});
+
+export type Destination = z.infer<typeof destinationSchema>;
+
+export const CoinsbuyDepositAttributesSchema = z.object({
+  address: z.string(),
+  created_at: z.string(),
+  tracking_id: z.string(),
+  target_paid: z.string(),
+  source_amount_requested: z.string(),
+  target_amount_requested: z.string(),
+  status: z.number(),
+  time_limit: z.any().nullable(),
+  inaccuracy: z.string(),
+  destination: destinationSchema
+});
+
+export type CoinsbuyDepositAttributes = z.infer<typeof CoinsbuyDepositAttributesSchema>;
+
+export const CoinsbuyDepositDataSchema = z.object({
+  type: z.string(),
+  id: z.string(),
+  attributes: CoinsbuyDepositAttributesSchema,
+  relationships: RelationshipsSchema
+});
+
+export type CoinsbuyDepositData = z.infer<typeof CoinsbuyDepositDataSchema>;
+
+export const CoinsbuyDepositSchema = z.object({
+  data: CoinsbuyDepositDataSchema,
+  metadata: RequestMetadataSchema
+});
+
+export type CoinsbuyDeposit = z.infer<typeof CoinsbuyDepositSchema>;

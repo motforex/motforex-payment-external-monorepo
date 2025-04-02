@@ -1,10 +1,9 @@
 import { logger, sendRequest } from '@motforex/global-libs';
-import { PaymentRequest } from '@motforex/global-types';
 import { getCoinbuysAuthToken } from './coinsbuy-auth-service';
 import { API_COINBUYS_BASE } from '@/constants';
 import { CoinsbuyDepositRequestResponse, CoinsbuyDepositRequestResponseSchema } from '@/types/coinsbuy.types';
 
-export async function createCoinbuysInvoice(depositRequest: PaymentRequest): Promise<CoinsbuyDepositRequestResponse> {
+export async function createCoinbuysInvoice(id: number, amount: number): Promise<CoinsbuyDepositRequestResponse> {
   try {
     const coinsBuyAuthToken = await getCoinbuysAuthToken();
 
@@ -20,11 +19,11 @@ export async function createCoinbuysInvoice(depositRequest: PaymentRequest): Pro
           type: 'deposit',
           attributes: {
             label: 'MOTFOREX_DASHBOARD_DEPOSIT',
-            tracking_id: `${depositRequest.id}`,
+            tracking_id: `${id}`,
             target_amount_requested: `6.5`,
             confirmations_needed: 2,
-            callback_url: `https://api.motforex.com/crypto/v1/deposit/${depositRequest.id}/callback`,
-            payment_page_redirect_url: `https://dashboard.motforex.com/payments/deposit/${depositRequest.id}`,
+            callback_url: `https://api.motforex.com/crypto/v1/deposit/${id}/callback`,
+            payment_page_redirect_url: `https://dashboard.motforex.com/payments/deposit/${id}`,
             payment_page_button_text: 'Back to dashboard'
           },
           relationships: {
