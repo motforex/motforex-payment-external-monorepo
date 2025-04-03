@@ -9,7 +9,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   const eventPurchase = await getValidatedEventPurchaseById(id);
 
   // Validate the status of the event purchase
-  if (eventPurchase.status !== 'PENDING') {
+  if (eventPurchase.status !== STATUS_PENDING) {
     logger.error(`EventPurchase:${id} is not pending! Cannot check the invoice`);
     return eventPurchase;
   }

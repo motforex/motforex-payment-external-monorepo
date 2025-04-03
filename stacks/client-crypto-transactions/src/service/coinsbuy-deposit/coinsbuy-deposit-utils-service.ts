@@ -74,7 +74,7 @@ export async function regenerateCoinsbuyInvoice(merchantInvoice: MerchantInvoice
           urlLink: coinsbuyInvoice.attributes.payment_page
         }
       },
-      `#status = :pending`,
+      `invoiceStatus = :pending`,
       { ':pending': STATUS_PENDING }
     );
     logger.info(`CoinsBuy invoice updated successfully: ${JSON.stringify(updatedMerchantInvoice)}`);

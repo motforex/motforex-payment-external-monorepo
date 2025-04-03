@@ -20,7 +20,7 @@ export async function createCoinbuysInvoice(id: number, amount: number): Promise
           attributes: {
             label: 'MOTFOREX_DASHBOARD_DEPOSIT',
             tracking_id: `${id}`,
-            target_amount_requested: `6.5`,
+            target_amount_requested: `${amount}`,
             confirmations_needed: 2,
             callback_url: `https://api.motforex.com/crypto/v1/deposit/${id}/callback`,
             payment_page_redirect_url: `https://dashboard.motforex.com/payments/deposit/${id}`,

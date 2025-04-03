@@ -1,5 +1,10 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { MerchantInvoice, RequestMetadata as Metadata } from '@motforex/global-types';
+import {
+  STATUS_EXECUTED,
+  STATUS_PENDING,
+  type MerchantInvoice,
+  type RequestMetadata as Metadata
+} from '@motforex/global-types';
 
 import { checkAuthorization, CustomError, handleApiFuncError, logger } from '@motforex/global-libs';
 import { getValidInvoicePayment, markMerchantInvoiceAsSuccessful, reexecuteDepositRequest } from '../merchant-invoice';
@@ -21,12 +26,12 @@ export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: nu
     const merchantInvoice = await getValidInvoicePayment(id, ['card', 'socialpay']);
 
     // Check MerchantInvoice status
-    if (merchantInvoice.invoiceStatus === 'PENDING') {
+    if (merchantInvoice.invoiceStatus === STATUS_PENDING) {
       return formatInvoiceAsResponse(await checkValidMotforexGolomtMerchInvoice(merchantInvoice));
     }
 
     // Handling case where the invoice is successful but the execution is not.
-    if (merchantInvoice.invoiceStatus === 'SUCCESSFUL' && merchantInvoice.executionStatus !== 'SUCCESSFUL') {
+    if (merchantInvoice.invoiceStatus === STATUS_EXECUTED && merchantInvoice.executionStatus !== STATUS_EXECUTED) {
       return formatInvoiceAsResponse(await reexecuteDepositRequest(merchantInvoice));
     }
 

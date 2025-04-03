@@ -6,7 +6,6 @@ import {
   getValidatedInvoiceAndRequest,
   markMerchantInvoiceAsFailed
 } from '../merchant-invoice';
-
 import { createNewCryptoDepositInvoice, regenerateCoinsbuyInvoice } from './coinsbuy-deposit-utils-service';
 import { logger } from '@motforex/global-libs';
 
@@ -50,7 +49,7 @@ export async function createCoinbuysInvoiceByDepositId(id: number, email: string
     logger.info(`Regenerated CoinsBuy invoice successfully: ${JSON.stringify(newMerchantInvoice)}`);
     return formatMerchantInvoiceForUser(newMerchantInvoice);
   } catch (error: unknown) {
-    logger.info(`Error occurred on createCryptoDeposit: ${error}`);
+    logger.info(`Error occurred on createCoinbuysInvoiceByDepositId: ${error}`);
     throw error;
   }
 }

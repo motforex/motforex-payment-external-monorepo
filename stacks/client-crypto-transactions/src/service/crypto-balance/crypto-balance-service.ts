@@ -1,12 +1,12 @@
 import type { CryptoBalanceRecord, UpdateCryptoBalanceRequest } from '@/types/crypto-balance.types';
 
 import { CryptoBalanceRecordSchema, UpdateCryptoBalanceRequestSchema } from '@/types/crypto-balance.types';
+import { CustomError, logger } from '@motforex/global-libs';
 import {
   createCryptoBalanceRecord,
   getCryptoBalanceRecordByUserId,
   updateCryptoBalanceRecord
 } from '@/repository/crypto-balance-request';
-import { CustomError, logger } from '@motforex/global-libs';
 
 /**
  *  Get crypto balance for a user.

@@ -1,12 +1,35 @@
+import {
+  STATUS_CANCELLED,
+  STATUS_EXECUTED,
+  STATUS_EXPIRED,
+  STATUS_FAILED,
+  STATUS_HALTED,
+  STATUS_INITIAL,
+  STATUS_PAYOUT,
+  STATUS_PENDING,
+  STATUS_PROCESSING,
+  STATUS_REJECTED
+} from '../constants';
 import { z } from 'zod';
 
-export const InvoiceStatusSchema = z.enum(['INITIAL', 'PENDING', 'SUCCESSFUL', 'UNSUCCESSFUL', 'EXPIRED', 'CANCELLED']);
+export const InvoiceStatusSchema = z.enum([
+  STATUS_INITIAL,
+  STATUS_PENDING,
+  STATUS_CANCELLED,
+  STATUS_EXPIRED,
+  STATUS_PROCESSING,
+  STATUS_PAYOUT,
+  STATUS_HALTED,
+  STATUS_FAILED,
+  STATUS_EXECUTED,
+  STATUS_REJECTED
+]);
 
 export const MerchantInvoiceSchema = z.object({
   // General config props
   id: z.number(),
   referenceId: z.number(),
-  referenceType: z.enum(['DEPOSIT', 'WITHDRAWAL']),
+  referenceType: z.string(),
   merchantMethod: z.enum(['QPAY', 'SOCIALPAY', 'MERCHANT', 'COINSBUY']),
   userId: z.string(),
   // Invoice props

@@ -1,12 +1,12 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata } from '@motforex/global-types';
 
-import { CustomError, handleApiFuncError, logger } from '@motforex/global-libs';
-import { getValidatedInvoiceAndRequest } from '../motforex-qpay';
-import { formatInvoiceAsResponse } from '@motforex/global-services';
-import { isPaidOnGolomtMerch } from './golomt-merch-check-utils';
 import { GOLOMT_MERCHANT_SECRET, GOLOMT_MERCHANT_TOKEN } from './golomt-merch-configs';
+import { CustomError, handleApiFuncError, logger } from '@motforex/global-libs';
 import { markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
+import { formatInvoiceAsResponse } from '@motforex/global-services';
+import { getValidatedInvoiceAndRequest } from '../motforex-qpay';
+import { isPaidOnGolomtMerch } from './golomt-merch-check-utils';
 
 export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
   try {

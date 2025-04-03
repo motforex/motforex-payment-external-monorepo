@@ -13,7 +13,7 @@ import { getValidInvoicePayment, markMerchantInvoiceAsSuccessful } from '../merc
 import { isQpayInvoicePaid } from '../qpay';
 import { MOTFOREX_QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
 import { reexecuteDepositRequest } from '../merchant-invoice';
-import { STATUS_PENDING } from '@motforex/global-types';
+import { STATUS_EXECUTED, STATUS_PENDING } from '@motforex/global-types';
 
 /**
  * Checks the status of a Motforex Qpay invoice.
@@ -34,7 +34,7 @@ export async function checkMotforexQpayInvoice(metadata: Metadata, id: number): 
     }
 
     // Handling case where the invoice is successful but the execution is not.
-    if (merchantInvoice.invoiceStatus === 'SUCCESSFUL' && merchantInvoice.executionStatus !== 'SUCCESSFUL') {
+    if (merchantInvoice.invoiceStatus === STATUS_EXECUTED && merchantInvoice.executionStatus !== STATUS_EXECUTED) {
       return formatInvoiceAsResponse(await reexecuteDepositRequest(merchantInvoice));
     }
 

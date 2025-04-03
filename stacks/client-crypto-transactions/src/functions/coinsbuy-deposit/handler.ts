@@ -10,10 +10,15 @@ import {
   logger,
   middyfy
 } from '@motforex/global-libs';
-import { createCoinbuysInvoiceByDepositId } from '@/service/coinsbuy-deposit/coinsbuy-deposit-service';
-import { coinsbuyDepositCallbackService } from '@/service/coinsbuy-deposit/coinsbuy-deposit-callback-service';
+import { coinsbuyDepositCallbackService, createCoinbuysInvoiceByDepositId } from '@/service/coinsbuy-deposit';
 import { CoinsbuyDepositSchema } from '@/types/coinsbuy.types';
 
+/**
+ *  Create invoice for coinsbuy deposit
+ *
+ * @param event
+ * @returns
+ */
 const createCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
@@ -39,15 +44,24 @@ const checkCoinsbuyInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFu
   }
 };
 
+/**
+ * Callback function for coinsbuy deposit
+ *
+ * @param event
+ * @returns
+ */
 const callbackCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
+    if (!event.pathParameters || !event.pathParameters.id) return formatApiResponse({});
+
     logger.info(`Path variable: ${event.pathParameters?.id}`);
     logger.info(`Query string: ${event.queryStringParameters}`);
     logger.info(`Body: ${JSON.stringify(event.body)}`);
 
+    const id = Number(event.pathParameters.id);
     const parsedBody = CoinsbuyDepositSchema.parse(event.body);
 
-    await coinsbuyDepositCallbackService(parsedBody);
+    await coinsbuyDepositCallbackService(id, parsedBody);
     return formatApiResponse({});
   } catch (error: unknown) {
     return handleApiFuncErrorWithI18n(error);

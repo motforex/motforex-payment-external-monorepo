@@ -1,20 +1,17 @@
-import { CustomError, logger } from '@motforex/global-libs';
+import type { MerchantInvoice, PaymentRequest as Payment } from '@motforex/global-types';
+
 import { createGolomtMerchInvoice, getCurrentDateAsString, GolomtCreateInvoiceSchema } from '@motforex/global-services';
-import {
-  MerchantInvoice,
-  MerchantInvoiceSchema,
-  PaymentRequest as Payment,
-  STATUS_PENDING
-} from '@motforex/global-types';
+import { markPaymentInvoiceAsSuccessful, markPaymentInvoiceAsUnsuccessful } from '../merchant-invoice';
+import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/merchant-invoice';
+import { STATUS_PENDING, MerchantInvoiceSchema } from '@motforex/global-types';
+import { isPaidOnGolomtMerch } from './golomt-merch-check-utils';
+import { CustomError, logger } from '@motforex/global-libs';
 import {
   GOLOMT_MERCHANT_EXPIRY_TIME,
   GOLOMT_MERCHANT_REGENERATION_COUNT,
   GOLOMT_MERCHANT_SECRET,
   GOLOMT_MERCHANT_TOKEN
 } from './golomt-merch-configs';
-import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/merchant-invoice';
-import { isPaidOnGolomtMerch } from './golomt-merch-check-utils';
-import { markPaymentInvoiceAsSuccessful, markPaymentInvoiceAsUnsuccessful } from '../merchant-invoice';
 
 /**
  * Create a new Golomt merchant invoice.

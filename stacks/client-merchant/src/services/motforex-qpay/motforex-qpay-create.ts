@@ -17,6 +17,6 @@ export async function createMotforexQpayInvoice(metadata: Metadata, id: number):
     id,
     createNewInvoice: createNewQpayInvoice,
     regenerateInvoice: regenerateQpayInvoice,
-    invoiceType: 'Qpay'
+    invoiceType: 'QPAY'
   });
 }

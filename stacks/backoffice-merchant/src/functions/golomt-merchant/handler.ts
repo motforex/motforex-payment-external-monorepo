@@ -13,6 +13,12 @@ import { checkMotforexGolomtMerchInvoice, receiveGolomtMerchPushNotification } f
 import { GolomtMerchantCallbackRequest as GolomtCallbackReq } from '@/types';
 import { verifyPermission } from '@motforex/global-services';
 
+/**
+ *  Check golomt merchant invoice
+ *
+ * @param event
+ * @returns
+ */
 const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
@@ -28,6 +34,11 @@ const postCheckGolomtMerchFunc: ApiFuncType<null> = async (event): Promise<ApiFu
   }
 };
 
+/**
+ *
+ * @param event
+ * @returns
+ */
 const postReceiveGolomtMerchCallbackFunc: ApiFuncType<GolomtCallbackReq> = async (event): Promise<ApiFuncRes> => {
   try {
     if (event.httpMethod !== 'POST') return formatApiResponse({ message: 'Unallowed HTTP method' }, 404);

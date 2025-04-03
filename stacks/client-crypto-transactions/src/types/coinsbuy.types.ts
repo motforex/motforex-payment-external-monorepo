@@ -1,4 +1,3 @@
-import { RequestMetadataSchema } from '@motforex/global-types';
 import { z } from 'zod';
 
 //------------------------------------- INVOICE REQUEST -----------------------------------------------
@@ -28,14 +27,14 @@ export const CoinsbuyAuthTokenResponseSchema = z.object({
 export type CoinsbuyAuthTokenResponse = z.infer<typeof CoinsbuyAuthTokenResponseSchema>;
 
 const WalletDataSchema = z.object({
-  type: z.literal('wallet'),
+  type: z.string(),
   id: z.string()
 });
 
 const RelationshipsSchema = z.object({
-  currency: z.object({ data: WalletDataSchema.nullable() }),
-  wallet: z.object({ data: WalletDataSchema.nullable() }),
-  transfer: z.object({ data: WalletDataSchema.nullable() })
+  currency: z.object({ data: WalletDataSchema.nullable() }).optional(),
+  transfer: z.object({ data: WalletDataSchema.nullable() }).optional(),
+  wallet: z.object({ data: WalletDataSchema.nullable() })
 });
 
 const AttributesSchema = z.object({
@@ -107,9 +106,64 @@ export const CoinsbuyDepositDataSchema = z.object({
 
 export type CoinsbuyDepositData = z.infer<typeof CoinsbuyDepositDataSchema>;
 
+export const CoinsbuyCurrencyIncludeSchema = z.object({
+  type: z.string(),
+  id: z.string(),
+  attributes: z.object({
+    blockchain_name: z.string(),
+    iso: z.number(),
+    name: z.string(),
+    alpha: z.string(),
+    alias: z.string(),
+    tags: z.string(),
+    exp: z.number(),
+    confirmation_blocks: z.number(),
+    minimal_transfer_amount: z.string(),
+    block_delay: z.number()
+  })
+});
+
+export const CoinsbuyTransferIncludedSchema = z.object({
+  type: z.string(),
+  id: z.string(),
+  attributes: z.object({
+    op_id: z.number(),
+    op_type: z.number(),
+    amount: z.string(),
+    rate_target: z.string(),
+    commission: z.string(),
+    fee: z.string(),
+    txid: z.string(),
+    status: z.number(),
+    user_message: z.string().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+    confirmations: z.number(),
+    risk: z.number(),
+    risk_personal: z.any().nullable(),
+    risk_personal_status: z.number(),
+    risk_status: z.number(),
+    amount_target: z.string(),
+    commission_target: z.string(),
+    amount_cleared: z.string()
+  }),
+  relationships: z.object({
+    currency: z.object({ data: RelationshipsSchema }),
+    parent: z.object({ data: RelationshipsSchema })
+  })
+});
+
+export type CoinsbuyTransferIncluded = z.infer<typeof CoinsbuyTransferIncludedSchema>;
+
 export const CoinsbuyDepositSchema = z.object({
   data: CoinsbuyDepositDataSchema,
-  metadata: RequestMetadataSchema
+  included: z.array(z.union([CoinsbuyCurrencyIncludeSchema, CoinsbuyTransferIncludedSchema])).optional(),
+  meta: z
+    .object({
+      time: z.string(),
+      sign: z.string()
+    })
+    .optional()
 });
 
 export type CoinsbuyDeposit = z.infer<typeof CoinsbuyDepositSchema>;

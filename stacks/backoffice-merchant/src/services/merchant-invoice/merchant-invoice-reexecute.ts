@@ -1,4 +1,4 @@
-import type { MerchantInvoice } from '@motforex/global-types';
+import { STATUS_EXECUTED, type MerchantInvoice } from '@motforex/global-types';
 
 import { updateMerchantInvoice } from '@/repository/merchant-invoice';
 import { executeDepositRequestById } from '@motforex/global-services';
@@ -17,12 +17,12 @@ export async function reexecuteDepositRequest(invoice: MerchantInvoice): Promise
 
     const updatedInvoice = await updateMerchantInvoice({
       ...invoice,
-      executionStatus: 'SUCCESSFUL',
+      executionStatus: STATUS_EXECUTED,
       message: 'Re-execution successful!'
     });
     logger.info(`Successfully re-executed deposit request with id: ${invoice.id}`);
 
-    return updatedInvoice;
+    return updatedInvoice!;
   } catch (error: unknown) {
     logger.error(`Failed to re-execute deposit request with id: ${invoice.id}`, error);
     return invoice;
