@@ -55,7 +55,7 @@ export async function handleInvoiceCreation(request: HandleInvoiceCreationReques
 
     if (!depositRequest.paymentMethodTitle.toUpperCase().includes(invoiceType.toUpperCase())) {
       logger.error(`Invalid payment method for ${invoiceType}-invoice creation!`);
-      throw new CustomError(`Invalid payment method for ${invoiceType} invoice creation!`, 400);
+      throw new CustomError(`financeMessageErrorInvalidPaymentMethod`, 400);
     }
 
     // If the invoice request does not exist

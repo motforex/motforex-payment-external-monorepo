@@ -6,7 +6,8 @@ import { checkMotforexQpayInvoiceAsClient, createMotforexQpayInvoice } from '@/s
 
 const createQpayInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    if (!event.pathParameters || !event.pathParameters.id)
+      throw new CustomError(`financeMessageErrorBadRequestPathVariable`, 400);
     return await createMotforexQpayInvoice(extractMetadata(event), Number(event.pathParameters.id));
   } catch (error: unknown) {
     return handleApiFuncError(error);
@@ -15,7 +16,8 @@ const createQpayInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncR
 
 const checkQpayInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
-    if (!event.pathParameters || !event.pathParameters.id) throw new CustomError(`Bad request!`, 400);
+    if (!event.pathParameters || !event.pathParameters.id)
+      throw new CustomError(`financeMessageErrorBadRequestPathVariable`, 400);
     return await checkMotforexQpayInvoiceAsClient(extractMetadata(event), Number(event.pathParameters.id));
   } catch (error: unknown) {
     return handleApiFuncError(error);

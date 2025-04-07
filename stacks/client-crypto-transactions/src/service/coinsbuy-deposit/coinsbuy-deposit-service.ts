@@ -7,7 +7,7 @@ import {
   markMerchantInvoiceAsFailed
 } from '../merchant-invoice';
 import { createNewCryptoDepositInvoice, regenerateCoinsbuyInvoice } from './coinsbuy-deposit-utils-service';
-import { logger } from '@motforex/global-libs';
+import { CustomError, logger } from '@motforex/global-libs';
 
 /**
  * Validates the deposit request and creates a new CoinsBuy invoice.
@@ -18,6 +18,11 @@ import { logger } from '@motforex/global-libs';
 export async function createCoinbuysInvoiceByDepositId(id: number, email: string): Promise<PaymentInvoiceResponse> {
   try {
     const { depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(id, email);
+
+    if (depositRequest.paymentMethodId !== 1014) {
+      logger.info(`Invalid paymentMethodId: ${depositRequest.paymentMethodId}`);
+      throw new CustomError('financeMessageErrorInvalidPaymentMethod', 400);
+    }
 
     if (!merchantInvoice) {
       logger.info(`CoinsBuy invoice does not exist for deposit request: ${id}`);
