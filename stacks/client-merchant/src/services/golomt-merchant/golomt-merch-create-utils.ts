@@ -77,8 +77,8 @@ async function createInvoiceForDeposit(
 ): Promise<MerchantInvoice> {
   const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId } = deposit;
   // For now the amount is hardcoded as 10.
-  const transactionAmount = 10;
-  // const transactionAmount = amountWithCommission.amount * conversionRate;
+  // const transactionAmount = 10;
+  const transactionAmount = amountWithCommission.amount * conversionRate;
 
   logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
   logger.info(`The converted AmountInMNT: ${transactionAmount}`);
