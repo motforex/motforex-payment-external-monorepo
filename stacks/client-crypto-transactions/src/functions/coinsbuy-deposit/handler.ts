@@ -34,6 +34,9 @@ const createCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiF
   }
 };
 
+/**
+ *
+ */
 const checkCoinsbuyInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)

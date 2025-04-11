@@ -1,6 +1,11 @@
 import type { AWS } from '@serverless/typescript';
 import { postCreateQpayInvoice, postCheckQpayInvoice } from '@/functions/qpay';
-import { createGolomtMerchInvoice, createSocialPayInvoice, checkGolomtMerchInvoice } from '@/functions/golomt-merchant';
+import {
+  createGolomtMerchInvoice,
+  createSocialPayInvoice,
+  checkGolomtMerchInvoice,
+  checkSocialpayInvoice
+} from '@/functions/golomt-merchant';
 
 const serverlessConfig: AWS = {
   service: 'motforex-client-merchant',
@@ -41,7 +46,8 @@ const serverlessConfig: AWS = {
     // Golomt merchant functions
     createGolomtMerchInvoice,
     createSocialPayInvoice,
-    checkGolomtMerchInvoice
+    checkGolomtMerchInvoice,
+    checkSocialpayInvoice
   },
   package: { individually: true },
   custom: {

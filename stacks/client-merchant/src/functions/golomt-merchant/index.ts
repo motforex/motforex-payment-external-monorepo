@@ -20,3 +20,10 @@ export const checkGolomtMerchInvoice = createUserAuthApiGatewayFunc(
   'post',
   '/v1/invoice/golomt-merchant/{id}/check'
 );
+
+export const checkSocialpayInvoice = createUserAuthApiGatewayFunc(
+  __dirname,
+  'checkSocialpayInvoice',
+  'post',
+  '/v1/invoice/socialpay/{id}/check'
+);

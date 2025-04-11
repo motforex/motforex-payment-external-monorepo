@@ -1,5 +1,4 @@
-import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata } from '@motforex/global-types';
+import type { MerchantInvoice } from '@motforex/global-types';
 
 import { createNewQpayInvoice, regenerateQpayInvoice } from './motforex-qpay-create-utils';
 import { handleInvoiceCreation } from '../merchant-invoice';
@@ -11,10 +10,11 @@ import { handleInvoiceCreation } from '../merchant-invoice';
  * @param id
  * @returns
  */
-export async function createMotforexQpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function createMotfxQpayInvoice(id: number, email: string, locale: string): Promise<MerchantInvoice> {
   return handleInvoiceCreation({
-    metadata,
     id,
+    email,
+    locale,
     createNewInvoice: createNewQpayInvoice,
     regenerateInvoice: regenerateQpayInvoice,
     invoiceType: 'QPAY'

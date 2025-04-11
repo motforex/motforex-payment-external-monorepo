@@ -1,5 +1,4 @@
-import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata } from '@motforex/global-types';
+import type { MerchantInvoice } from '@motforex/global-types';
 
 import {
   createNewGolomtMerchantInvoice,
@@ -16,13 +15,18 @@ import { handleInvoiceCreation } from '../merchant-invoice';
  * @param id - Invoice ID
  * @returns - API response
  */
-export async function createMotforexGolomtMerchantInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function createMotforexGolomtMerchantInvoice(
+  id: number,
+  email: string,
+  locale: string
+): Promise<MerchantInvoice> {
   return handleInvoiceCreation({
-    metadata,
     id,
+    email,
+    locale,
     createNewInvoice: createNewGolomtMerchantInvoice,
     regenerateInvoice: regenerateGolomtMerchantInvoice,
-    invoiceType: 'Card'
+    invoiceType: 'CARD'
   });
 }
 
@@ -33,12 +37,17 @@ export async function createMotforexGolomtMerchantInvoice(metadata: Metadata, id
  * @param id - Invoice ID
  * @returns - API response
  */
-export async function createMotforexSocialpayInvoice(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function createMotforexSocialpayInvoice(
+  id: number,
+  email: string,
+  locale: string
+): Promise<MerchantInvoice> {
   return handleInvoiceCreation({
-    metadata,
     id,
+    email,
+    locale,
     createNewInvoice: createNewSocialpayInvoice,
     regenerateInvoice: regenerateSocialpayInvoice,
-    invoiceType: 'Socialpay'
+    invoiceType: 'SOCIALPAY'
   });
 }

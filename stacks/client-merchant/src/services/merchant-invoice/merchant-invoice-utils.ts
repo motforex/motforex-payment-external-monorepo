@@ -1,25 +1,19 @@
-import type { MerchantInvoice, PaymentRequest, RequestMetadata } from '@motforex/global-types';
-import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata } from '@motforex/global-types';
+import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
-import { formatInvoiceAsResponse } from '@motforex/global-services';
 import { markPaymentInvoiceAsExpired } from '../merchant-invoice';
-import { QpayCreateInvoiceRequest, QpayCreateInvoiceRequestSchema } from '@motforex/global-services';
-import { checkAuthorization, handleApiFuncError, CustomError, logger } from '@motforex/global-libs';
+import { CustomError, logger } from '@motforex/global-libs';
 import { getMerchantInvoiceById } from '@/repository/merchant-invoice';
-import { getValidDepositRequest } from '../utility';
-import { STATUS_PENDING } from '@motforex/global-types';
-import { MOTFOREX_QPAY_INVOICE_CODE } from '../motforex-qpay';
+import { getDepositReqById } from '@/repository/deposit-requests';
 
 interface ValidatedResponse {
-  email: string;
   depositRequest: PaymentRequest;
   merchantInvoice: MerchantInvoice | undefined;
 }
 
 export type HandleInvoiceCreationRequest = {
-  metadata: Metadata;
   id: number;
+  email: string;
+  locale: string;
   createNewInvoice: (depositRequest: PaymentRequest, locale: string) => Promise<any>;
   regenerateInvoice: (merchantInvoice: MerchantInvoice) => Promise<any>;
   invoiceType: string;
@@ -48,48 +42,43 @@ export type HandleInvoiceCreationRequest = {
  * const response = await handleInvoiceCreation(request);
  * // Output: { statusCode: 200, body: '{"id": 12345, "amount": 100}' }
  */
-export async function handleInvoiceCreation(request: HandleInvoiceCreationRequest): Promise<APIResponse> {
-  try {
-    const { metadata, id, createNewInvoice, regenerateInvoice, invoiceType } = request;
-    const { depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(metadata, id);
+export async function handleInvoiceCreation(request: HandleInvoiceCreationRequest): Promise<MerchantInvoice> {
+  const { id, createNewInvoice, regenerateInvoice, locale, invoiceType, email } = request;
 
-    if (!depositRequest.paymentMethodTitle.toUpperCase().includes(invoiceType.toUpperCase())) {
-      logger.error(`Invalid payment method for ${invoiceType}-invoice creation!`);
-      throw new CustomError(`financeMessageErrorInvalidPaymentMethod`, 400);
-    }
-
-    // If the invoice request does not exist
-    if (!merchantInvoice) {
-      logger.info(`${invoiceType}-Invoice does not exist for deposit request: ${id}`);
-      return formatInvoiceAsResponse(
-        await createNewInvoice(depositRequest, (metadata.headers.locale as string) || 'en')
-      );
-    }
-
-    // If the invoice request already exists
-    logger.info(`${invoiceType}-Invoice already exists for deposit request: ${id}`);
-    if (merchantInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`${invoiceType}-Invoice is already successful for deposit request: ${id}`);
-      return formatInvoiceAsResponse(merchantInvoice);
-    }
-
-    const currentDate = Date.now();
-    if (merchantInvoice.expiryDate > currentDate) {
-      logger.info(`${invoiceType}-Invoice hasn't expired for deposit request: ${id}`);
-      return formatInvoiceAsResponse(merchantInvoice);
-    }
-
-    logger.info(`${invoiceType}-Invoice has expired for deposit request: ${id}`);
-    if (merchantInvoice.regenerationCount <= 0) {
-      logger.info(`${invoiceType}-Invoice regeneration count is zero for deposit request: ${id}`);
-      const updatedInvoice = await markPaymentInvoiceAsExpired(merchantInvoice);
-      return formatInvoiceAsResponse(updatedInvoice);
-    }
-
-    return formatInvoiceAsResponse(await regenerateInvoice(merchantInvoice));
-  } catch (error: unknown) {
-    return handleApiFuncError(error);
+  const { depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(id, email, invoiceType);
+  // If the invoice request does not exist
+  if (!merchantInvoice) {
+    logger.error(`Merchant invoice not found for ID: ${id}`);
+    return await createNewInvoice(depositRequest, locale || 'mn');
   }
+  logger.info(`Merchant invoice (${invoiceType}) found for ID: ${id}`);
+
+  // If the invoice request is not PENDING
+  if (merchantInvoice.invoiceStatus !== 'PENDING') {
+    logger.info(`Merchant invoice (${invoiceType}) is already successful for ID: ${id}`);
+    return merchantInvoice;
+  }
+
+  // If the invoice request already exists and not expired yet
+  const currentDate = Date.now();
+  if (merchantInvoice.expiryDate > currentDate) {
+    logger.info(`Merchant invoice (${invoiceType}) hasn't expired for ID: ${id}`);
+    return merchantInvoice;
+  }
+
+  // If invoice has expired and regeneration count is zero
+  if (merchantInvoice.regenerationCount <= 0) {
+    logger.info(`Merchant invoice (${invoiceType}) regeneration count is zero for ID: ${id}`);
+    const updatedInvoice = await markPaymentInvoiceAsExpired(merchantInvoice);
+    return updatedInvoice;
+  }
+
+  if (depositRequest.status !== 'PENDING') {
+    logger.error(`Deposit request is not in PENDING status for ID: ${id}`);
+    throw new CustomError('financeMessageErrorDepositRequestNotFound', 400);
+  }
+
+  return await regenerateInvoice(merchantInvoice);
 }
 
 /**
@@ -98,6 +87,8 @@ export async function handleInvoiceCreation(request: HandleInvoiceCreationReques
  *
  * @param {RequestMetadata} metadata - Metadata containing authorization and header details.
  * @param {number} id - The unique identifier of the deposit request or invoice.
+ * @param {string} email - The email address associated with the deposit request.
+ * @param {string} invoiceType - The type of invoice (e.g., "QPAY") for validation.
  * @returns {Promise<ValidatedResponse>} - An object containing the validated email, deposit request, and merchant invoice (if it exists).
  * @throws {CustomError} - If the deposit request status is not `PENDING` or validation fails.
  * @example
@@ -110,44 +101,29 @@ export async function handleInvoiceCreation(request: HandleInvoiceCreationReques
  * //   merchantInvoice: undefined
  * // }
  */
-export async function getValidatedInvoiceAndRequest(metadata: RequestMetadata, id: number): Promise<ValidatedResponse> {
-  const { email } = checkAuthorization(metadata, 'create-Motforex-Invoice');
-  const [depositRequest, merchantInvoice] = await Promise.all([
-    getValidDepositRequest(id, [STATUS_PENDING], email),
-    getMerchantInvoiceById(id)
-  ]);
+export async function getValidatedInvoiceAndRequest(
+  id: number,
+  email: string,
+  invoiceType: string
+): Promise<ValidatedResponse> {
+  const [depositRequest, merchantInvoice] = await Promise.all([getDepositReqById(id), getMerchantInvoiceById(id)]);
+  // If the deposit request does not exist
+  if (!depositRequest) {
+    logger.error(`Deposit request not found for ID: ${id}`);
+    throw new CustomError('financeMessageErrorDepositRequestNotFound', 400);
+  }
 
-  return { email, depositRequest, merchantInvoice };
-}
+  // If payment method is not matched with the invoice type
+  if (!depositRequest.paymentMethodTitle.toUpperCase().includes(invoiceType.toUpperCase())) {
+    logger.error(`Invalid payment method for ${invoiceType}-invoice creation!`);
+    throw new CustomError(`financeMessageErrorInvalidPaymentMethod`, 400);
+  }
 
-/**
- * Constructs a QPay invoice request object based on the provided ID, amount, and invoice number.
- * The object is validated against the `QpayCreateInvoiceRequestSchema`.
- *
- * @param {number} id - The unique identifier of the deposit request.
- * @param {number} amount - The amount for the invoice.
- * @param {string} invoiceNumber - The unique invoice number.
- * @returns {QpayCreateInvoiceRequest} - A validated QPay invoice request object.
- * @example
- * const qpayRequest = buildQpayInvoiceRequest(12345, 100.50, "INV12345");
- * // Output: {
- * //   invoice_code: "MOTFOREX_QPAY_INVOICE_CODE",
- * //   sender_invoice_no: "INV12345",
- * //   invoice_receiver_code: "INV12345",
- * //   invoice_description: "MOTFOREX DEPOSIT 12345",
- * //   sender_branch_code: "MAIN",
- * //   amount: 100.50,
- * //   callback_url: "https://api-backoffice.motforex.com/mechant/v1/invoice/qpay/12345/callback"
- * // }
- */
-export function buildQpayInvoiceRequest(id: number, amount: number, invoiceNumber: string): QpayCreateInvoiceRequest {
-  return QpayCreateInvoiceRequestSchema.parse({
-    invoice_code: MOTFOREX_QPAY_INVOICE_CODE,
-    sender_invoice_no: invoiceNumber,
-    invoice_receiver_code: invoiceNumber,
-    invoice_description: `MOTFOREX DEPOSIT ${id}`,
-    sender_branch_code: 'MAIN',
-    amount,
-    callback_url: `https://api-backoffice.motforex.com/mechant/v1/invoice/qpay/${id}/callback`
-  });
+  // If the deposit request does not exist
+  if (depositRequest.email !== email) {
+    logger.info(`Email mismatch for deposit request ID: ${id}`);
+    throw new CustomError(`financeMessageErrorInvalidPaymentMethod`, 400);
+  }
+
+  return { depositRequest, merchantInvoice };
 }

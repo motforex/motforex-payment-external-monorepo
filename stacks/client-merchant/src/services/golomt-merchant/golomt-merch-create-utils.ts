@@ -144,7 +144,7 @@ async function createInvoiceForDeposit(
  */
 async function regenerateInvoice(merchantInvoice: MerchantInvoice, redirectSegment: string): Promise<MerchantInvoice> {
   try {
-    const { id, providerId, transactionAmount, metadata } = merchantInvoice;
+    const { id, providerId, transactionAmount, metadata, regenerationCount } = merchantInvoice;
     logger.info(`Regenerating invoice for deposit request: ${id}`);
 
     // Validate the credentials
@@ -177,7 +177,7 @@ async function regenerateInvoice(merchantInvoice: MerchantInvoice, redirectSegme
     const updatedInvoice = await updateMerchantInvoice(
       {
         ...merchantInvoice,
-        regenerationCount: merchantInvoice.regenerationCount - 1,
+        regenerationCount: regenerationCount - 1,
         expiryDate: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
         providerId: transactionId,
         providerInfo: invoice,
@@ -187,7 +187,7 @@ async function regenerateInvoice(merchantInvoice: MerchantInvoice, redirectSegme
         }
       },
       'providerId = :oldProviderId',
-      { ':oldProviderId': merchantInvoice.providerId }
+      { ':oldProviderId': providerId }
     );
 
     logger.info(`Invoice regenerated successfully: ${updatedInvoice.id}`);

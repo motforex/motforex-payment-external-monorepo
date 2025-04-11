@@ -1,14 +1,20 @@
 import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
-import { buildQpayInvoiceRequest, markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
-import { createSimpleQpayInvoice, getCurrentDateAsString } from '@motforex/global-services';
+import { markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
+import {
+  createSimpleQpayInvoice,
+  getCurrentDateAsString,
+  QpayCreateInvoiceRequest,
+  QpayCreateInvoiceRequestSchema
+} from '@motforex/global-services';
 import { createMerchantInvoice, updateMerchantInvoice } from '@/repository/merchant-invoice';
 import { CustomError, getParameterStoreVal, logger } from '@motforex/global-libs';
 import { MerchantInvoiceSchema, STATUS_PENDING } from '@motforex/global-types';
 import {
   MOTFOREX_QPAY_EXPIRY_TIME,
   QPAY_TOKEN_PARAMETER,
-  MOTFOREX_QPAY_REGENERATION_COUNT
+  MOTFOREX_QPAY_REGENERATION_COUNT,
+  MOTFOREX_QPAY_INVOICE_CODE
 } from './motforex-qpay-constants';
 import { cancelMotforexInvoice } from './motforex-qpay-cancel';
 import { isPaidOnQpay } from './motforex-qpay-check';
@@ -23,17 +29,23 @@ export async function createNewQpayInvoice(
   depositRequest: PaymentRequest,
   locale: string = 'mn'
 ): Promise<MerchantInvoice> {
-  const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId } = depositRequest;
+  const { id, conversionRate, amountInUsd, amountWithCommission, transactionCurrency, userId, status } = depositRequest;
   logger.info(`Creating new Qpay invoice for deposit request: ${id} ${locale}`);
 
+  // Check if the deposit request and invoice exist
+  if (status !== STATUS_PENDING) {
+    logger.error(`Deposit request is not in PENDING status!`);
+    throw new CustomError('financeMessageErrorStatusNotAcceptable', 400);
+  }
+
+  // Calculate the transaction amount
   const transactionAmount = amountWithCommission.amount * conversionRate;
-  // const transactionAmount = 10;
   logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
   logger.info(`The converted AmountInMNT: ${transactionAmount}`);
-
   const invoiceNumber = `${id}${getCurrentDateAsString()}`;
-  const createQpayInvoiceRequest = buildQpayInvoiceRequest(id, transactionAmount, invoiceNumber);
 
+  // Create qpay invoice request
+  const createQpayInvoiceRequest = buildQpayInvoiceRequest(id, transactionAmount, invoiceNumber);
   const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
   if (!qpayAuthToken) {
     logger.error('QPAY token is not found in the parameter store!');
@@ -45,7 +57,6 @@ export async function createNewQpayInvoice(
     createQpayInvoiceRequest
   );
   logger.info(`Qpay invoice created successfully: ${JSON.stringify(invoice_id)}`);
-
   const invoice = await createMerchantInvoice(
     MerchantInvoiceSchema.parse({
       // General config props
@@ -73,7 +84,6 @@ export async function createNewQpayInvoice(
       createdAt: Date.now()
     })
   );
-
   logger.info(`New invoice created successfully: ${JSON.stringify(invoice.id)}`);
   return invoice;
 }
@@ -130,4 +140,36 @@ export async function regenerateQpayInvoice(merchantInvoice: MerchantInvoice): P
   logger.info(`Qpay Invoice regenerated successfully: ${JSON.stringify(updatedInvoice.id)}`);
 
   return updatedInvoice;
+}
+
+/**
+ * Constructs a QPay invoice request object based on the provided ID, amount, and invoice number.
+ * The object is validated against the `QpayCreateInvoiceRequestSchema`.
+ *
+ * @param {number} id - The unique identifier of the deposit request.
+ * @param {number} amount - The amount for the invoice.
+ * @param {string} invoiceNumber - The unique invoice number.
+ * @returns {QpayCreateInvoiceRequest} - A validated QPay invoice request object.
+ * @example
+ * const qpayRequest = buildQpayInvoiceRequest(12345, 100.50, "INV12345");
+ * // Output: {
+ * //   invoice_code: "MOTFOREX_QPAY_INVOICE_CODE",
+ * //   sender_invoice_no: "INV12345",
+ * //   invoice_receiver_code: "INV12345",
+ * //   invoice_description: "MOTFOREX DEPOSIT 12345",
+ * //   sender_branch_code: "MAIN",
+ * //   amount: 100.50,
+ * //   callback_url: "https://api-backoffice.motforex.com/mechant/v1/invoice/qpay/12345/callback"
+ * // }
+ */
+export function buildQpayInvoiceRequest(id: number, amount: number, invoiceNumber: string): QpayCreateInvoiceRequest {
+  return QpayCreateInvoiceRequestSchema.parse({
+    invoice_code: MOTFOREX_QPAY_INVOICE_CODE,
+    sender_invoice_no: invoiceNumber,
+    invoice_receiver_code: invoiceNumber,
+    invoice_description: `MOTFOREX DEPOSIT ${id}`,
+    sender_branch_code: 'MAIN',
+    amount,
+    callback_url: `https://api-backoffice.motforex.com/mechant/v1/invoice/qpay/${id}/callback`
+  });
 }

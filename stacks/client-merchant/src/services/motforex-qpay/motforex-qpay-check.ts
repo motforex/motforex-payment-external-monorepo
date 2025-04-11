@@ -1,8 +1,7 @@
-import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata, MerchantInvoice } from '@motforex/global-types';
+import type { MerchantInvoice } from '@motforex/global-types';
 
-import { CustomError, getParameterStoreVal, handleApiFuncError, logger } from '@motforex/global-libs';
-import { checkQpayInvoice, formatInvoiceAsResponse } from '@motforex/global-services';
+import { CustomError, getParameterStoreVal, logger } from '@motforex/global-libs';
+import { checkQpayInvoice } from '@motforex/global-services';
 import { markPaymentInvoiceAsSuccessful } from '../merchant-invoice';
 import { getValidatedInvoiceAndRequest } from '../merchant-invoice';
 import { QPAY_TOKEN_PARAMETER } from './motforex-qpay-constants';
@@ -16,19 +15,21 @@ import { STATUS_PENDING } from '@motforex/global-types';
  * @returns
  *
  */
-export async function checkMotforexQpayInvoiceAsClient(metadata: Metadata, id: number): Promise<APIResponse> {
-  try {
-    const { email, depositRequest, merchantInvoice } = await getValidatedInvoiceAndRequest(metadata, id);
-    // Check if the email is valid
-    if (depositRequest.email !== email) {
-      logger.error(`Invalid email for Qpay invoice creation!`);
-      throw new CustomError('Invalid request for Qpay invoice creation!', 400);
-    }
-    // Check if the invoice is paid
-    return await formatInvoiceAsResponse(await checkMotforexQpayInvoice(merchantInvoice));
-  } catch (error: unknown) {
-    return handleApiFuncError(error);
+export async function checkMotforexQpayInvoiceAsClient(id: number, email: string): Promise<MerchantInvoice> {
+  const { merchantInvoice } = await getValidatedInvoiceAndRequest(id, email, 'QPAY');
+  // Check if the deposit request and invoice exist
+
+  if (!merchantInvoice) {
+    logger.error(`Deposit request or invoice does not exist!`);
+    throw new CustomError('financeMessageErrorDepositRequestNotFound', 404);
   }
+
+  if (merchantInvoice.invoiceStatus !== STATUS_PENDING) {
+    logger.info(`Invoice is not in PENDING status!`);
+    return merchantInvoice;
+  }
+
+  return await checkMotforexQpayInvoice(merchantInvoice);
 }
 
 /**
@@ -61,6 +62,7 @@ export async function checkMotforexQpayInvoice(invoice?: MerchantInvoice): Promi
     logger.info(`Invoice is not paid yet!`);
     return invoice;
   }
+
   // If the invoice is paid, update the invoice status to PAID
   logger.info(`Invoice is paid!`);
   return await markPaymentInvoiceAsSuccessful(invoice);
