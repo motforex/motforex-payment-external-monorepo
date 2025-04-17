@@ -13,7 +13,19 @@ export async function createGolomtMerchInvoice(secret: string, tok: string, req:
     // Extract the required fields from the request
     const { transactionId, amount, callback } = req;
     const checksum = generateSha256Checksum(secret, [transactionId, `${amount}`, MERCH_RETURN_TYPE, callback]);
-    console.log('checksum', checksum);
+
+    console.log(`CREATE INVOICE M:`, {
+      data: {
+        amount: `354183.25`,
+        callback: `https://my.motforex.com/payments/dw/2906709`,
+        checksum,
+        genToken: 'N',
+        returnType: MERCH_RETURN_TYPE,
+        transactionId,
+        socialDeeplink: SOCIAL_DEEPLINK_FLAG
+      }
+    });
+
     // Send the request to the Golomt API
     const { data } = await sendRequest<GolomtInvoice>({
       url: `${GOLOMT_E_COMMERCE_BASE}/api/invoice`,
@@ -23,9 +35,9 @@ export async function createGolomtMerchInvoice(secret: string, tok: string, req:
         amount: `${amount}`,
         callback,
         checksum,
+        transactionId,
         genToken: 'N',
         returnType: MERCH_RETURN_TYPE,
-        transactionId,
         socialDeeplink: SOCIAL_DEEPLINK_FLAG
       }
     });

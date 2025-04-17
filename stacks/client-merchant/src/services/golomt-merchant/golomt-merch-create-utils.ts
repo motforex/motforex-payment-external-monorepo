@@ -20,7 +20,7 @@ import {
  * @param locale - The locale string.
  */
 export async function createNewGolomtMerchantInvoice(deposit: Payment, locale: string): Promise<MerchantInvoice> {
-  return createInvoiceForDeposit(deposit, locale, 'MERCHANT', 'payments');
+  return createInvoiceForDeposit(deposit, locale, 'MERCHANT', 'payment');
 }
 
 /**
@@ -112,7 +112,7 @@ async function createInvoiceForDeposit(
       providerId: transactionId,
       providerInfo: invoice,
       regenerationCount: GOLOMT_MERCHANT_REGENERATION_COUNT,
-      expireAt: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
+      expiryDate: Date.now() + GOLOMT_MERCHANT_EXPIRY_TIME,
       merchantMethod: merchMethod,
       all: 1,
       userId,

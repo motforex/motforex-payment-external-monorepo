@@ -1,4 +1,4 @@
-import { createUserAuthApiGatewayFunc } from '@motforex/global-libs';
+import { createDefaultApiGatewayFunc, createUserAuthApiGatewayFunc } from '@motforex/global-libs';
 
 export const createGolomtMerchInvoice = createUserAuthApiGatewayFunc(
   __dirname,
@@ -26,4 +26,11 @@ export const checkSocialpayInvoice = createUserAuthApiGatewayFunc(
   'checkSocialpayInvoice',
   'post',
   '/v1/invoice/socialpay/{id}/check'
+);
+
+export const receiveMerchantNotification = createDefaultApiGatewayFunc(
+  __dirname,
+  'receiveMerchantNotification',
+  'post',
+  '/v1/invoice/golomt-merchant/notification'
 );

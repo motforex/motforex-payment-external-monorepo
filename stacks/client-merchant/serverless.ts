@@ -1,10 +1,11 @@
 import type { AWS } from '@serverless/typescript';
-import { postCreateQpayInvoice, postCheckQpayInvoice } from '@/functions/qpay';
+import { postCreateQpayInvoice, postCheckQpayInvoice, getCallbackQpayInvoice } from '@/functions/qpay';
 import {
   createGolomtMerchInvoice,
   createSocialPayInvoice,
   checkGolomtMerchInvoice,
-  checkSocialpayInvoice
+  checkSocialpayInvoice,
+  receiveMerchantNotification
 } from '@/functions/golomt-merchant';
 
 const serverlessConfig: AWS = {
@@ -26,7 +27,7 @@ const serverlessConfig: AWS = {
       usagePlan: {
         throttle: {
           burstLimit: 150,
-          rateLimit: 100 // Average number of requests per second
+          rateLimit: 100
         }
       }
     },
@@ -43,11 +44,13 @@ const serverlessConfig: AWS = {
     // Client qpay functions
     postCreateQpayInvoice,
     postCheckQpayInvoice,
+    getCallbackQpayInvoice,
     // Golomt merchant functions
     createGolomtMerchInvoice,
     createSocialPayInvoice,
     checkGolomtMerchInvoice,
-    checkSocialpayInvoice
+    checkSocialpayInvoice,
+    receiveMerchantNotification
   },
   package: { individually: true },
   custom: {

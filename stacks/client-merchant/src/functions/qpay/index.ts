@@ -13,3 +13,10 @@ export const postCheckQpayInvoice = createUserAuthApiGatewayFunc(
   'post',
   '/v1/invoice/qpay/{id}/check'
 );
+
+export const getCallbackQpayInvoice = createUserAuthApiGatewayFunc(
+  __dirname,
+  'getCallbackQpayInvoice',
+  'get',
+  '/v1/invoice/qpay/{id}/callback'
+);
