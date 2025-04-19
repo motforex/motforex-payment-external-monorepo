@@ -2,8 +2,9 @@ import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 
 import { markPaymentInvoiceAsExpired } from '../merchant-invoice';
 import { CustomError, logger } from '@motforex/global-libs';
-import { getMerchantInvoiceById } from '@/repository/merchant-invoice';
+import { getMerchantInvoiceById, getMerchantInvoiceByQuery } from '@/repository/merchant-invoice';
 import { getDepositReqById } from '@/repository/deposit-requests';
+import { QueryRequestSchema } from '@motforex/dynamo';
 
 interface ValidatedResponse {
   depositRequest: PaymentRequest;
@@ -126,4 +127,32 @@ export async function getValidatedInvoiceAndRequest(
   }
 
   return { depositRequest, merchantInvoice };
+}
+
+export async function getMerchantInvoiceByProviderId(providerId: string, amount: number): Promise<MerchantInvoice> {
+  const queryRequest = QueryRequestSchema.parse({
+    indexName: 'providerId-createdAt-index',
+    pKey: providerId,
+    pKeyType: 'S',
+    pKeyProp: 'providerId'
+  });
+
+  const { items } = await getMerchantInvoiceByQuery(queryRequest);
+
+  if (items.length === 0) {
+    logger.info(`No merchant invoice found for providerId: ${providerId}`);
+    throw new CustomError(`MerchantInvoice not found`);
+  }
+
+  if (items.length > 1) {
+    logger.info(`Multiple invoices found for providerId: ${providerId}, selecting closest to amount: ${amount}`);
+    const closestItem = items.reduce((prev, curr) => {
+      const prevDiff = Math.abs(prev.transactionAmount - amount);
+      const currDiff = Math.abs(curr.transactionAmount - amount);
+      return currDiff < prevDiff ? curr : prev;
+    });
+    return closestItem;
+  }
+
+  return items[0];
 }

@@ -1,6 +1,7 @@
 import type { MerchantInvoice } from '@motforex/global-types';
+import type { QueryRequest } from '@motforex/dynamo';
 
-import { createRecord, getRecordByKey, updateRecord } from '@motforex/dynamo';
+import { createRecord, getRecordByKey, queryRecords, updateRecord } from '@motforex/dynamo';
 import { omit } from 'lodash';
 
 const INVOICE_RECORD_TABLE_NAME = 'motforex-merchant-invoice';
@@ -9,6 +10,14 @@ export async function getMerchantInvoiceById(id: number, projection?: string): P
   return await getRecordByKey<MerchantInvoice>({
     tableName: INVOICE_RECORD_TABLE_NAME,
     key: { id },
+    projectionExpression: projection
+  });
+}
+
+export async function getMerchantInvoiceByQuery(queryRequest: QueryRequest, projection?: string) {
+  return await queryRecords<MerchantInvoice>({
+    tableName: INVOICE_RECORD_TABLE_NAME,
+    queryRequest: queryRequest,
     projectionExpression: projection
   });
 }

@@ -93,7 +93,7 @@ async function createInvoiceForDeposit(
   const invoiceRequest = GolomtCreateInvoiceSchema.parse({
     amount: transactionAmount,
     transactionId: `${id}${getCurrentDateAsString()}`,
-    callback: `https://dashboard.motforex.com/payments/deposit/${id}`
+    callback: `https://my.motforex.com/payments/deposit/${id}`
   });
 
   const { invoice, socialDeeplink, transactionId } = await createGolomtMerchInvoice(
@@ -164,7 +164,7 @@ async function regenerateInvoice(merchantInvoice: MerchantInvoice, redirectSegme
     const invoiceRequest = GolomtCreateInvoiceSchema.parse({
       amount: transactionAmount,
       transactionId: `${id}${getCurrentDateAsString()}`,
-      callback: `https://dashboard.motforex.com/payments/deposit/${id}`
+      callback: `https://my.motforex.com/payments/deposit/${id}`
     });
     const { invoice, socialDeeplink, transactionId } = await createGolomtMerchInvoice(
       GOLOMT_MERCHANT_SECRET,
