@@ -9,11 +9,10 @@ export async function markMerchantInvoiceAsSuccessful(invoice: MerchantInvoice):
     logger.info(`Marking payment invoice as paid: ${invoice.id}`);
     const updatedInvoice: MerchantInvoice = {
       ...invoice,
-      invoiceStatus: STATUS_EXECUTED,
-      executionStatus: STATUS_EXECUTED
+      invoiceStatus: STATUS_EXECUTED
     };
     await executeDepositRequest(updatedInvoice);
-    return updatedInvoice;
+    return await updateMerchantInvoice(updatedInvoice);
   } catch (error: unknown) {
     logger.error(`Error marking payment invoice as paid: ${invoice.id}`);
     throw error;

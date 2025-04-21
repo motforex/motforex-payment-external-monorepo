@@ -3,7 +3,7 @@ import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
 import { CustomError, logger } from '@motforex/global-libs';
 import { getMerchantInvoiceById } from '@/repository/merchant-invoice';
 import { getValidDepositRequest } from '../utility';
-import { STATUS_PENDING } from '@motforex/global-types';
+import { STATUS_CANCELLED, STATUS_EXPIRED, STATUS_PENDING } from '@motforex/global-types';
 
 interface ValidatedResponse {
   depositRequest: PaymentRequest;
@@ -31,17 +31,11 @@ export async function getValidatedInvoiceAndRequest(
 ): Promise<ValidatedResponse> {
   // Run both async operations concurrently.
   const [depositRequest, merchantInvoice] = await Promise.all([
-    getValidDepositRequest(id, [STATUS_PENDING], email),
+    getValidDepositRequest(id, [STATUS_PENDING, STATUS_CANCELLED, STATUS_EXPIRED], email),
     getMerchantInvoiceById(id)
   ]);
 
-  const { status, paymentMethodTitle } = depositRequest;
-
-  // Ensure the depositRequest has the correct status.
-  if (status !== STATUS_PENDING) {
-    logger.error('Invalid status for Qpay invoice creation!');
-    throw new CustomError('Invalid status for Qpay invoice creation!', 400);
-  }
+  const { paymentMethodTitle } = depositRequest;
 
   // If a paymentMethodTitle exists, validate that at least one provided payment method matches.
   if (!paymentMethodTitle) {
@@ -74,6 +68,7 @@ export async function getValidatedInvoiceAndRequest(
 export async function getValidInvoicePayment(id: number, payment: string[], email?: string): Promise<MerchantInvoice> {
   // Check if the invoice is valid
   const { merchantInvoice } = await getValidatedInvoiceAndRequest(id, payment, email);
+
   if (!merchantInvoice) {
     logger.error(`Invoice does not exist for deposit request!`);
     throw new CustomError('Invoice does not exist for the deposit request!', 404);

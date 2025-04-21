@@ -36,7 +36,7 @@ export async function updateMerchantInvoice(
   invoice: MerchantInvoice,
   condition?: string,
   extra?: Record<string, any>
-): Promise<MerchantInvoice | undefined> {
+): Promise<MerchantInvoice> {
   await updateRecord<MerchantInvoice>({
     tableName: INVOICE_RECORD_TABLE_NAME,
     key: { id: invoice.id },

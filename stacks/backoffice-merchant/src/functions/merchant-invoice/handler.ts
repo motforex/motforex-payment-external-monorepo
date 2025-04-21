@@ -24,14 +24,13 @@ const getMerchantInvoiceByQueryFunc: ApiFuncType<null> = async (event): Promise<
     const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:readInvoiceDeposit']);
 
-    const { queryParams } = metadata;
     return await merchantInvoiceRepo.getMerchantInvoiceByQuery(
       extractQueryParamsFromEvent(event, {
         indexName: 'all-createdAt-index',
         pKey: '1',
         pKeyType: 'N',
         pKeyProp: 'all',
-        ...queryParams
+        ...metadata.queryParams
       })
     );
   } catch (error: unknown) {
