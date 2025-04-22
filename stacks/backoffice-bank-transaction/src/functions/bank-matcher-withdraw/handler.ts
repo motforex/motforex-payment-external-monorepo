@@ -6,6 +6,7 @@ import {
   CustomError,
   extractMetadata,
   handleApiFuncError,
+  logger,
   middyfy
 } from '@motforex/global-libs';
 import * as bankMatcherWithdrawService from '@/services/bank-matcher-withdraw';
@@ -80,16 +81,37 @@ const putWithdrawExecutionFunc: ApiFuncType<{ id: number }> = async (event): Pro
   }
 };
 
-const postSolveWithdrawExecutionFunc: ApiFuncType<{ id: number }> = async (event): Promise<ApiFuncRes> => {
+const postRejectWithdrawExecutionFunc: ApiFuncType<{ message: string }> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     // Check admin authorization
     const metadata = extractMetadata(event);
-    const { permission } = checkAdminAuthorization(metadata);
+    const { permission, email } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['withdraw:executeBankWithdraw']);
+    const id = Number(event.pathParameters.id);
 
-    return await bankMatcherWithdrawService.solveWithdrawRequestByApi(metadata, Number(event.pathParameters?.id));
+    const message = event.body?.message || `Rejected by user ${email}`;
+    logger.info(`User ${email} is rejecting withdraw-execution with id ${id}`);
+    return await bankMatcherWithdrawService.rejectWithdrawExecution(id, message);
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const postSolveWithdrawExecutionFunc: ApiFuncType<{ message: string }> = async (event): Promise<ApiFuncRes> => {
+  try {
+    if (!event.pathParameters || !event.pathParameters.id)
+      throw new CustomError(`Bad request, missing path parameter!`, 400);
+    // Check admin authorization
+    const metadata = extractMetadata(event);
+    const { permission, email } = checkAdminAuthorization(metadata);
+    await verifyPermission(permission, ['withdraw:executeBankWithdraw']);
+    const id = Number(event.pathParameters.id);
+
+    const message = event.body?.message || `Solved by user ${email}`;
+    logger.info(`User ${email} is solving withdraw-execution with id ${id}`);
+    return await bankMatcherWithdrawService.solveWithdrawRequestByApi(id, message);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -128,6 +150,7 @@ export const getWithdrawExecutionsCount = middyfy(getWithdrawExecutionsCountFunc
 export const getWithdrawExecutionById = middyfy(getWithdrawExecutionByIdFunc);
 export const refreshWithdrawExecution = middyfy(getRefreshWithdrawExecutionFunc);
 export const putWithdrawExecution = middyfy(putWithdrawExecutionFunc);
+export const postRejectWithdrawExecution = middyfy(postRejectWithdrawExecutionFunc);
 export const postSolveWithdrawExecution = middyfy(postSolveWithdrawExecutionFunc);
 export const postRevalidateWithdrawExecution = middyfy(postRevalidateWithdrawExecutionFunc);
 export const postExecuteWithdrawExecution = middyfy(postExecuteWithdrawExecutionFunc);

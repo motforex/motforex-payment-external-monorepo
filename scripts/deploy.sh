@@ -4,7 +4,8 @@
 stacks=(
   "../stacks/backoffice-bank-transaction"
   "../stacks/backoffice-merchant"
-  "../stacks/client-withdraw"
+  "../stacks/client-crypto-transactions"
+  "../stacks/client-merchant",
 )
 
 # Function to deploy a serverless stack

@@ -4,10 +4,9 @@ import type { DepositExecution, RequestMetadata as Metadata } from '@motforex/gl
 import { formatApiResponse, handleApiFuncError, handleDefaultError, sendRequest } from '@motforex/global-libs';
 import { BANK_MATCHER_ADDRESS } from '@/constants';
 
-export async function getDepositExecutions(metadata: Metadata): Promise<APIResponse> {
+export async function getDepositExecutions(queryParams: Record<string, string> | undefined): Promise<APIResponse> {
   try {
-    const { queryParams } = metadata;
-    const { data } = await sendRequest<object[]>({
+    const { data } = await sendRequest<DepositExecution[]>({
       url: `${BANK_MATCHER_ADDRESS}/api/deposit-executions`,
       method: 'GET',
       params: queryParams
@@ -18,9 +17,8 @@ export async function getDepositExecutions(metadata: Metadata): Promise<APIRespo
   }
 }
 
-export async function getDepositExecutionsCount(metadata: Metadata): Promise<APIResponse> {
+export async function getDepositExecutionsCount(queryParams: Record<string, string> | undefined): Promise<APIResponse> {
   try {
-    const { queryParams } = metadata;
     const { data } = await sendRequest<number>({
       url: `${BANK_MATCHER_ADDRESS}/api/deposit-executions/count`,
       method: 'GET',

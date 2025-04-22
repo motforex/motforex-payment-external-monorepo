@@ -6,10 +6,12 @@ import {
   CustomError,
   extractMetadata,
   handleApiFuncError,
+  logger,
   middyfy
 } from '@motforex/global-libs';
 import * as bankMatcherDeService from '@/services/bank-matcher-deposit';
 import { verifyPermission } from '@motforex/global-services';
+import { DepositExecutionSchema } from '@motforex/global-types';
 
 const getDepositExecutionsFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
@@ -17,7 +19,7 @@ const getDepositExecutionsFunc: ApiFuncType<null> = async (event): Promise<ApiFu
     const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:readBankDeposit']);
 
-    return await bankMatcherDeService.getDepositExecutions(metadata);
+    return await bankMatcherDeService.getDepositExecutions(metadata.queryParams);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -29,7 +31,7 @@ const getDepositExecutionsCountFunc: ApiFuncType<null> = async (event): Promise<
     const { permission } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:readBankDeposit']);
 
-    return await bankMatcherDeService.getDepositExecutionsCount(metadata);
+    return await bankMatcherDeService.getDepositExecutionsCount(metadata.queryParams);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -54,9 +56,14 @@ const putDepositExecutionFunc: ApiFuncType<{ id: number }> = async (event): Prom
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
-    const { permission } = checkAdminAuthorization(metadata);
+    const { permission, email } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:executeBankDeposit']);
-    return await bankMatcherDeService.updateDepositExecution(metadata, Number(event.pathParameters?.id));
+    const id = Number(event.pathParameters.id);
+
+    logger.info(`User ${email} is updating deposit execution with id ${id}`);
+    const body = DepositExecutionSchema.parse(metadata.body);
+
+    return await bankMatcherDeService.updateDepositExecution(id, body);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -67,25 +74,30 @@ const postReprocessDepositExecutionFunc: ApiFuncType<{ id: number }> = async (ev
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
-    const { permission } = checkAdminAuthorization(metadata);
+    const { permission, email } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:executeBankDeposit']);
+    const id = Number(event.pathParameters.id);
 
-    return await bankMatcherDeService.reprocessDepositExecution(metadata, Number(event.pathParameters?.id));
+    logger.info(`User ${email} is reprocessing deposit execution with id ${id}`);
+
+    return await bankMatcherDeService.reprocessDepositExecution(id);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
 };
 
-const postSolveDepositExecutionFunc: ApiFuncType<{ id: number }> = async (event): Promise<ApiFuncRes> => {
+const postSolveDepositExecutionFunc: ApiFuncType<{ message: string }> = async (event): Promise<ApiFuncRes> => {
   try {
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
 
     const metadata = extractMetadata(event);
-    const { permission } = checkAdminAuthorization(metadata);
+    const { permission, email } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['deposit:executeBankDeposit']);
+    const id = Number(event.pathParameters.id);
 
-    return await bankMatcherDeService.solveDepositExecutionByApi(metadata, Number(event.pathParameters?.id));
+    const message = event.body?.message || `Rejected by user ${email}`;
+    return await bankMatcherDeService.solveDepositExecutionByApi(id, message);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }

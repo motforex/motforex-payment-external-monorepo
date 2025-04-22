@@ -1,7 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 import { postCheckGolomtMerch, postReceiveGolomtMerchCallback } from '@/functions/golomt-merchant';
 import { handleQpayToken, postCheckQpayInvoice, getHandleQpayCallback } from '@/functions/qpay';
-import { postTestFunction } from '@/functions/test';
 import { getMerchantInvoiceByQuery, getMerchantInvoiceTableDesc } from '@/functions/merchant-invoice';
 
 const serverlessConfig: AWS = {
@@ -12,7 +11,7 @@ const serverlessConfig: AWS = {
   provider: {
     name: 'aws',
     stage: "${opt:stage, 'prod'}",
-    runtime: 'nodejs18.x',
+    runtime: 'nodejs20.x',
     region: 'ap-southeast-1',
     profile: 'default',
     logRetentionInDays: 365,
@@ -44,10 +43,9 @@ const serverlessConfig: AWS = {
     handleQpayToken,
     postCheckQpayInvoice,
     getHandleQpayCallback,
-    // Test function
+    // Merchant functions
     getMerchantInvoiceTableDesc,
-    getMerchantInvoiceByQuery,
-    postTestFunction
+    getMerchantInvoiceByQuery
   },
   package: { individually: true },
   custom: {

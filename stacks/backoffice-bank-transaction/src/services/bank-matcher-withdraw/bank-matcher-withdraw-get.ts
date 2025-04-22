@@ -56,6 +56,21 @@ export async function refreshWithdrawExecution(): Promise<APIResponse> {
   }
 }
 
+export async function rejectWithdrawExecution(id: number, message: string): Promise<APIResponse> {
+  try {
+    const { data } = await sendRequest<WithdrawExecution>({
+      url: `${BANK_MATCHER_ADDRESS}/api/v1/withdraw-executions/${id}/reject`,
+      method: 'POST',
+      data: {
+        message
+      }
+    });
+    return formatApiResponse(data || {});
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+}
+
 export async function getWithdrawExecutionRaw(id: number): Promise<WithdrawExecution | null> {
   try {
     const { data } = await sendRequest<WithdrawExecution>({

@@ -1,14 +1,18 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 import type { RequestMetadata as Metadata, WithdrawExecution } from '@motforex/global-types';
-import { checkAuthorization, formatApiResponse, handleApiFuncError, logger, sendRequest } from '@motforex/global-libs';
+import {
+  checkAuthorization,
+  CustomError,
+  formatApiResponse,
+  handleApiFuncError,
+  logger,
+  sendRequest
+} from '@motforex/global-libs';
 import { BANK_MATCHER_ADDRESS } from '@/constants';
 import { getWithdrawExecutionRaw } from './bank-matcher-withdraw-get';
 
-export async function solveWithdrawRequestByApi(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function solveWithdrawRequestByApi(id: number, message: string): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'Solve-Withdraw-Execution');
-    logger.info(`User ${email} is solving withdraw-execution with id ${id}`);
-
     const withdrawExecution = await getWithdrawExecutionRaw(id);
 
     if (!withdrawExecution) {
@@ -17,9 +21,9 @@ export async function solveWithdrawRequestByApi(metadata: Metadata, id: number):
     }
     logger.info(`Withdraw execution with id ${id} found`);
 
-    if (!['PROCESSING', 'FAILED', 'PENDING'].includes(withdrawExecution.status)) {
+    if (!['PROCESSING', 'FAILED', 'PENDING', 'PAYOUT'].includes(withdrawExecution.status)) {
       logger.error(`Withdraw execution with id ${id} is not in a valid state`);
-      return formatApiResponse({}, 400);
+      throw new CustomError('Bad request! Withdraw execution is not in a valid state', 400);
     }
     logger.info(`Withdraw execution with id ${id} is in a valid state`);
 
@@ -29,9 +33,10 @@ export async function solveWithdrawRequestByApi(metadata: Metadata, id: number):
       data: {
         ...withdrawExecution,
         status: 'SOLVED',
-        message: metadata.body.message || `Solved by user ${email}`
+        message
       }
     });
+
     return formatApiResponse(data || {});
   } catch (error: unknown) {
     return handleApiFuncError(error);

@@ -1,14 +1,7 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { DepositExecution, RequestMetadata as Metadata } from '@motforex/global-types';
+import type { DepositExecution } from '@motforex/global-types';
 
-import {
-  checkAuthorization,
-  CustomError,
-  formatApiResponse,
-  handleApiFuncError,
-  logger,
-  sendRequest
-} from '@motforex/global-libs';
+import { CustomError, formatApiResponse, handleApiFuncError, logger, sendRequest } from '@motforex/global-libs';
 import { getDepositExecutionRaw } from './deposit-execution-get';
 import { BANK_MATCHER_ADDRESS } from '@/constants';
 
@@ -19,10 +12,8 @@ import { BANK_MATCHER_ADDRESS } from '@/constants';
  * @param id - Path variable id
  * @returns
  */
-export async function reprocessDepositExecution(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function reprocessDepositExecution(id: number): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'reprocess-Deposit-Execution');
-    logger.info(`User ${email} is reprocessing deposit execution with id ${id}`);
     const { data } = await sendRequest<DepositExecution>({
       url: `${BANK_MATCHER_ADDRESS}/api/v1/deposit-executions/${id}/reprocess`,
       method: 'POST'
@@ -40,11 +31,8 @@ export async function reprocessDepositExecution(metadata: Metadata, id: number):
  * @param id
  * @returns
  */
-export async function solveDepositExecutionByApi(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function solveDepositExecutionByApi(id: number, message: string): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'solve-Deposit-Execution');
-    logger.info(`User ${email} is solving deposit execution with id ${id}`);
-
     const depositExecution = await getDepositExecutionRaw(id);
 
     if (!depositExecution) {
@@ -53,7 +41,7 @@ export async function solveDepositExecutionByApi(metadata: Metadata, id: number)
     }
     logger.info(`Deposit execution with id ${id} found`);
 
-    if (!['PROCESSING', 'FAILED', 'PENDING'].includes(depositExecution.status)) {
+    if (!['PROCESSING', 'FAILED', 'PENDING', 'PAYOUT'].includes(depositExecution.status)) {
       logger.error(`Deposit execution with id ${id} is not in a valid state`);
       throw new CustomError('Bad request! Deposit execution is not in a valid state', 400);
     }
@@ -62,7 +50,7 @@ export async function solveDepositExecutionByApi(metadata: Metadata, id: number)
     const body = {
       ...depositExecution,
       status: 'SOLVED',
-      message: metadata.body.message || `Solved by user ${email}`
+      message
     };
 
     const { data } = await sendRequest<DepositExecution>({
