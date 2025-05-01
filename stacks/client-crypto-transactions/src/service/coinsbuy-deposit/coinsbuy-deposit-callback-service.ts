@@ -19,13 +19,6 @@ export async function coinsbuyDepositCallbackService(id: number, coinsbuyDeposit
 
     const merchantInvoice = await getValidMerchantInvoiceById(id, [STATUS_PENDING]);
 
-    // If the status is 2(Created but hasn't been paid yet), we need to update the invoice
-    if (statusNumber === 2) {
-      logger.info('Coinsbuy deposit invoice is created but not paid yet');
-      await handlePartialPayment(merchantInvoice, coinsbuyDeposit);
-      return;
-    }
-
     // If the status is 3(Paid), mark invoice as a success
     if (statusNumber === 3) {
       logger.info('Coinsbuy deposit invoice is paid');

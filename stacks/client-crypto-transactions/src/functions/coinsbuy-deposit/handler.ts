@@ -58,7 +58,6 @@ const callbackCoinbuysInvoiceFunc: ApiFuncType<null> = async (event): Promise<Ap
     if (!event.pathParameters || !event.pathParameters.id) return formatApiResponse({});
 
     logger.info(`Path variable: ${event.pathParameters?.id}`);
-    logger.info(`Query string: ${event.queryStringParameters}`);
     logger.info(`Body: ${JSON.stringify(event.body)}`);
 
     const id = Number(event.pathParameters.id);
