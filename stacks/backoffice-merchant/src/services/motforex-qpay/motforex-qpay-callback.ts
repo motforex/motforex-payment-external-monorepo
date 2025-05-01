@@ -8,7 +8,7 @@ export async function handleQpayCallback(id: number): Promise<void> {
 
     // Check MerchantInvoice status
     if (merchantInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`Invoice is not in PENDING status!`);
+      logger.info(`Invoice:${id} is not in PENDING status!`);
       return;
     }
 

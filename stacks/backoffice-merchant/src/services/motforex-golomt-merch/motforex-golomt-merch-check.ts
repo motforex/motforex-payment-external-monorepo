@@ -35,7 +35,7 @@ export async function checkMotforexGolomtMerchInvoice(metadata: Metadata, id: nu
       return formatInvoiceAsResponse(await reexecuteDepositRequest(merchantInvoice));
     }
 
-    logger.info(`Invoice is not in PENDING status!`);
+    logger.info(`Invoice:${id} is not in PENDING status!`);
     return formatInvoiceAsResponse(merchantInvoice);
   } catch (error: unknown) {
     return handleApiFuncError(error);

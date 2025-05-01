@@ -25,7 +25,7 @@ export async function checkMotforexQpayInvoiceAsClient(id: number, email: string
   }
 
   if (merchantInvoice.invoiceStatus !== STATUS_PENDING) {
-    logger.info(`Invoice is not in PENDING status!`);
+    logger.info(`Invoice:${id} is not in PENDING status!`);
     return merchantInvoice;
   }
 
@@ -47,7 +47,7 @@ export async function checkMotforexQpayInvoice(invoice?: MerchantInvoice): Promi
   }
 
   if (invoice.invoiceStatus !== STATUS_PENDING) {
-    logger.info(`Invoice is not in PENDING status!`);
+    logger.info(`Invoice:${invoice.id} is not in PENDING status!`);
     return invoice;
   }
 

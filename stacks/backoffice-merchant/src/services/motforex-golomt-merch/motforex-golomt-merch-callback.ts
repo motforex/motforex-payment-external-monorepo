@@ -28,7 +28,7 @@ export async function receiveGolomtMerchPushNotification(body: GolomtMerchantCal
     const merchantInvoice = MerchantInvoiceSchema.parse({});
     // Check MerchantInvoice status
     if (merchantInvoice.invoiceStatus !== 'PENDING') {
-      logger.info(`Merchant Invoice is not in PENDING status!`);
+      logger.info(`Invoice:${merchantInvoice.id} is not in PENDING status!`);
       return;
     }
     logger.info(`Merchant invoice is valid to check!`);
