@@ -20,7 +20,7 @@ export async function handleCallbackMotforexInvoice(id: number): Promise<void> {
     }
 
     if (merchantInvoice.invoiceStatus !== STATUS_PENDING) {
-      logger.info(`Invoice is not in PENDING status!`);
+      logger.info(`Invoice:${id} is not in PENDING status!`);
       return;
     }
 
