@@ -270,7 +270,7 @@ importers:
         specifier: ^8.20.0
         version: 8.22.0(eslint@9.19.0)(typescript@5.7.3)
 
-  stacks/client-merchant:
+  stacks/client-crypto-transactions:
     dependencies:
       '@motforex/dynamo':
         specifier: workspace:*
@@ -340,7 +340,7 @@ importers:
         specifier: ^8.20.0
         version: 8.22.0(eslint@9.19.0)(typescript@5.7.3)
 
-  stacks/crypto-transactions:
+  stacks/client-merchant:
     dependencies:
       '@motforex/dynamo':
         specifier: workspace:*
