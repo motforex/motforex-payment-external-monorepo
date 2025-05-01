@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 //------------------------------------- INVOICE REQUEST -----------------------------------------------
 export const CoinsbuyAuthTokenDataSchema = z.object({
-  type: z.string().optional(), // Allow `type` to be undefined
+  type: z.string().optional(),
   id: z.string().nullable().optional(),
   attributes: z.object({
     refresh: z.string(),
@@ -31,10 +31,12 @@ const WalletDataSchema = z.object({
   id: z.string()
 });
 
+// Updated RelationshipsSchema to match API structure
 const RelationshipsSchema = z.object({
   currency: z.object({ data: WalletDataSchema.nullable() }).optional(),
   transfer: z.object({ data: WalletDataSchema.nullable() }).optional(),
-  wallet: z.object({ data: WalletDataSchema.nullable() })
+  wallet: z.object({ data: WalletDataSchema.nullable() }).optional(),
+  parent: z.object({ data: WalletDataSchema.nullable() }).optional() // Allow null for parent.data
 });
 
 const AttributesSchema = z.object({
@@ -55,14 +57,14 @@ const AttributesSchema = z.object({
   target_paid: z.string(),
   source_amount_requested: z.string(),
   target_paid_pending: z.string(),
-  assets: z.record(z.any()), // Empty object
+  assets: z.record(z.any()),
   destination: z.null(),
   payment_page_redirect_url: z.string().url(),
   payment_page_button_text: z.string(),
   is_active: z.boolean()
 });
 
-// Main schema
+// Main schema for invoice request
 export const CoinsbuyDepositRequestResponseSchema = z.object({
   data: z.object({
     type: z.string(),
@@ -123,6 +125,7 @@ export const CoinsbuyCurrencyIncludeSchema = z.object({
   })
 });
 
+// Updated CoinsbuyTransferIncludedSchema to allow null for risk
 export const CoinsbuyTransferIncludedSchema = z.object({
   type: z.string(),
   id: z.string(),
@@ -139,7 +142,7 @@ export const CoinsbuyTransferIncludedSchema = z.object({
     created_at: z.string(),
     updated_at: z.string(),
     confirmations: z.number(),
-    risk: z.number(),
+    risk: z.number().nullable(), // Allow null for risk
     risk_personal: z.any().nullable(),
     risk_personal_status: z.number(),
     risk_status: z.number(),
@@ -148,13 +151,14 @@ export const CoinsbuyTransferIncludedSchema = z.object({
     amount_cleared: z.string()
   }),
   relationships: z.object({
-    currency: z.object({ data: RelationshipsSchema }),
-    parent: z.object({ data: RelationshipsSchema })
+    currency: z.object({ data: WalletDataSchema.nullable() }), // Simplified to match API
+    parent: z.object({ data: WalletDataSchema.nullable() }) // Allow null for parent.data
   })
 });
 
 export type CoinsbuyTransferIncluded = z.infer<typeof CoinsbuyTransferIncludedSchema>;
 
+// Updated CoinsbuyDepositSchema with corrected included union
 export const CoinsbuyDepositSchema = z.object({
   data: CoinsbuyDepositDataSchema,
   included: z.array(z.union([CoinsbuyCurrencyIncludeSchema, CoinsbuyTransferIncludedSchema])).optional(),

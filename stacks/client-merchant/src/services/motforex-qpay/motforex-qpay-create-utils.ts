@@ -45,7 +45,7 @@ export async function createNewQpayInvoice(
   const invoiceNumber = `${id}${getCurrentDateAsString()}`;
 
   // Create qpay invoice request
-  const createQpayInvoiceRequest = buildQpayInvoiceRequest(id, transactionAmount, invoiceNumber);
+  const qpayRequest = buildQpayInvoiceRequest(id, transactionAmount, invoiceNumber);
   const qpayAuthToken = await getParameterStoreVal(QPAY_TOKEN_PARAMETER);
   if (!qpayAuthToken) {
     logger.error('QPAY token is not found in the parameter store!');
@@ -54,7 +54,7 @@ export async function createNewQpayInvoice(
 
   const { invoice_id, qPay_shortUrl, qr_text, qr_image, urls } = await createSimpleQpayInvoice(
     qpayAuthToken,
-    createQpayInvoiceRequest
+    qpayRequest
   );
   logger.info(`Qpay invoice created successfully: ${JSON.stringify(invoice_id)}`);
   const invoice = await createMerchantInvoice(
@@ -170,6 +170,6 @@ export function buildQpayInvoiceRequest(id: number, amount: number, invoiceNumbe
     invoice_description: `MOTFOREX DEPOSIT ${id}`,
     sender_branch_code: 'MAIN',
     amount,
-    callback_url: `https://api.motforex.com/mechant/v1/invoice/qpay/${id}/callback`
+    callback_url: `https://api.motforex.com/merchant/v1/invoice/qpay/${id}/callback`
   });
 }

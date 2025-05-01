@@ -1,4 +1,4 @@
-import { createUserAuthApiGatewayFunc } from '@motforex/global-libs';
+import { createDefaultApiGatewayFunc, createUserAuthApiGatewayFunc } from '@motforex/global-libs';
 
 export const postCreateQpayInvoice = createUserAuthApiGatewayFunc(
   __dirname,
@@ -14,7 +14,7 @@ export const postCheckQpayInvoice = createUserAuthApiGatewayFunc(
   '/v1/invoice/qpay/{id}/check'
 );
 
-export const getCallbackQpayInvoice = createUserAuthApiGatewayFunc(
+export const getCallbackQpayInvoice = createDefaultApiGatewayFunc(
   __dirname,
   'getCallbackQpayInvoice',
   'get',

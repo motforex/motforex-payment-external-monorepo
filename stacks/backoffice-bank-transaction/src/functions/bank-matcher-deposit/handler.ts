@@ -57,13 +57,30 @@ const putDepositExecutionFunc: ApiFuncType<{ id: number }> = async (event): Prom
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     const metadata = extractMetadata(event);
     const { permission, email } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['deposit:executeBankDeposit']);
+    await verifyPermission(permission, ['deposit:updateBankDeposit']);
     const id = Number(event.pathParameters.id);
 
     logger.info(`User ${email} is updating deposit execution with id ${id}`);
     const body = DepositExecutionSchema.parse(metadata.body);
 
     return await bankMatcherDeService.updateDepositExecution(id, body);
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const postSolveDepositExecutionFunc: ApiFuncType<{ message: string }> = async (event): Promise<ApiFuncRes> => {
+  try {
+    if (!event.pathParameters || !event.pathParameters.id)
+      throw new CustomError(`Bad request, missing path parameter!`, 400);
+
+    const metadata = extractMetadata(event);
+    const { permission, email } = checkAdminAuthorization(metadata);
+    await verifyPermission(permission, ['deposit:updateBankDeposit']);
+    const id = Number(event.pathParameters.id);
+
+    const message = event.body?.message || `Rejected by user ${email}`;
+    return await bankMatcherDeService.solveDepositExecutionByApi(id, message);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -81,23 +98,6 @@ const postReprocessDepositExecutionFunc: ApiFuncType<{ id: number }> = async (ev
     logger.info(`User ${email} is reprocessing deposit execution with id ${id}`);
 
     return await bankMatcherDeService.reprocessDepositExecution(id);
-  } catch (error: unknown) {
-    return handleApiFuncError(error);
-  }
-};
-
-const postSolveDepositExecutionFunc: ApiFuncType<{ message: string }> = async (event): Promise<ApiFuncRes> => {
-  try {
-    if (!event.pathParameters || !event.pathParameters.id)
-      throw new CustomError(`Bad request, missing path parameter!`, 400);
-
-    const metadata = extractMetadata(event);
-    const { permission, email } = checkAdminAuthorization(metadata);
-    await verifyPermission(permission, ['deposit:executeBankDeposit']);
-    const id = Number(event.pathParameters.id);
-
-    const message = event.body?.message || `Rejected by user ${email}`;
-    return await bankMatcherDeService.solveDepositExecutionByApi(id, message);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
