@@ -19,6 +19,7 @@ export async function isQpayInvoicePaid(qpayToken: string, invoice: MerchantInvo
 
     if (checkResponse.count === 0) {
       logger.info(`Qpay invoice is not paid yet! QpayInvoice: ${invoice.providerId}`);
+      logger.info(`Qpay invoice check response: ${JSON.stringify(checkResponse)}`);
       return false;
     }
 
