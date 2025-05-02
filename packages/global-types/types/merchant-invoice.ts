@@ -1,3 +1,5 @@
+// /packages/merchant-invoice/src/merchant-invoice.ts
+
 import {
   STATUS_CANCELLED,
   STATUS_EXECUTED,
@@ -30,7 +32,7 @@ export const MerchantInvoiceSchema = z.object({
   id: z.number(),
   referenceId: z.number(),
   referenceType: z.string(),
-  merchantMethod: z.enum(['QPAY', 'SOCIALPAY', 'MERCHANT', 'COINSBUY']),
+  merchantMethod: z.enum(['QPAY', 'SOCIALPAY', 'MERCHANT', 'COINSBUY', 'APPLEPAY']),
   userId: z.string(),
   // Invoice props
   providerId: z.string(),
