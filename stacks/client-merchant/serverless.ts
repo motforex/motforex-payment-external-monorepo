@@ -7,6 +7,7 @@ import {
   checkSocialpayInvoice,
   receiveMerchantNotification
 } from '@/functions/golomt-merchant';
+import { checkApplePayInvoice, createApplePayInvoice, processApplePayPayment } from '@/functions/applepay';
 
 const serverlessConfig: AWS = {
   service: 'motforex-client-merchant',
@@ -36,7 +37,8 @@ const serverlessConfig: AWS = {
       MOTFOREX_GOLOMT_MERCHANT_SECRET: '${ssm:/motforex/payments/golomt/card-merchant/secret-key}',
       MOTFOREX_GOLOMT_MERCHANT_TOKEN: '${ssm:/motforex/payments/golomt/card-merchant/token}',
       MOTFOREX_QPAY_USERNAME: '${ssm:/motforex/payments/qpay/username}',
-      MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}'
+      MOTFOREX_QPAY_PASSWORD: '${ssm:/motforex/payments/qpay/password}',
+      MOTFOREX_APPLEPAY_MERCHANT_KEY: '${ssm:/motforex/payments/applepay/merchant/secret-key}'
     }
   },
 
@@ -50,7 +52,11 @@ const serverlessConfig: AWS = {
     createSocialPayInvoice,
     checkGolomtMerchInvoice,
     checkSocialpayInvoice,
-    receiveMerchantNotification
+    receiveMerchantNotification,
+    // Applepay functions
+    createApplePayInvoice,
+    processApplePayPayment,
+    checkApplePayInvoice
   },
   package: { individually: true },
   custom: {
