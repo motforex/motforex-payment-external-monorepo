@@ -11,9 +11,17 @@ import { APPLEPAY_MERCHANT_EXPIRY_TIME, APPLEPAY_MERCHANT_REGENERATION_COUNT } f
  * @returns The created MerchantInvoice.
  */
 export async function createApplePayInvoice(depositRequest: PaymentRequest, locale: string): Promise<MerchantInvoice> {
-  const { id, userId, transactionCurrency, conversionRate, amountInUsd } = depositRequest;
+  const { id, userId, transactionCurrency, conversionRate, amountInUsd, amountWithCommission } = depositRequest;
+
+  // const transactionAmount = amountWithCommission.amount * conversionRate;
+  // For Apple Pay, the amount is in MNT.
+  // We are using a fixed transaction amount of 1 for the sake of this example.
+  const transactionAmount = 1;
 
   const transactionId = `${id}${getCurrentDateAsString()}`;
+
+  logger.info(`Initial amount: ${amountWithCommission.amount}, Conversion rate: ${conversionRate}`);
+  logger.info(`The converted AmountInMNT: ${transactionAmount}`);
 
   const merchantInvoice = await createMerchantInvoice(
     MerchantInvoiceSchema.parse({
@@ -28,7 +36,7 @@ export async function createApplePayInvoice(depositRequest: PaymentRequest, loca
       all: 1,
       userId,
       conversionRate,
-      transactionAmount: amountInUsd,
+      transactionAmount,
       transactionCurrency,
       amountInUsd,
       invoiceStatus: STATUS_PENDING,
