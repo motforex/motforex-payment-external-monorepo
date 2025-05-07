@@ -1,4 +1,3 @@
-// /packages/global-services/applepay/invoice.ts
 import { sendRequest, logger } from '@motforex/global-libs';
 import { BONUM_PSP_BASE } from './constants';
 import { ApplePayInvoiceCheckRes, ApplePayProcessRes } from './applepay.types';
@@ -15,8 +14,12 @@ export async function processApplePayPayment(
   token: string,
   orderId: string
 ): Promise<ApplePayProcessRes> {
+  let parsedToken;
   try {
+    parsedToken = JSON.parse(token);
+    logger.info('Parsed token successfully:', parsedToken);
     const { data } = await sendRequest<ApplePayProcessRes>({
+      // url: `https://testpsp.bonum.mn/api/payment/process`,
       url: `${BONUM_PSP_BASE}/api/payment/process`,
       method: 'POST',
       headers: {
@@ -24,7 +27,7 @@ export async function processApplePayPayment(
         'x-merchant-key': merchantKey
       },
       data: {
-        token, // Payment token from Apple Pay
+        token: parsedToken, // Payment token from Apple Pay
         order_id: orderId // Our internal invoice ID
       }
     });
@@ -45,8 +48,8 @@ export async function processApplePayPayment(
 export async function checkApplePayPayment(merchantKey: string, orderId: string): Promise<ApplePayInvoiceCheckRes> {
   try {
     const { data } = await sendRequest<ApplePayInvoiceCheckRes>({
-      // url: `${BONUM_PSP_BASE}/api/payment-log/read?order_id=${orderId}`,
-      url: `https://testpsp.bonum.mn/api/payment-log/read?order_id=${orderId}`,
+      url: `${BONUM_PSP_BASE}/api/payment-log/read?order_id=${orderId}`,
+      // url: `https://testpsp.bonum.mn/api/payment-log/read?order_id=${orderId}`,
       method: 'GET',
       headers: {
         'x-merchant-key': merchantKey

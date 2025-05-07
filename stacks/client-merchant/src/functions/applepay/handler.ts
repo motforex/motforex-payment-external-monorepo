@@ -2,7 +2,7 @@ import type { CustomAPIGatewayEvent as ApiFuncType } from '@motforex/global-libs
 import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
 
 import { CustomError, extractMetadata, handleApiFuncError, middyfy } from '@motforex/global-libs';
-import { formatInvoiceAsResponse } from '@motforex/global-services';
+import { formatInvoiceAsResponse, ApplePayProcessBodySchema } from '@motforex/global-services';
 
 import { checkAuthorization } from '@motforex/global-libs';
 import {
@@ -24,16 +24,15 @@ const createApplePayInvoiceFunc: ApiFuncType<null> = async (event): Promise<ApiF
   }
 };
 
-const processApplePayPaymentFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
+export const processApplePayPaymentFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
     const { id } = event.pathParameters || {};
     if (!id) throw new CustomError('Missing invoice ID', 400);
 
-    const body = JSON.parse(event.body || '{}');
-    const { paymentToken } = body;
-    if (!paymentToken) throw new CustomError('Missing payment token', 400);
+    const { paymentToken } = ApplePayProcessBodySchema.parse(event.body);
 
     const updatedInvoice = await processMotforexApplepayPayment(Number(id), paymentToken);
+
     return formatInvoiceAsResponse(updatedInvoice);
   } catch (error: unknown) {
     return handleApiFuncError(error);

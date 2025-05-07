@@ -57,6 +57,7 @@ export const MerchantInvoiceSchema = z.object({
 export type MerchantInvoice = z.infer<typeof MerchantInvoiceSchema>;
 
 export const PaymentInvoiceResponseSchema = z.object({
+  id: z.number(),
   invoiceStatus: InvoiceStatusSchema,
   executionStatus: InvoiceStatusSchema,
   transactionAmount: z.number(),

@@ -1,10 +1,11 @@
 import type { MerchantInvoice, PaymentRequest } from '@motforex/global-types';
-
 import { markPaymentInvoiceAsExpired } from '../merchant-invoice';
 import { CustomError, logger } from '@motforex/global-libs';
 import { getMerchantInvoiceById, getMerchantInvoiceByQuery } from '@/repository/merchant-invoice';
 import { getDepositReqById } from '@/repository/deposit-requests';
 import { QueryRequestSchema } from '@motforex/dynamo';
+
+import { STATUS_PENDING } from '@motforex/global-types';
 
 interface ValidatedResponse {
   depositRequest: PaymentRequest;
@@ -55,7 +56,7 @@ export async function handleInvoiceCreation(request: HandleInvoiceCreationReques
   logger.info(`Merchant invoice (${invoiceType}) found for ID: ${id}`);
 
   // If the invoice request is not PENDING
-  if (merchantInvoice.invoiceStatus !== 'PENDING') {
+  if (merchantInvoice.invoiceStatus !== STATUS_PENDING) {
     logger.info(`Merchant invoice (${invoiceType}) is already successful for ID: ${id}`);
     return merchantInvoice;
   }

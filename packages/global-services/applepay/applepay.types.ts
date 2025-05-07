@@ -27,6 +27,10 @@ export const ProcessResponseSchema = z.object({
   description: z.string()
 });
 
+export const ApplePayProcessBodySchema = z.object({
+  paymentToken: z.string().min(1, 'Missing payment token')
+});
+
 /**
  * Schema for a single transaction in the /api/payment-log/read response.
  */
@@ -46,4 +50,4 @@ export const CheckResponseSchema = z.array(TransactionSchema);
  * Inferred types from the schemas.
  */
 export type ApplePayProcessRes = z.infer<typeof ProcessResponseSchema>;
-export type ApplePayInvoiceCheckRes = z.infer<typeof CheckResponseSchema>;
+export type ApplePayInvoiceCheckRes = z.infer<typeof TransactionSchema>;

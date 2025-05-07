@@ -3,7 +3,7 @@ import { getMerchantInvoiceById, updateMerchantInvoice } from '@/repository/merc
 import { processApplePayPayment as processPayment } from '@motforex/global-services/applepay';
 import { CustomError, logger } from '@motforex/global-libs';
 import { STATUS_EXECUTED, STATUS_FAILED } from '@motforex/global-types';
-import { createApplePayInvoice, noRegenerateApplePayInvoice } from './applepay-merch-utils';
+import { createApplePayInvoice, regenerateApplePayInvoice } from './applepay-merch-utils';
 import { handleInvoiceCreation } from '../merchant-invoice';
 
 import { checkApplePayPayment as checkPayment } from '@motforex/global-services/applepay';
@@ -21,7 +21,7 @@ export async function createMotforexApplepayInvoice(
     email,
     locale,
     createNewInvoice: createApplePayInvoice,
-    regenerateInvoice: noRegenerateApplePayInvoice,
+    regenerateInvoice: regenerateApplePayInvoice,
     invoiceType: 'APPLEPAY'
   });
 }
@@ -41,8 +41,11 @@ export async function processMotforexApplepayPayment(
       throw new CustomError('Unable to process ApplePay invoice', 500);
     }
 
-    const result = await processPayment(MOTFOREX_APPLEPAY_MERCHANT_KEY, paymentToken, invoice.id.toString());
+    logger.info(`Processing ApplePay payment for invoice: ${invoiceId}, paymentToken: ${paymentToken}`);
 
+    const result = await processPayment(MOTFOREX_APPLEPAY_MERCHANT_KEY, paymentToken, invoice.providerId.toString());
+
+    logger.info(`ApplePay payment response from Bonum PSP: ${JSON.stringify(result)}`);
     if (result.success) {
       invoice.invoiceStatus = STATUS_EXECUTED;
       invoice.executionStatus = STATUS_EXECUTED;
@@ -54,6 +57,7 @@ export async function processMotforexApplepayPayment(
       invoice.message = result.description || 'Payment failed';
     }
   } catch (error) {
+    logger.error(`Error processing ApplePay payment: ${error}`);
     invoice.invoiceStatus = STATUS_FAILED;
     invoice.executionStatus = STATUS_FAILED;
     invoice.message = 'Payment processing error';
@@ -98,7 +102,7 @@ export async function checkMotforexApplepayInvoice(id: number, email: string): P
   }
 
   // NB:  we used invoice.id as order_id when creating / processing the payment
-  const pspRes = await checkPayment(MOTFOREX_APPLEPAY_MERCHANT_KEY, merchantInvoice.id.toString());
+  const pspRes = await checkPayment(MOTFOREX_APPLEPAY_MERCHANT_KEY, merchantInvoice.providerId.toString());
 
   logger.info(`ApplePay invoice check response from Bonum PSP: ${JSON.stringify(pspRes)}`);
   // ---------------------------------------------------------------------------
