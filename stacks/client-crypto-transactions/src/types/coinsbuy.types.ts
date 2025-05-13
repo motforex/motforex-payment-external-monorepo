@@ -57,10 +57,10 @@ const AttributesSchema = z.object({
   target_paid: z.string(),
   source_amount_requested: z.string(),
   target_paid_pending: z.string(),
-  assets: z.record(z.any()),
-  destination: z.null(),
-  payment_page_redirect_url: z.string().url(),
-  payment_page_button_text: z.string(),
+  assets: z.record(z.any()).optional(),
+  destination: z.string().nullable().optional(),
+  payment_page_redirect_url: z.string().url().optional(),
+  payment_page_button_text: z.string().optional(),
   is_active: z.boolean()
 });
 
@@ -89,8 +89,8 @@ export const CoinsbuyDepositAttributesSchema = z.object({
   created_at: z.string(),
   tracking_id: z.string(),
   target_paid: z.string(),
-  source_amount_requested: z.string(),
-  target_amount_requested: z.string(),
+  source_amount_requested: z.string().optional(),
+  target_amount_requested: z.string().optional(),
   status: z.number(),
   time_limit: z.any().nullable(),
   inaccuracy: z.string(),

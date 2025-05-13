@@ -1,0 +1,102 @@
+{
+  "data": {
+    "type": "deposit",
+    "id": "3576161",
+    "attributes": {
+      "address": "0xa0187de17f61cbb060d6dc4cc204e9e978a1c267",
+      "created_at": "2025-05-12T20:26:58.419345Z",
+      "tracking_id": "3319780",
+      "target_paid": "1.97500000",
+      "source_amount_requested": "230000.000000",
+      "target_amount_requested": "230000.00000000",
+      "status": 2,
+      "time_limit": null,
+      "inaccuracy": "0.00000000",
+      "destination": {
+        "address_type": null,
+        "address": "0xa0187de17f61cbb060d6dc4cc204e9e978a1c267"
+      }
+    },
+    "relationships": {
+      "currency": {
+        "data": {
+          "type": "currency",
+          "id": "2310"
+        }
+      },
+      "wallet": {
+        "data": {
+          "type": "wallet",
+          "id": "1177"
+        }
+      },
+      "transfer": {
+        "data": {
+          "type": "transfer",
+          "id": "4391928"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "currency",
+      "id": "2310",
+      "attributes": {
+        "blockchain_name": "",
+        "iso": 2310,
+        "name": "TetherUS",
+        "alpha": "USDT-OP",
+        "alias": "USDT",
+        "tags": "Token,Erc20 (Optimism),Stablecoin",
+        "exp": 6,
+        "confirmation_blocks": 3,
+        "minimal_transfer_amount": "1.000000",
+        "block_delay": 75
+      }
+    },
+    {
+      "type": "transfer",
+      "id": "4391928",
+      "attributes": {
+        "op_id": 3576161,
+        "op_type": 1,
+        "amount": "1.975000",
+        "rate_target": "1.000000000000000000",
+        "commission": "0.401236",
+        "fee": "0.000000",
+        "txid": "0xa4bedb62210f38f7c855984e3258d7c73ae54ce53e05f72aa27e5be7233596cf",
+        "status": 2,
+        "user_message": null,
+        "created_at": "2025-05-12T20:29:22.941580Z",
+        "updated_at": "2025-05-12T20:29:31.192444Z",
+        "confirmations": 13,
+        "risk": 0,
+        "risk_personal": null,
+        "risk_personal_status": 4,
+        "risk_status": 4,
+        "amount_target": "1.57376400",
+        "commission_target": "0.40123600",
+        "amount_cleared": "1.57376400"
+      },
+      "relationships": {
+        "currency": {
+          "data": {
+            "type": "currency",
+            "id": "2310"
+          }
+        },
+        "parent": {
+          "data": {
+            "type": "transfer",
+            "id": "4391930"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "time": "2025-05-12T20:29:31.237859+00:00",
+    "sign": "57b006d3db59740e736127b949a2bbd5c690f915410ea11f128f68877260ebd9"
+  }
+}

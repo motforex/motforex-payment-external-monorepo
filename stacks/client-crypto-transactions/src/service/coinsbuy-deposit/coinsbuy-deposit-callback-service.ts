@@ -1,9 +1,9 @@
-import type { CoinsbuyDeposit, CoinsbuyTransferIncluded } from '@/types/coinsbuy.types';
+import type { CoinsbuyDeposit } from '@/types/coinsbuy.types';
+import type { MerchantInvoice } from '@motforex/global-types';
 
+import { markCoinsbuyInvoiceAsExecuted, getValidMerchantInvoiceById } from '../merchant-invoice';
+import { STATUS_PENDING } from '@motforex/global-types';
 import { logger } from '@motforex/global-libs';
-import { getValidMerchantInvoiceById } from '../merchant-invoice';
-import { MerchantInvoice, STATUS_PENDING } from '@motforex/global-types';
-import { markCoinsbuyInvoiceAsExecuted } from '../merchant-invoice';
 
 /**
  *  Callback service for handling Coinsbuy deposit status updates.
@@ -19,10 +19,9 @@ export async function coinsbuyDepositCallbackService(id: number, coinsbuyDeposit
 
     const merchantInvoice = await getValidMerchantInvoiceById(id, [STATUS_PENDING]);
 
-    // If the status is 3(Paid), mark invoice as a success
     if (statusNumber === 3) {
       logger.info('Coinsbuy deposit invoice is paid');
-      await markCoinsbuyInvoiceAsExecuted(merchantInvoice);
+      await validateCallbackAndExecute(merchantInvoice, coinsbuyDeposit);
       return;
     }
 
@@ -32,25 +31,17 @@ export async function coinsbuyDepositCallbackService(id: number, coinsbuyDeposit
   }
 }
 
-/**
- * Handles partial payment for a Coinsbuy deposit by marking the invoice as executed.
- *
- * @param invoice
- * @param coinsbuyDeposit
- * @returns
- */
-export async function handlePartialPayment(invoice: MerchantInvoice, coinsbuyDeposit: CoinsbuyDeposit): Promise<void> {
-  const transfers = coinsbuyDeposit.included?.filter((item) => item.type === 'transfer') as CoinsbuyTransferIncluded[];
+export async function validateCallbackAndExecute(inv: MerchantInvoice, coinsbuy: CoinsbuyDeposit): Promise<void> {
+  try {
+    if (inv.transactionAmount !== Number(coinsbuy.data.attributes.target_paid)) {
+      logger.info(`Coinsbuy amount is invalid: ${inv.transactionAmount} != ${coinsbuy.data.attributes.target_paid}`);
+      return;
+    }
+    logger.info(`Coinsbuy amount is valid: ${inv.transactionAmount} == ${coinsbuy.data.attributes.target_paid}`);
 
-  if (!transfers || transfers.length === 0) {
-    logger.error('Coinsbuy deposit transfer not found');
-    return;
+    logger.info(`Coinsbuy invoice is valid to process: ${inv.id} EXECUTING!`);
+    await markCoinsbuyInvoiceAsExecuted(inv);
+  } catch (error: unknown) {
+    logger.error(`Error in validateCallbackAndExecute: ${error}`);
   }
-
-  const largestTransfer = transfers.reduce((max, current) => {
-    return parseFloat(current.attributes.amount) > parseFloat(max.attributes.amount) ? current : max;
-  });
-  logger.info(`Coinsbuy deposit transfer: ${JSON.stringify(largestTransfer)}`);
-
-  await markCoinsbuyInvoiceAsExecuted(invoice);
 }
