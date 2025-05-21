@@ -1,0 +1,99 @@
+{
+  "data": {
+    "type": "deposit",
+    "id": "3578829",
+    "attributes": {
+      "address": "0xc8af06b48af68e0a35ee0cc7cae3600f580b01ae",
+      "created_at": "2025-05-13T07:48:32.655019Z",
+      "tracking_id": "3320258",
+      "target_paid": "25.00000000",
+      "source_amount_requested": "25.000000000000000000",
+      "target_amount_requested": "25.00000000",
+      "status": 3,
+      "time_limit": null,
+      "inaccuracy": "0.00000000",
+      "destination": {
+        "address_type": null,
+        "address": "0xc8af06b48af68e0a35ee0cc7cae3600f580b01ae"
+      }
+    },
+    "relationships": {
+      "currency": {
+        "data": {
+          "type": "currency",
+          "id": "2065"
+        }
+      },
+      "wallet": {
+        "data": {
+          "type": "wallet",
+          "id": "1177"
+        }
+      },
+      "transfer": {
+        "data": {
+          "type": "transfer",
+          "id": "4399434"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "currency",
+      "id": "2065",
+      "attributes": {
+        "blockchain_name": "",
+        "iso": 2065,
+        "name": "TetherUS",
+        "alpha": "BUSD-T-BSC",
+        "alias": "USDT",
+        "tags": "",
+        "exp": 18,
+        "confirmation_blocks": 3,
+        "minimal_transfer_amount": "10.000000000000000000",
+        "block_delay": 75
+      }
+    },
+    {
+      "type": "transfer",
+      "id": "4399434",
+      "attributes": {
+        "op_id": 3578829,
+        "op_type": 1,
+        "amount": "25.000000000000000000",
+        "rate_target": "1.000000000000000000",
+        "commission": "0.200610030501525076",
+        "fee": "0.000000000000000000",
+        "txid": "0x5b4c51c7a9e0f1847d9c2c833408c616e824c195d673e18c434b8f26b8febd60",
+        "status": 2,
+        "user_message": null,
+        "created_at": "2025-05-13T07:52:37.058505Z",
+        "updated_at": "2025-05-13T07:52:40.623741Z",
+        "confirmations": 5,
+        "risk": 0,
+        "risk_personal": null,
+        "risk_personal_status": 4,
+        "risk_status": 4,
+        "amount_target": "24.79938996",
+        "commission_target": "0.20061003",
+        "amount_cleared": "24.79938996"
+      },
+      "relationships": {
+        "currency": {
+          "data": {
+            "type": "currency",
+            "id": "2065"
+          }
+        },
+        "parent": {
+          "data": null
+        }
+      }
+    }
+  ],
+  "meta": {
+    "time": "2025-05-13T07:52:41.193480+00:00",
+    "sign": "1f3e06901c07645d65b0e4b2a3d3556bb290a40e809b90f1263e37e7bbdb128c"
+  }
+}

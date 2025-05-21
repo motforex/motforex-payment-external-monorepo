@@ -6,9 +6,17 @@ export const STATUS_PENDING = 'PENDING';
 export const STATUS_CANCELLED = 'CANCELLED';
 export const STATUS_EXPIRED = 'EXPIRED';
 export const STATUS_PROCESSING = 'PROCESSING';
+
+export const STATUS_AUTO_PROCESSING = 'AUTO_PROCESSING';
+export const STATUS_AUTO_PAYOUT = 'AUTO_PAYOUT';
+export const STATUS_AUTO_SOLVED = 'AUTO_SOLVED';
+export const STATUS_AUTO_FAILED = 'AUTO_FAILED';
+export const STATUS_AUTO_REJECTED = 'AUTO_REJECTED';
+export const STATUS_AUTO_EXECUTED = 'AUTO_EXECUTED';
+
 export const STATUS_PAYOUT = 'PAYOUT';
-export const STATUS_PAID = 'PAID';
 export const STATUS_HALTED = 'HALTED';
 export const STATUS_FAILED = 'FAILED';
 export const STATUS_EXECUTED = 'EXECUTED';
 export const STATUS_REJECTED = 'REJECTED';
+export const STATUS_ARCHIVED = 'ARCHIVED';

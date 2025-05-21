@@ -1,0 +1,53 @@
+{
+  "data": {
+    "type": "deposit",
+    "id": "3577576",
+    "attributes": {
+      "address": "TTRCugwc2c9zuTV8jatVQNjipKQvDSGVgc",
+      "created_at": "2025-05-13T03:17:08.631755Z",
+      "tracking_id": "3319947",
+      "target_paid": "25.00000000",
+      "source_amount_requested": "25.000000",
+      "target_amount_requested": "25.00000000",
+      "status": 3,
+      "time_limit": null,
+      "inaccuracy": "0.00000000",
+      "destination": {
+        "address_type": null,
+        "address": "TTRCugwc2c9zuTV8jatVQNjipKQvDSGVgc"
+      }
+    },
+    "relationships": {
+      "currency": {
+        "data": {
+          "type": "currency",
+          "id": "2145"
+        }
+      },
+      "wallet": {
+        "data": {
+          "type": "wallet",
+          "id": "1177"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "type": "currency",
+      "id": "2145",
+      "attributes": {
+        "blockchain_name": "",
+        "iso": 2145,
+        "name": "TetherUS",
+        "alpha": "USDT-TRX",
+        "alias": "USDT",
+        "tags": "",
+        "exp": 6,
+        "confirmation_blocks": 20,
+        "minimal_transfer_amount": "10.000000",
+        "block_delay": 75
+      }
+    }
+  ]
+}

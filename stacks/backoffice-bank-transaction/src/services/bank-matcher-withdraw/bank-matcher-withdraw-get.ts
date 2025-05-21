@@ -61,9 +61,7 @@ export async function rejectWithdrawExecution(id: number, message: string): Prom
     const { data } = await sendRequest<WithdrawExecution>({
       url: `${BANK_MATCHER_ADDRESS}/api/v1/withdraw-executions/${id}/reject`,
       method: 'POST',
-      data: {
-        message
-      }
+      data: { message }
     });
     return formatApiResponse(data || {});
   } catch (error: unknown) {

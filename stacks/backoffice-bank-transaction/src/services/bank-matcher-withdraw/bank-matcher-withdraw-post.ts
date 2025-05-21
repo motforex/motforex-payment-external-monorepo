@@ -1,5 +1,14 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { RequestMetadata as Metadata, WithdrawExecution } from '@motforex/global-types';
+import {
+  STATUS_AUTO_PAYOUT,
+  STATUS_AUTO_PROCESSING,
+  STATUS_FAILED,
+  STATUS_PAYOUT,
+  STATUS_PENDING,
+  STATUS_PROCESSING,
+  type RequestMetadata as Metadata,
+  type WithdrawExecution
+} from '@motforex/global-types';
 import {
   checkAuthorization,
   CustomError,
@@ -21,7 +30,16 @@ export async function solveWithdrawRequestByApi(id: number, message: string): Pr
     }
     logger.info(`Withdraw execution with id ${id} found`);
 
-    if (!['PROCESSING', 'FAILED', 'PENDING', 'PAYOUT'].includes(withdrawExecution.status)) {
+    if (
+      ![
+        STATUS_PROCESSING,
+        STATUS_FAILED,
+        STATUS_PENDING,
+        STATUS_PAYOUT,
+        STATUS_AUTO_PAYOUT,
+        STATUS_AUTO_PROCESSING
+      ].includes(withdrawExecution.status)
+    ) {
       logger.error(`Withdraw execution with id ${id} is not in a valid state`);
       throw new CustomError('Bad request! Withdraw execution is not in a valid state', 400);
     }

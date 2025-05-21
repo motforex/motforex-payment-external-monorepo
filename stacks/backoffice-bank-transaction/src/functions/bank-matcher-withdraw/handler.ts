@@ -11,6 +11,7 @@ import {
 } from '@motforex/global-libs';
 import * as bankMatcherWithdrawService from '@/services/bank-matcher-withdraw';
 import { verifyPermission } from '@motforex/global-services';
+import { WithdrawExecutionSchema } from '@motforex/global-types';
 
 const getWithdrawExecutionsFunc: ApiFuncType<null> = async (event): Promise<ApiFuncRes> => {
   try {
@@ -68,14 +69,15 @@ const getRefreshWithdrawExecutionFunc: ApiFuncType<null> = async (event): Promis
 
 const putWithdrawExecutionFunc: ApiFuncType<{ id: number }> = async (event): Promise<ApiFuncRes> => {
   try {
+    const body = WithdrawExecutionSchema.parse(event.body);
     if (!event.pathParameters || !event.pathParameters.id)
       throw new CustomError(`Bad request, missing path parameter!`, 400);
     // Check admin authorization
     const metadata = extractMetadata(event);
-    const { permission } = checkAdminAuthorization(metadata);
+    const { permission, email } = checkAdminAuthorization(metadata);
     await verifyPermission(permission, ['withdraw:executeBankWithdraw']);
 
-    return await bankMatcherWithdrawService.updateWithdrawExecutionByApi(metadata, Number(event.pathParameters?.id));
+    return await bankMatcherWithdrawService.updateWithdrawExec(Number(event.pathParameters?.id), email, body);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }

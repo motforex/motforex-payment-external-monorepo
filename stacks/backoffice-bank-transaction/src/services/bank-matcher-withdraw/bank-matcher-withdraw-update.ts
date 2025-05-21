@@ -1,21 +1,20 @@
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
-import type { WithdrawExecution, RequestMetadata as Metadata } from '@motforex/global-types';
+import type { WithdrawExecution } from '@motforex/global-types';
 
-import {
-  checkAuthorization,
-  CustomError,
-  formatApiResponse,
-  handleApiFuncError,
-  logger,
-  sendRequest
-} from '@motforex/global-libs';
+import { CustomError, formatApiResponse, handleApiFuncError, logger, sendRequest } from '@motforex/global-libs';
 import { BANK_MATCHER_ADDRESS } from '@/constants';
 import { getWithdrawExecutionRaw } from './bank-matcher-withdraw-get';
-import { WithdrawExecutionSchema } from '@motforex/global-types';
+import {
+  STATUS_AUTO_EXECUTED,
+  STATUS_AUTO_REJECTED,
+  STATUS_AUTO_SOLVED,
+  STATUS_EXECUTED,
+  STATUS_REJECTED,
+  WithdrawExecutionSchema
+} from '@motforex/global-types';
 
-export async function updateWithdrawExecutionByApi(metadata: Metadata, id: number): Promise<APIResponse> {
+export async function updateWithdrawExec(id: number, email: string, item: WithdrawExecution): Promise<APIResponse> {
   try {
-    const { email } = checkAuthorization(metadata, 'update-withdraw-execution');
     logger.info(`User ${email} is updating deposit execution with id ${id}`);
     const withdrawExecution = await getWithdrawExecutionRaw(id);
 
@@ -24,13 +23,22 @@ export async function updateWithdrawExecutionByApi(metadata: Metadata, id: numbe
       throw new CustomError('Bad request! Deposit execution not found', 400);
     }
 
-    if (['EXECUTED', 'REJECTED', 'SOLVED'].includes(withdrawExecution.status)) {
+    if (
+      [
+        STATUS_EXECUTED,
+        STATUS_REJECTED,
+        STATUS_AUTO_SOLVED,
+        STATUS_AUTO_REJECTED,
+        STATUS_AUTO_EXECUTED,
+        'SOLVED'
+      ].includes(withdrawExecution.status)
+    ) {
       logger.error(`Deposit execution with id ${id} is not in a valid state`);
       throw new CustomError('Bad request! Deposit execution is not in a valid state', 400);
     }
 
-    const body = WithdrawExecutionSchema.parse(metadata.body);
-    if (body.status === 'EXECUTED') {
+    const body = WithdrawExecutionSchema.parse(item);
+    if (body.status === STATUS_EXECUTED) {
       logger.warn(`User:${email} is trying to update the status to 'EXECUTED'`);
       throw new CustomError('Bad request! You cannot update the status to EXECUTED', 400);
     }
