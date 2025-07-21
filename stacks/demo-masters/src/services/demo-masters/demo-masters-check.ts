@@ -25,7 +25,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
   if (await isDemoMastersInvoicePaid(qpayAuthToken, eventPurchase)) {
     logger.info(`Event purchase is paid! EventPurchase:${id}`);
     await updateEventPurchase(
-      { ...eventPurchase, status: 'PAID', message: 'The payment is successfully paid' },
+      { ...eventPurchase, status: STATUS_PAID, message: 'The payment is successfully paid' },
       `#status = :pending`,
       { ':pending': STATUS_PENDING }
     );
@@ -47,7 +47,7 @@ export async function checkDemoMastersInvoice(id: string): Promise<EventPurchase
 
     logger.info(`Event purchase is paid! Response:${result}`);
     return await updateEventPurchase(
-      { ...eventPurchase, status: 'PAID', message: 'All operation finished' },
+      { ...eventPurchase, status: STATUS_PAID, message: 'All operation finished' },
       `#status = :paid`,
       { ':paid': STATUS_PAID }
     );

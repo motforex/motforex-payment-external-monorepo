@@ -1,11 +1,10 @@
 import { createEventPurchase } from '@/repository/demo-masters-repository';
-import { getPurchasesByUserIdAndEvent } from './demo-masters-utils';
+import { getDemoMastersPrice, getPurchasesByUserIdAndEvent } from './demo-masters-utils';
 import { EventPurchase, EventPurchaseSchema } from '@motforex/global-types';
 import { getCurrentDateString, getDayStartTimestamp, shuffleString } from '../utils/date-utils';
 import { createSimpleQpayInvoice, QpayCreateInvoiceRequestSchema } from '@motforex/global-services';
 import {
   MOTFOREX_DEMO_MASTERS_DAY_LIMIT,
-  MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE,
   MOTFOREX_QPAY_INVOICE_CODE,
   MOTFOREX_QPAY_TOKEN_PARAMETER
 } from '@/constants';
@@ -45,9 +44,10 @@ export async function createNewEventPurchase(userId: string, email?: string): Pr
   // Calculating amount
   const currentDateAsString = getCurrentDateString();
   const dayStartTimestamp = getDayStartTimestamp();
-  const conversionRate = await getUsdMntBuyRate();
+  const [conversionRate, price] = await Promise.all([getUsdMntBuyRate(), getDemoMastersPrice()]);
+  console.log(`Current price for demo masters: ${price}`);
   logger.info(`Current USD to MNT buy rate: ${conversionRate}`);
-  const amountInTransactionCurrency = Number(MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE * conversionRate);
+  const amountInTransactionCurrency = Number(price * conversionRate);
   // const amountInTransactionCurrency = 10;
   // Sending request to Qpay
   const id = shuffleString(`${currentDateAsString}${userId.substring(0, 5)}`);
@@ -64,7 +64,7 @@ export async function createNewEventPurchase(userId: string, email?: string): Pr
   const qpayAuthToken = await getParameterStoreVal(MOTFOREX_QPAY_TOKEN_PARAMETER);
   if (!qpayAuthToken) {
     logger.error('QPAY token is not found in the parameter store!');
-    throw new CustomError('QPAY token is not found in the parameter store!', 500);
+    throw new CustomError('Unable to create demo masters purchase', 500);
   }
   logger.info(`Creating new Qpay invoice for deposit request: ${id}`);
 
@@ -85,7 +85,7 @@ export async function createNewEventPurchase(userId: string, email?: string): Pr
       invoiceReference: invoice_id,
       conversionRate,
       transactionCurrency: 'MNT',
-      amountInUsd: MOTFOREX_DEMO_MASTERS_PURCHASE_FIXED_PRICE,
+      amountInUsd: price,
       amountInTransactionCurrency,
       referenceDate: dayStartTimestamp,
       metadata: { qPay_shortUrl, qr_text, qr_image, urls },

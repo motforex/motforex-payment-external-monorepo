@@ -9,8 +9,8 @@ export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): 
   try {
     logger.info(`Marking payment invoice as paid: ${invoice.id}`);
     const updatedInvoice: MerchantInvoice = { ...invoice, invoiceStatus: STATUS_EXECUTED };
-    await executeDepositRequest(updatedInvoice);
-    return await updateMerchantInvoice(
+
+    const response = await updateMerchantInvoice(
       updatedInvoice,
       'providerId = :oldProviderId AND invoiceStatus = :pendingStatus',
       {
@@ -18,6 +18,9 @@ export async function markPaymentInvoiceAsSuccessful(invoice: MerchantInvoice): 
         ':pendingStatus': STATUS_PENDING
       }
     );
+
+    await executeDepositRequest(updatedInvoice);
+    return response;
   } catch (error: unknown) {
     logger.error(`Error marking payment invoice as paid: ${invoice.id}`);
     throw error;

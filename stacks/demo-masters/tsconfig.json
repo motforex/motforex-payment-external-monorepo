@@ -1,11 +1,11 @@
 {
   "extends": "@motforex/typescript-config/base.json",
   "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "dist",
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src/**/*.ts", "serverless.ts"],
-  "exclude": ["node_modules/**/*", ".serverless/**/*", ".webpack/**/*", "_warmup/**/*", ".vscode/**/*"]
+  "exclude": ["node_modules", "dist", ".serverless", ".webpack", "_warmup", ".vscode"]
 }
