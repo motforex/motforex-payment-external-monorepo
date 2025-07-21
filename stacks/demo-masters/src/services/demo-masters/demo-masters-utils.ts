@@ -2,7 +2,8 @@ import { getEventPurchaseById, getEventPurchaseByQuery } from '@/repository/demo
 import { EventPurchase } from '@motforex/global-types';
 import { getDayStartTimestamp } from '../utils/date-utils';
 import { CustomError, getParameterStoreVal, logger } from '@motforex/global-libs';
-import { MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY } from '@/constants';
+import { MOTFOREX_DEMO_MASTERS_ACTUAL_PRICE_PS_KEY, MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY } from '@/constants';
+import { DemoMastersPriceDetail, DemoMastersPriceDetailSchema } from '@/types';
 
 export async function getValidatedEventPurchaseById(id: string): Promise<EventPurchase> {
   const result = await getEventPurchaseById(id);
@@ -33,17 +34,28 @@ export async function getPurchasesByUserIdAndEvent(userId: string, event: string
   }
 }
 
-export async function getDemoMastersPrice(): Promise<number> {
-  const value = await getParameterStoreVal(MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY);
+export async function getParameterStoreNumberValue(key: string): Promise<number> {
+  const value = await getParameterStoreVal(key);
   if (!value) {
-    logger.error('Demo masters price not found in parameter store');
-    throw new CustomError('Unable to create demo masters purchase', 500);
+    logger.error(`Parameter store value for key ${key} not found`);
+    throw new CustomError(`Parameter store value for key ${key} not found`, 500);
   }
   const parsedValue = parseFloat(value);
   if (isNaN(parsedValue) || parsedValue <= 0) {
-    logger.error('Demo masters price is not a valid number');
-    throw new CustomError('Invalid demo masters price', 500);
+    logger.error(`Parameter store value for key ${key} is not a valid number`);
+    throw new CustomError(`Invalid parameter store value for key ${key}`, 500);
   }
-
   return parsedValue;
+}
+
+export async function getDemoMastersPrice(): Promise<number> {
+  return getParameterStoreNumberValue(MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY);
+}
+
+export async function getDemoMastersPriceDetail(): Promise<DemoMastersPriceDetail> {
+  const [currentPriceInUsd, actualPriceInUsd] = await Promise.all([
+    getParameterStoreNumberValue(MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY),
+    getParameterStoreNumberValue(MOTFOREX_DEMO_MASTERS_ACTUAL_PRICE_PS_KEY)
+  ]);
+  return DemoMastersPriceDetailSchema.parse({ currentPriceInUsd, actualPriceInUsd });
 }

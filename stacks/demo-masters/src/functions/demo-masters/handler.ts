@@ -13,6 +13,7 @@ import {
 import {
   checkDemoMastersInvoice,
   createDemoMastersPurchase,
+  getDemoMastersPriceDetail,
   getEventPurchasesByIdAndEventName,
   getEventPurchasesByQuery,
   handleDemoMastersQpayCallback
@@ -20,10 +21,20 @@ import {
 import { getUsdMntBuyRate } from '@/services/custom-config';
 import { extractQueryParamsFromEvent } from '@motforex/dynamo';
 import { STATUS_PENDING } from '@motforex/global-types';
+import { DemoMastersPriceDetail } from '@/types';
 
-const getDemoMastersRateFunc: ApiFuncType<null> = async () => {
+const getDemoMastersRateFunc: ApiFuncType<{ rate: number }> = async () => {
   try {
     return formatApiResponse({ rate: await getUsdMntBuyRate() });
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const getDemoMastersPriceFunc: ApiFuncType<DemoMastersPriceDetail> = async () => {
+  try {
+    const response = await getDemoMastersPriceDetail();
+    return formatApiResponse(response);
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
@@ -103,6 +114,7 @@ const getHandleDemoMastersQpayCallbackFunc: ApiFuncType<null> = async (event): P
 };
 
 export const getDemoMastersRate = middyfy(getDemoMastersRateFunc);
+export const getDemoMastersPrice = middyfy(getDemoMastersPriceFunc);
 export const getDemoMastersInvoice = middyfy(getDemoMastersInvoiceFunc);
 export const getDemoMastersPurchaseByQuery = middyfy(getDemoMastersPurchaseByQueryFunc);
 export const postCreateDemoMastersInvoice = middyfy(postCreateDemoMastersInvoiceFunc);

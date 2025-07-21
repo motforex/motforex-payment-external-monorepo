@@ -2,6 +2,7 @@ export const MOTFOREX_QPAY_INVOICE_CODE = process.env.MOTFOREX_QPAY_INVOICE_CODE
 export const MOTFOREX_QPAY_TOKEN_PARAMETER = '/motforex/payments/qpay/access-token';
 export const MOTFOREX_DEMO_MASTERS_DAY_LIMIT = 20;
 export const MOTFOREX_DEMO_MASTERS_PRICE_PS_KEY = '/motforex/demo-masters/price';
+export const MOTFOREX_DEMO_MASTERS_ACTUAL_PRICE_PS_KEY = '/motforex/demo-masters/actual-price';
 
 export const RATE_USD_MNT_BUY = 'RATE_USD_MNT_BUY';
 export const RATE_USD_MNT_SELL = 'RATE_USD_MNT_SELL';

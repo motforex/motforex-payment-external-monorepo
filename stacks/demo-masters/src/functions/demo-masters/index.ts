@@ -7,6 +7,13 @@ export const getDemoMastersRate = createUserAuthApiGatewayFunc(
   '/v1/demo-masters/rate'
 );
 
+export const getDemoMastersPrice = createUserAuthApiGatewayFunc(
+  __dirname,
+  'getDemoMastersPrice',
+  'GET',
+  '/v1/demo-masters/price'
+);
+
 export const getDemoMastersInvoice = createUserAuthApiGatewayFunc(
   __dirname,
   'getDemoMastersInvoice',

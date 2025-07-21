@@ -1,6 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 import {
   getDemoMastersRate,
+  getDemoMastersPrice,
   getDemoMastersInvoice,
   getDemoMastersPurchaseByQuery,
   postCreateDemoMastersInvoice,
@@ -43,6 +44,7 @@ const serverlessConfig: AWS = {
   },
   functions: {
     getDemoMastersRate,
+    getDemoMastersPrice,
     getDemoMastersInvoice,
     getDemoMastersPurchaseByQuery,
     postCreateDemoMastersInvoice,
